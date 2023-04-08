@@ -2,9 +2,10 @@ import React, { useRef, useState } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "util/auth";
-import { useItem, updateItem, createItem } from "util/db";
+// import { useItem, updateItem, createItem } from "util/db";
+import { useDeepform, updateDeepForm, createDeepform } from "util/db";
 
-function EditItemModal(props) {
+function EditDeepformModal(props) {
   const auth = useAuth();
   const [pending, setPending] = useState(false);
   const [formAlert, setFormAlert] = useState(null);
@@ -12,14 +13,14 @@ function EditItemModal(props) {
 
   const { register, handleSubmit, errors } = useForm();
 
-  // This will fetch item if props.id is defined
+  // This will fetch Deepform if props.id is defined
   // Otherwise query does nothing and we assume
-  // we are creating a new item.
-  const { data: itemData, status: itemStatus } = useItem(props.id);
+  // we are creating a new Deepform.
+  const { data: deepformData, status: deepformStatus } = useDeepform(props.id);
 
-  // If we are updating an existing item
-  // don't show modal until item data is fetched.
-  if (props.id && itemStatus !== "success") {
+  // If we are updating an existing Deepform
+  // don't show modal until Deepform data is fetched.
+  if (props.id && deepformStatus !== "success") {
     return null;
   }
 
@@ -27,8 +28,8 @@ function EditItemModal(props) {
     setPending(true);
 
     const query = props.id
-      ? updateItem(props.id, data)
-      : createItem({ owner: auth.user.uid, ...data });
+      ? updateDeepform(props.id, data)
+      : createDeepform({ owner: auth.user.uid, ...data });
 
     query
       .then(() => {
@@ -85,7 +86,7 @@ function EditItemModal(props) {
                 as="h3"
                 className="text-lg font-medium leading-6 text-gray-900"
               >
-                {props.id ? "Update" : "Create"} Item
+                {props.id ? "Update" : "Create"} Deepform
               </Dialog.Title>
               <div className="mt-4">
                 {formAlert && (
@@ -98,9 +99,9 @@ function EditItemModal(props) {
                     name="name"
                     type="text"
                     placeholder="Name"
-                    defaultValue={itemData && itemData.name}
+                    defaultValue={deepformData && deepformData.name}
                     ref={register({
-                      required: "Please enter a name",
+                      required: "Please enter a name for your Deepform",
                     })}
                   />
 
@@ -137,4 +138,4 @@ function EditItemModal(props) {
   );
 }
 
-export default EditItemModal;
+export default EditDeepformModal;

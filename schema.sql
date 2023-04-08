@@ -74,7 +74,7 @@ create table public.items (
   -- Item data
   "name" text,
   "featured" boolean,
-  "createdAt" timestamp with time zone default timezone('utc'::text, now()) not null
+  "created_at" timestamp with time zone default timezone('utc'::text, now()) not null
   -- Validate data
   constraint name check (char_length("name") >= 1 OR char_length("name") <= 144)
 );

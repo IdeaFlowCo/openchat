@@ -8,7 +8,11 @@ function IndexPage(props) {
       <Meta />
       <section className="py-12 px-4">
         <div className="container mx-auto">
-          This is a placeholder template, blah, blah.
+        Welcome! Deepform trains and deploys AI user researchers to 
+        consistently gather deep insights from your users 
+        via automated conversational interviews.
+
+        Click "Sign In" to get started for free.
         </div>
       </section>
       <NewsletterSection />

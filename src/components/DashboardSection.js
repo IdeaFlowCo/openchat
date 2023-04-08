@@ -17,24 +17,16 @@ function DashboardSection(props) {
           </div>
           <div className="p-4 w-full md:w-1/2">
             <div className="p-6 rounded border border-gray-200 prose prose-a:text-blue-600 max-w-none">
-              <h3 className="mb-4">What is this?</h3>
+              <h3 className="mb-4">Deepform Dashboard</h3>
               <p>
-                The component on your left is an example UI that shows you how
-                to fetch, display, and update a list of items that belong to the
-                current authenticated user. Try it now by adding a couple items.
+                On your left, you can create your first Deepform by clicking "Create Deepform".
+                You can give it a name and then select it or delete it.
               </p>
               <p>
-                It also shows how you can limit features based on plan. If
-                you're subscribed to the "pro" or "business" plan then you'll be
-                able to use the star button to highlight items, otherwise you'll
-                be asked to upgrade your plan.
+                Once you create a Deepform, you can click on it to enter the Deepform's 
+                individual page. We'll show you how to set up your Deepform from within there!
               </p>
-              <p>
-                After exporting your code, you'll want to modify this component
-                to your needs. You may also find it easier to just use this
-                component as a reference as you build out your custom UI.
-              </p>
-              <h3 className="mb-4">Extra debug info</h3>
+              <h3 className="mb-4">Your account info</h3>
               <div>
                 You are signed in as <strong>{auth.user.email}</strong>.
               </div>

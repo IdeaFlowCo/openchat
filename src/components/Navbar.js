@@ -9,7 +9,7 @@ function Navbar(props) {
     <header className="py-5 px-4 bg-gray-100">
       <div className="container flex flex-col flex-wrap items-center mx-auto md:flex-row">
         <Link href="/">
-          <a className="mb-3 md:mb-0">Logo</a>
+          <a className="mb-3 md:mb-0">Deepform</a>
         </Link>
         <nav className="flex flex-wrap items-center md:ml-auto">
           <Link href="/about">

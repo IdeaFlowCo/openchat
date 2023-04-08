@@ -53,70 +53,136 @@ export async function updateUser(uid, data) {
   return response;
 }
 
-/**** ITEMS ****/
+/**** DEEPFORMS ****/
 /* Example query functions (modify to your needs) */
 
 // Fetch item data
-export function useItem(id) {
+export function useDeepform(id) {
   return useQuery(
-    ["item", { id }],
-    () => supabase.from("items").select().eq("id", id).single().then(handle),
+    ["deepform", { id }],
+    () => supabase.from("deepforms").select().eq("id", id).single().then(handle),
     { enabled: !!id }
   );
 }
 
 // Fetch all items by owner
-export function useItemsByOwner(owner) {
+export function useDeepformsByOwner(owner) {
   return useQuery(
-    ["items", { owner }],
+    ["deepforms", { owner }],
     () =>
       supabase
-        .from("items")
+        .from("deepforms")
         .select()
         .eq("owner", owner)
-        .order("createdAt", { ascending: false })
+        .order("created_at", { ascending: false })
         .then(handle),
     { enabled: !!owner }
   );
 }
 
 // Create a new item
-export async function createItem(data) {
-  const response = await supabase.from("items").insert([data]).then(handle);
+export async function createDeepform(data) {
+  const response = await supabase.from("deepforms").insert([data]).then(handle);
   // Invalidate and refetch queries that could have old data
-  await client.invalidateQueries(["items"]);
+  await client.invalidateQueries(["deepforms"]);
   return response;
 }
 
 // Update an item
-export async function updateItem(id, data) {
+export async function updateDeepform(id, data) {
   const response = await supabase
-    .from("items")
+    .from("deepforms")
     .update(data)
     .eq("id", id)
     .then(handle);
   // Invalidate and refetch queries that could have old data
   await Promise.all([
-    client.invalidateQueries(["item", { id }]),
-    client.invalidateQueries(["items"]),
+    client.invalidateQueries(["deepform", { id }]),
+    client.invalidateQueries(["deepforms"]),
   ]);
   return response;
 }
 
 // Delete an item
-export async function deleteItem(id) {
+export async function deleteDeepform(id) {
   const response = await supabase
-    .from("items")
+    .from("deepforms")
     .delete()
     .eq("id", id)
     .then(handle);
   // Invalidate and refetch queries that could have old data
   await Promise.all([
-    client.invalidateQueries(["item", { id }]),
-    client.invalidateQueries(["items"]),
+    client.invalidateQueries(["deepform", { id }]),
+    client.invalidateQueries(["deepforms"]),
   ]);
   return response;
 }
+
+
+// /**** ITEMS ****/
+// /* Example query functions (modify to your needs) */
+
+// // Fetch item data
+// export function useItem(id) {
+//   return useQuery(
+//     ["item", { id }],
+//     () => supabase.from("items").select().eq("id", id).single().then(handle),
+//     { enabled: !!id }
+//   );
+// }
+
+// // Fetch all items by owner
+// export function useItemsByOwner(owner) {
+//   return useQuery(
+//     ["items", { owner }],
+//     () =>
+//       supabase
+//         .from("items")
+//         .select()
+//         .eq("owner", owner)
+//         .order("createdAt", { ascending: false })
+//         .then(handle),
+//     { enabled: !!owner }
+//   );
+// }
+
+// // Create a new item
+// export async function createItem(data) {
+//   const response = await supabase.from("items").insert([data]).then(handle);
+//   // Invalidate and refetch queries that could have old data
+//   await client.invalidateQueries(["items"]);
+//   return response;
+// }
+
+// // Update an item
+// export async function updateItem(id, data) {
+//   const response = await supabase
+//     .from("items")
+//     .update(data)
+//     .eq("id", id)
+//     .then(handle);
+//   // Invalidate and refetch queries that could have old data
+//   await Promise.all([
+//     client.invalidateQueries(["item", { id }]),
+//     client.invalidateQueries(["items"]),
+//   ]);
+//   return response;
+// }
+
+// // Delete an item
+// export async function deleteItem(id) {
+//   const response = await supabase
+//     .from("items")
+//     .delete()
+//     .eq("id", id)
+//     .then(handle);
+//   // Invalidate and refetch queries that could have old data
+//   await Promise.all([
+//     client.invalidateQueries(["item", { id }]),
+//     client.invalidateQueries(["items"]),
+//   ]);
+//   return response;
+// }
 
 /**** HELPERS ****/
 

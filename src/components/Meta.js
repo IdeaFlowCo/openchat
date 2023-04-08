@@ -9,7 +9,7 @@ function Meta(props) {
   // Meta values that are the same across all pages
   const globalMeta = {
     // Site name
-    siteName: "My App",
+    siteName: "Deepform",
     // Your production domain (example: https://myapp.com)
     domain: "",
     // Your Twitter handle (example: @divjoy)
@@ -19,9 +19,11 @@ function Meta(props) {
   // Default meta values for current page (override with props)
   const defaultPageMeta = {
     // Page title
-    title: "My App",
+    title: "Deepform",
     // Page description
-    description: "My app description",
+    description: `Deepform trains and deploys AI user researchers 
+    to consistently gather deep insights from your users 
+    via automated conversational interviews.`,
     // Social share image (create this file in /public/images/)
     image: "/images/social.png",
     // Page type (see https://ogp.me/#types)

@@ -1,75 +1,77 @@
 import React, { useState } from "react";
-import EditItemModal from "components/EditItemModal";
+import EditDeepformModal from "components/EditDeepformModal";
 import { useAuth } from "util/auth";
-import { updateItem, deleteItem, useItemsByOwner } from "util/db";
+// import { updateItem, deleteItem, useItemsByOwner } from "util/db";
+import { deleteDeepform, useDeepformsByOwner } from "util/db";
 
 function DashboardItems(props) {
   const auth = useAuth();
 
   const {
-    data: items,
-    status: itemsStatus,
-    error: itemsError,
-  } = useItemsByOwner(auth.user.uid);
+    data: deepforms,
+    status: deepformsStatus,
+    error: deepformsError,
+  } = useDeepformsByOwner(auth.user.uid);
 
-  const [creatingItem, setCreatingItem] = useState(false);
+  const [creatingDeepform, setCreatingDeepform] = useState(false);
 
-  const [updatingItemId, setUpdatingItemId] = useState(null);
+  // const [updatingItemId, setUpdatingItemId] = useState(null);
 
-  const itemsAreEmpty = !items || items.length === 0;
+  const deepformsAreEmpty = !deepforms || deepforms.length === 0;
 
-  const canUseStar =
-    auth.user.planIsActive &&
-    (auth.user.planId === "pro" || auth.user.planId === "business");
+  // const canUseStar =
+  //   auth.user.planIsActive &&
+  //   (auth.user.planId === "pro" || auth.user.planId === "business");
 
-  const handleStarItem = (item) => {
-    if (canUseStar) {
-      updateItem(item.id, { featured: !item.featured });
-    } else {
-      alert("You must upgrade to the pro or business plan to use this feature");
-    }
-  };
+  // const handleStarItem = (item) => {
+  //   if (canUseStar) {
+  //     updateItem(item.id, { featured: !item.featured });
+  //   } else {
+  //     alert("You must upgrade to the pro or business plan to use this feature");
+  //   }
+  // };
 
   return (
     <>
-      {itemsError && (
-        <div className="mb-4 text-red-600">{itemsError.message}</div>
+      {deepformsError && (
+        <div className="mb-4 text-red-600">{deepformsError.message}</div>
       )}
 
       <div>
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <span className="text-xl">Items</span>
+          <span className="text-xl">Your Deepforms</span>
           <button
             className="py-2 px-4 bg-gray-200 rounded border-0 hover:bg-gray-300 focus:outline-none"
-            onClick={() => setCreatingItem(true)}
+            onClick={() => setCreatingDeepform(true)}
           >
-            Add Item
+            Create Deepform
           </button>
         </div>
 
-        {(itemsStatus === "loading" || itemsAreEmpty) && (
+        {(deepformsStatus === "loading" || deepformsAreEmpty) && (
           <div className="p-8">
-            {itemsStatus === "loading" && <>Loading...</>}
+            {deepformsStatus === "loading" && <>Loading...</>}
 
-            {itemsStatus !== "loading" && itemsAreEmpty && (
-              <>Nothing yet. Click the button to add your first item.</>
+            {deepformsStatus !== "loading" && deepformsAreEmpty && (
+              <>Nothing yet. Click the button to add your first Deepform.</>
             )}
           </div>
         )}
 
-        {itemsStatus !== "loading" && items && items.length > 0 && (
+        {deepformsStatus !== "loading" && deepforms && deepforms.length > 0 && (
           <>
-            {items.map((item, index) => (
+            {deepforms.map((deepform, index) => (
               <div
                 className={
-                  "flex p-4 border-b border-gray-200" +
-                  (item.featured ? " bg-gray-100" : "")
+                  "flex p-4 border-b border-gray-200"
+                  // "flex p-4 border-b border-gray-200" +
+                  // (item.featured ? " bg-gray-100" : "")
                 }
                 key={index}
               >
-                {item.name}
+                {deepform.name}
                 <div className="ml-auto space-x-2">
-                  <button
+                  {/* <button
                     className="text-blue-600"
                     onClick={() => handleStarItem(item)}
                   >
@@ -80,10 +82,10 @@ function DashboardItems(props) {
                     onClick={() => setUpdatingItemId(item.id)}
                   >
                     edit
-                  </button>
+                  </button> */}
                   <button
                     className="text-blue-600"
-                    onClick={() => deleteItem(item.id)}
+                    onClick={() => deleteDeepform(deepform.id)}
                   >
                     delete
                   </button>
@@ -94,14 +96,14 @@ function DashboardItems(props) {
         )}
       </div>
 
-      {creatingItem && <EditItemModal onDone={() => setCreatingItem(false)} />}
+      {creatingDeepform && <EditDeepformModal onDone={() => setCreatingDeepform(false)} />}
 
-      {updatingItemId && (
+      {/* {updatingItemId && (
         <EditItemModal
           id={updatingItemId}
           onDone={() => setUpdatingItemId(null)}
         />
-      )}
+      )} */}
     </>
   );
 }

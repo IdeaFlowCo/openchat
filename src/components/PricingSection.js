@@ -9,7 +9,7 @@ function PricingSection(props) {
     {
       id: "starter",
       name: "Starter",
-      price: "10",
+      price: "0",
       perks: [
         "Lorem ipsum dolor sit amet",
         "Consectetur adipiscing elit",
@@ -19,7 +19,7 @@ function PricingSection(props) {
     {
       id: "pro",
       name: "Pro",
-      price: "20",
+      price: "9.99",
       perks: [
         "Lorem ipsum dolor sit amet",
         "Consectetur adipiscing elit",
@@ -31,7 +31,7 @@ function PricingSection(props) {
     {
       id: "business",
       name: "Business",
-      price: "50",
+      price: "29.99",
       perks: [
         "Lorem ipsum dolor sit amet",
         "Consectetur adipiscing elit",
