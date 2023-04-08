@@ -6,7 +6,7 @@ npm install
 ```
 Update your `.env` file with values for each environment variable
 ```
-API_KEY=AIzaSyBkkFF0XhNZeWuDmOfEhsgdfX1VBG7WTas
+API_KEY=
 etc ...
 ```
 
