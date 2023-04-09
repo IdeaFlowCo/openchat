@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Script from "next/script";
-import { usePrevious } from "./../util/util";
-import { useAuth } from "./../util/auth";
+import { usePrevious } from "../util/util";
+import { useAuth } from "../util/auth";
 
 const config = {
   // Crisp website ID

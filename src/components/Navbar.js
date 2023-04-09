@@ -1,9 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import { useAuth } from "util/auth";
-
+import { useRouter } from "next/router";
 function Navbar(props) {
   const auth = useAuth();
+  const router = useRouter();
+  // If the url is /forms/[id] then we are on a form page. Don't show navbar.
+  if (router.pathname.startsWith("/form/")) {
+    return null;
+  }
 
   return (
     <header className="py-5 px-4 bg-gray-100">

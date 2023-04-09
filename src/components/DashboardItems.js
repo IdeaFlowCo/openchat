@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import EditDeepformModal from "components/EditDeepformModal";
 import { useAuth } from "util/auth";
+import { useRouter } from "next/router";
 // import { updateItem, deleteItem, useItemsByOwner } from "util/db";
 import { deleteDeepform, useDeepformsByOwner } from "util/db";
 
 function DashboardItems(props) {
   const auth = useAuth();
+  const router = useRouter();
 
   const {
     data: deepforms,
@@ -15,10 +17,15 @@ function DashboardItems(props) {
 
   const [creatingDeepform, setCreatingDeepform] = useState(false);
 
-  // const [updatingItemId, setUpdatingItemId] = useState(null);
+  const [updatingDeepformId, setUpdatingDeepformId] = useState(null);
 
   const deepformsAreEmpty = !deepforms || deepforms.length === 0;
 
+  const confirmDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      deleteDeepform(id);
+    }
+  }
   // const canUseStar =
   //   auth.user.planIsActive &&
   //   (auth.user.planId === "pro" || auth.user.planId === "business");
@@ -76,18 +83,18 @@ function DashboardItems(props) {
                     onClick={() => handleStarItem(item)}
                   >
                     {item.featured ? "unstar" : "star"}
-                  </button>
-                  <button
-                    className="text-blue-600"
-                    onClick={() => setUpdatingItemId(item.id)}
-                  >
-                    edit
                   </button> */}
                   <button
                     className="text-blue-600"
-                    onClick={() => deleteDeepform(deepform.id)}
+                    onClick={() => setUpdatingDeepformId(deepform.id)}
                   >
-                    delete
+                    Open
+                  </button>
+                  <button
+                    className="text-blue-600"
+                    onClick={() => confirmDelete(deepform.id)}
+                  >
+                    Delete
                   </button>
                 </div>
               </div>
@@ -98,12 +105,12 @@ function DashboardItems(props) {
 
       {creatingDeepform && <EditDeepformModal onDone={() => setCreatingDeepform(false)} />}
 
-      {/* {updatingItemId && (
-        <EditItemModal
-          id={updatingItemId}
-          onDone={() => setUpdatingItemId(null)}
+      {updatingDeepformId && (
+        <EditDeepformModal
+          id={updatingDeepformId}
+          onDone={() => setUpdatingDeepformId(null)}
         />
-      )} */}
+      )}
     </>
   );
 }

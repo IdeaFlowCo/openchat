@@ -2,7 +2,7 @@ import React from "react";
 import "styles/global.css";
 import Navbar from "components/Navbar";
 import "util/analytics";
-import Chat from "components/Chat";
+import Chat from "components/CrispChat";
 import { AuthProvider } from "util/auth";
 import { QueryClientProvider } from "util/db";
 
