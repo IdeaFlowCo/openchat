@@ -118,6 +118,71 @@ export async function deleteDeepform(id) {
   return response;
 }
 
+/**** SUBMISSIONS ****/
+/* Example query functions (modify to your needs) */
+
+// Fetch single submission data
+export function useSubmission(id) {
+  return useQuery(
+    ["submission", { id }],
+    () => supabase.from("submissions").select().eq("id", id).single().then(handle),
+    { enabled: !!id }
+  );
+}
+
+// Fetch all submissions by Deepform
+export function useSubmissionsByDeepform(deepformId) {
+  return useQuery(
+    ["submissions", { deepformId }],
+    () =>
+      supabase
+        .from("submissions")
+        .select()
+        .eq("deepform", deepformId)
+        .order("created_at", { ascending: false })
+        .then(handle),
+    { enabled: !!deepformId }
+  );
+}
+
+// Create a new submission
+export async function createSubmission(data) {
+  const response = await supabase.from("submissions").insert([data]).then(handle);
+  // Invalidate and refetch queries that could have old data
+  await client.invalidateQueries(["submissions"]);
+  return response;
+}
+
+// Update a submission
+export async function updateSubmission(id, data) {
+  const response = await supabase
+    .from("submissions")
+    .update(data)
+    .eq("id", id)
+    .then(handle);
+  // Invalidate and refetch queries that could have old data
+  await Promise.all([
+    client.invalidateQueries(["submission", { id }]),
+    client.invalidateQueries(["submissions"]),
+  ]);
+  return response;
+}
+
+// Delete a submission
+export async function deleteSubmission(id) {
+  const response = await supabase
+    .from("submissions")
+    .delete()
+    .eq("id", id)
+    .then(handle);
+  // Invalidate and refetch queries that could have old data
+  await Promise.all([
+    client.invalidateQueries(["submission", { id }]),
+    client.invalidateQueries(["submissions"]),
+  ]);
+  return response;
+}
+
 
 // /**** ITEMS ****/
 // /* Example query functions (modify to your needs) */

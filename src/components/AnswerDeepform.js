@@ -29,6 +29,7 @@ function DeepformSection(props) {
         const data = {
             messages: [...messages, { message, sender: "human" }],
             prompt: deepformData.prompt,
+            deepformId: props.id,
         };
 
         console.log("data", data);
@@ -49,6 +50,12 @@ function DeepformSection(props) {
                     { message: message, sender: "human" },
                     { message: data.text, sender: "AI" },
                 ]);
+                if (data.isEndOfInterview) {
+                    // Time out for 3 seconds, then redirect to Deepform home page
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 5000);
+                }
             })
             .catch((err) => {
                 console.log("err", err);

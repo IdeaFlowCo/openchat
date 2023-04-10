@@ -157,10 +157,10 @@ function EditDeepformModal(props) {
                                             type="submit"
                                             disabled={pending}
                                         >
-                                            {pending ? "..." : "Save"}
+                                            {pending ? "..." : "Save Edits"}
                                         </button>
                                     </div>
-                                    <div className="mt-4">
+                                    <div className="mt-4 flex gap-4">
                                         <a
                                             className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                             href={`/form/${props.id}`}
@@ -168,7 +168,15 @@ function EditDeepformModal(props) {
                                         >
                                             View Live
                                         </a>
+                                        <a
+                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            href={`/form/submissions/${props.id}`}
+                                            target={"_blank"}
+                                        >
+                                            Submissions
+                                        </a>
                                     </div>
+
                                 </form>
                             </div>
                         </div>
