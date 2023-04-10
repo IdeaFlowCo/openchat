@@ -19,12 +19,13 @@ function DashboardSection(props) {
             <div className="p-6 rounded border border-gray-200 prose prose-a:text-blue-600 max-w-none">
               <h3 className="mb-4">Deepform Dashboard</h3>
               <p>
-                On your left, you can create your first Deepform by clicking "Create Deepform".
-                You can give it a name and then select it or delete it.
+                Welcome to Deepform! On your left, you can create your first Deepform by clicking "Create Deepform".
+                You can give it a name and tell the AI what you want to learn about your customers.
               </p>
               <p>
-                Once you create a Deepform, you can click on it to enter the Deepform's 
-                individual page. We'll show you how to set up your Deepform from within there!
+                Once you create a Deepform, you can click on it to view the Deepform details.
+                You can edit it, delete it, view the live Deepform, or view the Deepform results.
+                Have fun!
               </p>
               <h3 className="mb-4">Your account info</h3>
               <div>

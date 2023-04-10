@@ -12,6 +12,7 @@ function EditDeepformModal(props) {
     const router = useRouter();
     const [pending, setPending] = useState(false);
     const [formAlert, setFormAlert] = useState(null);
+    const [isCreate, setIsCreate] = useState(!props.id);
     const cancelButtonRef = useRef(null);
 
     const { register, handleSubmit, errors } = useForm();
@@ -32,7 +33,7 @@ function EditDeepformModal(props) {
     const onSubmit = (data) => {
         setPending(true);
 
-        const query = props.id
+        const query = isCreate
             ? updateDeepform(props.id, data)
             : createDeepform({ owner: auth.user.uid, ...data });
 
@@ -158,25 +159,29 @@ function EditDeepformModal(props) {
                                             type="submit"
                                             disabled={pending}
                                         >
-                                            {pending ? "..." : "Save Edits"}
+                                            {pending ? "..." : "Save"}
                                         </button>
                                     </div>
                                     <div className="mt-4 flex gap-4">
-                                        <a
-                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            href={`/form/${props.id}`}
-                                            target={"_blank"}
-                                        >
-                                            View Live
-                                        </a>
-                                        <Link
-                                            href={`/submissions/${props.id}`}
-                                            // target={"_blank"}
-                                        >
-                                            <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
-                                                Submissions
-                                            </button>
-                                        </Link>
+                                        {!isCreate && (
+                                            <div>
+                                                <a
+                                                    className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                                    href={`/form/${props.id}`}
+                                                    target={"_blank"}
+                                                >
+                                                    View Live
+                                                </a>
+                                                <Link
+                                                    href={`/submissions/${props.id}`}
+                                                    // target={"_blank"}
+                                                >
+                                                    <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                                                        Submissions
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 </form>
                             </div>
