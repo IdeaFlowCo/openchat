@@ -33,7 +33,7 @@ function EditDeepformModal(props) {
     const onSubmit = (data) => {
         setPending(true);
 
-        const query = isCreate
+        const query = !isCreate
             ? updateDeepform(props.id, data)
             : createDeepform({ owner: auth.user.uid, ...data });
 
