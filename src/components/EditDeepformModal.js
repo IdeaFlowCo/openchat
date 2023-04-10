@@ -5,6 +5,7 @@ import { useAuth } from "util/auth";
 // import { useItem, updateItem, createItem } from "util/db";
 import { useDeepform, updateDeepform, createDeepform } from "util/db";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 function EditDeepformModal(props) {
     const auth = useAuth();
@@ -168,15 +169,15 @@ function EditDeepformModal(props) {
                                         >
                                             View Live
                                         </a>
-                                        <a
-                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            href={`/form/submissions/${props.id}`}
-                                            target={"_blank"}
+                                        <Link
+                                            href={`/submissions/${props.id}`}
+                                            // target={"_blank"}
                                         >
-                                            Submissions
-                                        </a>
+                                            <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                                                Submissions
+                                            </button>
+                                        </Link>
                                     </div>
-
                                 </form>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ function Navbar(props) {
   const auth = useAuth();
   const router = useRouter();
   // If the url is /forms/[id] then we are on a form page. Don't show navbar.
-  if (router.pathname.startsWith("/form/")) {
+  if (router.pathname.startsWith("/forms/")) {
     return null;
   }
 
