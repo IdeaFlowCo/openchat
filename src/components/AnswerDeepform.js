@@ -9,13 +9,11 @@ function DeepformSection(props) {
     );
     const [messages, setMessages] = useState([
         {
-            message:
-                `Hi, I'm Orion, an AI researcher. Thank you for participating in this conversational interview. I'll be asking you a few questions about your experiences. Feel free to answer as much or as little as you'd like.`,
+            message: `Hi, I'm Orion, an AI researcher. Thank you for participating in this conversational interview. I'll be asking you a few questions about your experiences. Feel free to answer as much or as little as you'd like.`,
             sender: "AI",
         },
         {
-            message:
-                `Before we start, I'd like to get to know you a little better. What's your name?`,
+            message: `Before we start, I'd like to get to know you a little better. What's your name?`,
             sender: "AI",
         },
     ]);
@@ -82,6 +80,11 @@ function DeepformSection(props) {
                             placeholder="Type your response..."
                             value={textInput}
                             onChange={(e) => setTextInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    sendMessage(textInput);
+                                }
+                            }}
                         />
                         <button
                             type="submit"
