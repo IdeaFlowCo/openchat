@@ -54,7 +54,8 @@ export default async function handler(req, res) {
             ...formattedMessages,
             response,
             new SystemChatMessage(
-                `You are asked to summarize the interview concisely, keeping in mind the goal prompt: ${prompt}`
+                `You are asked to summarize the interview extensively, keeping in mind the goal prompt: ${prompt}. 
+                Make sure to include all relevant information that answers that goal prompt.`
             ),
         ]);
 
