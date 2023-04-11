@@ -15,7 +15,7 @@ function Navbar(props) {
             <div className="container flex flex-col flex-wrap items-center mx-auto md:flex-row">
                 <Link href="/">
                     <button className="mb-3 md:mb-0 font-bold text-3xl">
-                        Deepform.
+                        Deepform
                     </button>
                 </Link>
                 <nav className="flex flex-wrap items-center md:ml-auto text-md">
