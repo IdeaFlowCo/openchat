@@ -28,12 +28,12 @@ function IndexPage(props) {
                                         Get started
                                     </button>
                                 </Link>
-                                <a
-                                    href="#"
-                                    className="text-sm font-semibold leading-6 text-gray-900"
-                                >
-                                    Learn more <span aria-hidden="true">→</span>
-                                </a>
+                                <Link href="/about">
+                                    <button className="text-sm font-semibold leading-6 text-gray-900">
+                                        Contact Us{" "}
+                                        <span aria-hidden="true">→</span>
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                         {/* <div className="mt-16 flow-root sm:mt-24">
