@@ -27,4 +27,4 @@ function DeepformPage(props) {
     );
 }
 
-export default requireAuth(DeepformPage);
+export default DeepformPage;
