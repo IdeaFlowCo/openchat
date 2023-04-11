@@ -102,8 +102,8 @@ function DeepformSection(props) {
                         </button>
                     </div>
 
-                    <a href="/" target="_blank" className="">
-                        Powered by Deepform
+                    <a href="/" target="_blank" className="mt-2 py-2 px-4 border border-black/20 rounded-2xl">
+                        Powered by <span className="font-bold">Deepform</span>
                     </a>
                 </div>
             </div>
