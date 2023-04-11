@@ -16,10 +16,10 @@ function NewsletterSection(props) {
   };
 
   return (
-    <section className="py-12 px-4 bg-gray-100">
+    <section className="py-12 px-4 bg-transparent">
       <div className="container mx-auto max-w-lg">
         <h1 className="mb-6 text-3xl font-medium text-center">
-          Subscribe to our newsletter
+          Stay up to date with Deepform!
         </h1>
 
         {subscribed === false && (

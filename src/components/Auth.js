@@ -36,7 +36,7 @@ function Auth(props) {
         onFormAlert={handleFormAlert}
       />
 
-      {["signup", "signin"].includes(props.type) && (
+      {/* {["signup", "signin"].includes(props.type) && (
         <>
           {props.providers && props.providers.length && (
             <AuthSocial
@@ -53,7 +53,7 @@ function Auth(props) {
             />
           )}
         </>
-      )}
+      )} */}
     </>
   );
 }
