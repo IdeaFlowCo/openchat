@@ -5,6 +5,7 @@ import "util/analytics";
 import Chat from "components/CrispChat";
 import { AuthProvider } from "util/auth";
 import { QueryClientProvider } from "util/db";
+import { Toaster } from 'react-hot-toast';
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -15,6 +16,7 @@ function MyApp({ Component, pageProps }) {
           <Navbar />
 
           <Component {...pageProps} />
+          <Toaster />
         </>
       </AuthProvider>
     </QueryClientProvider>

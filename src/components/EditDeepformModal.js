@@ -5,28 +5,29 @@ import { useAuth } from "util/auth";
 // import { useItem, updateItem, createItem } from "util/db";
 import { useDeepform, updateDeepform, createDeepform } from "util/db";
 import { useRouter } from "next/router";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
+import IconCopyToClipboard from "./IconCopyToClipboard";
 
-function EditDeepformModal(props) {
+function EditDeepformModal({ id, onDone, host }) {
     const auth = useAuth();
     const router = useRouter();
     const [pending, setPending] = useState(false);
     const [formAlert, setFormAlert] = useState(null);
-    const [isCreate, setIsCreate] = useState(!props.id);
+    const [isCreate, setIsCreate] = useState(!id);
     const cancelButtonRef = useRef(null);
 
     const { register, handleSubmit, errors } = useForm();
 
-    // This will fetch Deepform if props.id is defined
+    // This will fetch Deepform if id is defined
     // Otherwise query does nothing and we assume
     // we are creating a new Deepform.
-    const { data: deepformData, status: deepformStatus } = useDeepform(
-        props.id
-    );
+    const { data: deepformData, status: deepformStatus } = useDeepform(id);
 
     // If we are updating an existing Deepform
     // don't show modal until Deepform data is fetched.
-    if (props.id && deepformStatus !== "success") {
+    if (id && deepformStatus !== "success") {
         return null;
     }
 
@@ -34,13 +35,13 @@ function EditDeepformModal(props) {
         setPending(true);
 
         const query = !isCreate
-            ? updateDeepform(props.id, data)
+            ? updateDeepform(id, data)
             : createDeepform({ owner: auth.user.uid, ...data });
 
         query
             .then(() => {
                 // Let parent know we're done so they can hide modal
-                props.onDone();
+                onDone();
             })
             .catch((error) => {
                 // Hide pending indicator
@@ -58,7 +59,7 @@ function EditDeepformModal(props) {
             <Dialog
                 as="div"
                 className="overflow-y-auto fixed inset-0 z-10"
-                onClose={() => props.onDone()}
+                onClose={() => onDone()}
             >
                 <div className="px-4 min-h-screen text-center">
                     <Transition.Child
@@ -92,7 +93,7 @@ function EditDeepformModal(props) {
                                 as="h3"
                                 className="text-lg font-medium leading-6 text-gray-900"
                             >
-                                {props.id ? "" : "Create"} Deepform
+                                {id ? "" : "Create"} Deepform
                             </Dialog.Title>
                             <div className="mt-4">
                                 {formAlert && (
@@ -149,7 +150,7 @@ function EditDeepformModal(props) {
                                         <button
                                             className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                             type="button"
-                                            onClick={() => props.onDone()}
+                                            onClick={() => onDone()}
                                             ref={cancelButtonRef}
                                         >
                                             Cancel
@@ -164,23 +165,40 @@ function EditDeepformModal(props) {
                                     </div>
                                     <div className="mt-4 flex gap-4">
                                         {!isCreate && (
-                                            <div>
-                                                <a
-                                                    className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                                    href={`/form/${props.id}`}
-                                                    target={"_blank"}
-                                                >
-                                                    View Live
-                                                </a>
+                                            <>
+                                                <div className="w-fit flex gap-2 justify-center items-center">
+                                                    <a
+                                                        className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                                        href={`/form/${id}`}
+                                                        target={"_blank"}
+                                                    >
+                                                        View Live
+                                                    </a>
+                                                    <CopyToClipboard
+                                                        text={`${host}/form/${id}`}
+                                                        onCopy={() =>
+                                                            toast(
+                                                                "Link Copied!"
+                                                            )
+                                                        }
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            className=""
+                                                        >
+                                                            <IconCopyToClipboard />
+                                                        </button>
+                                                    </CopyToClipboard>
+                                                </div>
                                                 <Link
-                                                    href={`/submissions/${props.id}`}
+                                                    href={`/submissions/${id}`}
                                                     // target={"_blank"}
                                                 >
                                                     <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
                                                         Submissions
                                                     </button>
                                                 </Link>
-                                            </div>
+                                            </>
                                         )}
                                     </div>
                                 </form>
