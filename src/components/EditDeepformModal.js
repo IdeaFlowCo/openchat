@@ -88,7 +88,7 @@ function EditDeepformModal({ id, onDone, host }) {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="inline-block overflow-hidden p-6 my-8 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform">
+                        <div className="inline-block overflow-hidden p-6 my-8 w-full max-w-3xl text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform">
                             <Dialog.Title
                                 as="h3"
                                 className="text-lg font-medium leading-6 text-gray-900"
