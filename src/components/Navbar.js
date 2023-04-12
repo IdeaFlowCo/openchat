@@ -18,7 +18,7 @@ function Navbar(props) {
                         Deepform
                     </button>
                 </Link>
-                <nav className="flex flex-wrap items-center md:ml-auto text-md">
+                <nav className="flex flex-wrap items-center md:ml-auto text-lg">
                     <Link href="/about">
                         <button className="ml-5">About</button>
                     </Link>

@@ -12,7 +12,7 @@ function IndexPage(props) {
                 <div className="py-24 sm:py-32 lg:pb-40">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl text-center">
-                            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                            <h1 className="text-5xl font-medium tracking-tight text-gray-900 md:text-7xl">
                                 10x your customer empathy with AI user
                                 researchers
                             </h1>
