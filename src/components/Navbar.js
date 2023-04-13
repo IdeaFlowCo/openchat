@@ -2,22 +2,19 @@ import React from "react";
 import Link from "next/link";
 import { useAuth } from "util/auth";
 import { useRouter } from "next/router";
+import Logo from "./Logo";
 function Navbar(props) {
     const auth = useAuth();
     const router = useRouter();
     // If the url is /forms/[id] then we are on a form page. Don't show navbar.
-    if (router.pathname.startsWith("/form/")) {
+    if (router.pathname.startsWith("/form") || router.pathname.startsWith("/dashboard")) {
         return null;
     }
 
     return (
         <header className="relative py-5 px-4 bg-transparent z-10">
             <div className="container flex flex-col flex-wrap items-center mx-auto md:flex-row">
-                <Link href="/">
-                    <button className="mb-3 md:mb-0 font-bold text-3xl">
-                        Deepform
-                    </button>
-                </Link>
+                <Logo />
                 <nav className="flex flex-wrap items-center md:ml-auto text-lg">
                     <Link href="/about">
                         <button className="ml-5">About</button>

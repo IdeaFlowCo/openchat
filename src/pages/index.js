@@ -12,14 +12,13 @@ function IndexPage(props) {
                 <div className="py-14 sm:py-24 lg:pb-40">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl text-center">
-                            <h1 className="text-5xl font-medium tracking-tight text-gray-900 md:text-7xl">
-                                10x your customer empathy with AI user
-                                researchers
+                            <h1 className="font-satoshi text-5xl font-bold tracking-tight text-gray-900 md:text-6xl">
+                                Deeply understand your users 10x faster with A.I.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Deepform trains and deploys AI user researchers
+                                Deepform trains and deploys A.I. user researchers
                                 that consistently gather deep insights from your
-                                customers via automated conversational
+                                users via automated conversational
                                 interviews.
                             </p>
                             <div className="mt-10 flex items-center justify-center gap-x-6">

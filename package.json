@@ -8,9 +8,11 @@
   "dependencies": {
     "@analytics/mixpanel": "0.3.1",
     "@dqbd/tiktoken": "^1.0.4",
-    "@headlessui/react": "1.5.0",
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.17",
     "@stripe/stripe-js": "1.11.0",
     "@supabase/supabase-js": "2.15.0",
+    "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "0.5.2",
     "analytics": "0.3.1",
     "autoprefixer": "10.4.4",

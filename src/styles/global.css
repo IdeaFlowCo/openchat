@@ -6,6 +6,15 @@
     border: 1px solid red;
 }
 
+html {
+    height: 100%;
+    background: white;
+}
+
+body {
+    height: 100%;
+}
+
 @font-face {
 	font-family: "Satoshi";
 	src: url("/fonts/Satoshi-Light.otf");

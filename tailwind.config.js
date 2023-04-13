@@ -1,13 +1,21 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
     content: [
         "./src/pages/**/*.{js,ts,jsx,tsx}",
         "./src/components/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
-        fontFamily: {
-            sans: ["Satoshi", "sans-serif"],
+        extend: {
+            fontFamily: {
+                sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+                satoshi: ["Satoshi", "sans-serif"],
+            },
         },
+        // fontFamily: {
+        //     sans: ["Satoshi", "sans-serif"],
+        // },
+
         // Default projects breakpoints
         // https://tailwindcss.com/docs/screens
         screens: {
@@ -21,5 +29,8 @@ module.exports = {
     variants: {
         extend: {},
     },
-    plugins: [require("@tailwindcss/typography")],
+    plugins: [
+        require("@tailwindcss/typography"),
+        require("@tailwindcss/forms"),
+    ],
 };
