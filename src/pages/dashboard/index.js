@@ -9,7 +9,7 @@ function DashboardPage({ host }) {
         <>
             <Meta title="Dashboard" />
             {/* <DashboardSection host={host} /> */}
-            <NewDashboardSection />
+            <NewDashboardSection host={host}/>
         </>
     );
 }

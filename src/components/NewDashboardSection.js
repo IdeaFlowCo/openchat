@@ -45,7 +45,7 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function NewDashboardSection() {
+export default function NewDashboardSection({ host }) {
     const auth = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -359,7 +359,7 @@ export default function NewDashboardSection() {
                                 action="#"
                                 method="GET"
                             >
-                              {/* TODO: add search functionality */}
+                                {/* TODO: add search functionality */}
                                 {/* <label
                                     htmlFor="search-field"
                                     className="sr-only"
@@ -379,7 +379,7 @@ export default function NewDashboardSection() {
                                 /> */}
                             </form>
                             <div className="flex items-center gap-x-4 lg:gap-x-6">
-                              {/* TODO: Notifications */}
+                                {/* TODO: Notifications */}
                                 {/* <button
                                     type="button"
                                     className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
@@ -513,7 +513,7 @@ export default function NewDashboardSection() {
                     <main className="py-10">
                         <div className="px-4 sm:px-6 lg:px-8">
                             {/* Your content */}
-                            <DashboardSection />
+                            <DashboardSection host={host} />
                         </div>
                     </main>
                 </div>
