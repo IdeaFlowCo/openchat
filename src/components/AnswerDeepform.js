@@ -80,6 +80,7 @@ function DeepformSection(props) {
                         <label htmlFor="chat" className="sr-only">
                             Chat
                         </label>
+
                         <input
                             name="chat"
                             id="chat"
@@ -101,10 +102,24 @@ function DeepformSection(props) {
                             Send
                         </button>
                     </div>
+                    <div>
+                        <button
+                            type="submit"
+                            onClick={() => sendMessage("Sorry, I have to go!")}
+                            className="mr-4 nline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            End Interview
+                        </button>
 
-                    <a href="/" target="_blank" className="mt-2 py-2 px-4 border border-black/20 rounded-2xl">
-                        Powered by <span className="font-bold">Deepform</span>
-                    </a>
+                        <a
+                            href="/"
+                            target="_blank"
+                            className="mt-2 py-2 px-4 border border-black/20 rounded-2xl"
+                        >
+                            Powered by{" "}
+                            <span className="font-bold">Deepform</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
