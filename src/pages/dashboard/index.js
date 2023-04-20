@@ -1,8 +1,8 @@
 import React from "react";
 import Meta from "components/Meta";
-import DashboardSection from "components/DashboardSection";
+import DashboardSection from "components/dashboard/DashboardSection";
 import { requireAuth } from "util/auth";
-import NewDashboardSection from "components/NewDashboardSection";
+import NewDashboardSection from "components/dashboard/NewDashboardSection";
 
 function DashboardPage({ host }) {
     return (

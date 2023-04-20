@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import DashboardItems from "components/DashboardItems";
+import DashboardItems from "components/dashboard/DashboardItems";
 import { useAuth } from "util/auth";
 
 function DashboardSection({ host }) {

@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useAuth } from "util/auth";
-import Logo from "./Logo";
+import Logo from "components/Logo";
 import DashboardSection from "./DashboardSection";
 
 const navigation = [
