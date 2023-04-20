@@ -24,44 +24,48 @@ function DeepformSection(props) {
 
     const sendMessage = async (message) => {
         setTextInput("");
-
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { message: message, sender: "human" },
+        ]);
+      
         // Create data object to send to API route /api/openai
         const data = {
-            messages: [...messages, { message, sender: "human" }],
-            prompt: deepformData.prompt,
-            deepformId: props.id,
+          messages: [...messages, { message, sender: "human" }],
+          prompt: deepformData.prompt,
+          deepformId: props.id,
         };
-
+      
         console.log("data", data);
-
+      
         // Send data to API route /api/openai
         await fetch("/api/openai", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: data ? JSON.stringify(data) : undefined,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: data ? JSON.stringify(data) : undefined,
         })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("data.text", data.text);
-                setMessages([
-                    ...messages,
-                    { message: message, sender: "human" },
-                    { message: data.text, sender: "AI" },
-                ]);
-                if (data.isEndOfInterview) {
-                    // Time out for 3 seconds, then redirect to Deepform home page
-                    setTimeout(() => {
-                        window.location.href = "/";
-                    }, 5000);
-                }
-            })
-            .catch((err) => {
-                console.log("err", err);
-                alert("Error sending message. Please try again.");
-            });
-    };
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("data.text", data.text);
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { message: data.text, sender: "AI" },
+            ]);
+            if (data.isEndOfInterview) {
+              // Time out for 3 seconds, then redirect to Deepform home page
+              setTimeout(() => {
+                window.location.href = "/";
+              }, 5000);
+            }
+          })
+          .catch((err) => {
+            console.log("err", err);
+            alert("Error sending message. Please try again.");
+          });
+      };
+      
 
     return (
         <section className="flex justify-center items-start mx-4 sm:mx-auto h-fit-content pt-4 pb-96 sm:pt-12">
