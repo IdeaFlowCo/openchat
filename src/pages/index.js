@@ -3,6 +3,7 @@ import Meta from "components/Meta";
 import NewsletterSection from "components/NewsletterSection";
 import Link from "next/link";
 import AbstractBg from "components/AbstractBg";
+import FeatureSection from "components/FeatureSection";
 function IndexPage(props) {
     return (
         <>
@@ -13,7 +14,7 @@ function IndexPage(props) {
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl text-center">
                             <h1 className="font-satoshi text-5xl font-bold tracking-tight text-gray-900 md:text-6xl">
-                                Deeply understand your users 10x faster with A.I.
+                                Deeply understand your users 100x faster with A.I.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
                                 Deepform trains and deploys A.I. user researchers
@@ -60,6 +61,7 @@ function IndexPage(props) {
                         }}
                     />
                 </div>
+                <FeatureSection />
                 <NewsletterSection />
             </div>
         </>
