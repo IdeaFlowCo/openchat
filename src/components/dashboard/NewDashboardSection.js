@@ -23,8 +23,8 @@ import DashboardSection from "./DashboardSection";
 
 const navigation = [
     { name: "Home", href: "#", icon: HomeIcon, current: true },
-    { name: "Deepforms", href: "#", icon: FolderIcon, current: false },
-    { name: "Submissions", href: "#", icon: UsersIcon, current: false },
+    // { name: "Deepforms", href: "#", icon: FolderIcon, current: false },
+    // { name: "Submissions", href: "#", icon: UsersIcon, current: false },
     //   { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
     //   { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
     //   { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },

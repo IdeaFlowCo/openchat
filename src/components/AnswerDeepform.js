@@ -69,7 +69,7 @@ function DeepformSection(props) {
 
     return (
         <section className="flex justify-center items-start mx-4 sm:mx-auto h-fit-content pt-4 pb-96 sm:pt-12">
-            <div className="container flex flex-col gap-2">
+            <div className="container flex flex-col gap-2 max-w-3xl">
                 {messages.map((message, index) => (
                     <ChatMessage
                         key={index}
