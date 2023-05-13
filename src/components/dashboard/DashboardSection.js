@@ -7,16 +7,16 @@ function DashboardSection({ host }) {
     const auth = useAuth();
 
     return (
-        <section className="py-12">
+        <section className="py-6">
             <div className="container mx-auto">
                 <div className="flex flex-wrap">
                     <div className="p-4 w-full md:w-1/2">
-                        <div className="rounded border border-gray-200">
+                        {/* <div className="rounded border border-gray-200"> */}
                             <DashboardItems host={host}/>
-                        </div>
+                        {/* </div> */}
                     </div>
                     <div className="p-4 w-full md:w-1/2">
-                        <div className="p-6 rounded border border-gray-200 prose prose-a:text-blue-600 max-w-none">
+                        <div className="p-6 rounded-xl border border-gray-200 prose prose-a:text-blue-600 max-w-none">
                             <h3 className="mb-4">Deepform Dashboard</h3>
                             <p>
                                 Welcome to Deepform! On your left, you can
