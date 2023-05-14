@@ -2,7 +2,7 @@ import React from "react";
 
 function LegalTerms(props) {
   return (
-    <div className="prose prose-a:text-blue-600 max-w-none">
+    <div className="prose prose-a:text-indigo-600 max-w-none">
       <h1>Terms of Service</h1>
       <p>
         This document is a placeholder. You should replace this with your own

@@ -131,10 +131,10 @@ function DeepformSection(props) {
     }, [messages]);
 
     return (
-        <section className="chat flex flex-col justify-center items-center mx-4 sm:mx-auto">
+        <section className="chat flex flex-col justify-center items-center sm:mx-auto">
             <div
                 id="chat"
-                className="flex justify-center items-start py-5 w-full h-[80vh] overflow-auto"
+                className="flex justify-center items-start p-4 sm:pt-10 w-full h-[80vh] overflow-auto"
             >
                 <div className="container flex flex-col gap-2 max-w-3xl">
                     {messages.map((message, index) => (
@@ -248,14 +248,6 @@ function DeepformSection(props) {
                         </button>
                     </div>
                     <div>
-                        <button
-                            type="submit"
-                            onClick={() => sendMessage("Sorry, I have to go!")}
-                            className="mr-4 nline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            End Interview
-                        </button>
-
                         <a
                             href="/"
                             target="_blank"
@@ -264,6 +256,13 @@ function DeepformSection(props) {
                             Powered by{" "}
                             <span className="font-bold">Deepform</span>
                         </a>
+                        <button
+                            type="submit"
+                            onClick={() => sendMessage("Sorry, I have to go!")}
+                            className="ml-4 nline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            End Interview
+                        </button>
                     </div>
                 </div>
             </div>

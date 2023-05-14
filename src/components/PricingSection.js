@@ -84,7 +84,7 @@ function PricingSection(props) {
                                             : `/auth/signup?next=/purchase/${plan.id}`
                                     }
                                 >
-                                    <a className="py-3 px-5 mt-auto w-full text-white bg-blue-500 rounded border-0 hover:bg-blue-600 focus:outline-none">
+                                    <a className="py-3 px-5 mt-auto w-full text-white bg-indigo-500 rounded border-0 hover:bg-indigo-600 focus:outline-none">
                                         Choose
                                     </a>
                                 </Link>

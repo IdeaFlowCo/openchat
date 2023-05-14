@@ -50,7 +50,7 @@ function DashboardItems({ host }) {
                 <div className="flex justify-between items-center p-4 border-b border-gray-200">
                     <span className="text-xl">Your Deepforms</span>
                     <button
-                        className="py-2 px-4 bg-gray-200 rounded border-0 hover:bg-gray-300 focus:outline-none"
+                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded border-0  focus:outline-none"
                         onClick={() => setCreatingDeepform(true)}
                     >
                         Create Deepform
@@ -83,16 +83,17 @@ function DashboardItems({ host }) {
                                     }
                                     key={index}
                                 >
-                                    {deepform.name}
+                                    <p className="whitespace-nowrap overflow-scroll max-w-[60%] sm:max-w-[50%] xl:max-w-[70%]">{deepform.name}</p>
+
                                     <div className="ml-auto space-x-2">
                                         {/* <button
-                    className="text-blue-600"
+                    className="text-indigo-600"
                     onClick={() => handleStarItem(item)}
                   >
                     {item.featured ? "unstar" : "star"}
                   </button> */}
                                         <button
-                                            className="text-blue-600"
+                                            className="text-indigo-600"
                                             onClick={() =>
                                                 setUpdatingDeepformId(
                                                     deepform.id
@@ -102,7 +103,7 @@ function DashboardItems({ host }) {
                                             Open
                                         </button>
                                         <button
-                                            className="text-blue-600"
+                                            className="text-indigo-600"
                                             onClick={() =>
                                                 confirmDelete(deepform.id)
                                             }

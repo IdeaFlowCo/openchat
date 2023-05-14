@@ -106,7 +106,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                     <div className="flex flex-col gap-4">
                                         <p>Name</p>
                                         <input
-                                            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-blue-500 focus:ring-1"
+                                            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
                                             name="name"
                                             type="text"
                                             placeholder="Name"
@@ -124,7 +124,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                             user?
                                         </p>
                                         <textarea
-                                            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-blue-500 focus:ring-1"
+                                            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
                                             name="prompt"
                                             rows={7}
                                             type="text"
@@ -148,7 +148,7 @@ function EditDeepformModal({ id, onDone, host }) {
 
                                     <div className="mt-4">
                                         <button
-                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                                             type="button"
                                             onClick={() => onDone()}
                                             ref={cancelButtonRef}
@@ -156,7 +156,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                             Cancel
                                         </button>
                                         <button
-                                            className="inline-flex justify-center py-2 px-4 ml-3 text-sm font-medium text-white bg-blue-500 rounded-md border border-transparent hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            className="inline-flex justify-center py-2 px-4 ml-3 text-sm font-medium text-white bg-indigo-500 rounded-md border border-transparent hover:bg-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                                             type="submit"
                                             disabled={pending}
                                         >
@@ -169,7 +169,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                                 <div className="w-fit flex gap-2 justify-center items-center">
                                                     <Link href={`/form/${id}`}>
                                                         <button
-                                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                                            className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
 
                                                             // target={"_blank"}
                                                         >
@@ -196,7 +196,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                                     href={`/submissions/${id}`}
                                                     // target={"_blank"}
                                                 >
-                                                    <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                                                    <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
                                                         Submissions
                                                     </button>
                                                 </Link>

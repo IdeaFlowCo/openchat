@@ -47,7 +47,7 @@ function SettingsGeneral(props) {
       <div>
         Name
         <input
-          className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-blue-500 focus:ring-1 mt-1"
+          className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1 mt-1"
           name="name"
           type="text"
           placeholder="Name"
@@ -65,7 +65,7 @@ function SettingsGeneral(props) {
       <div className="mt-3">
         Email
         <input
-          className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-blue-500 focus:ring-1 mt-1"
+          className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1 mt-1"
           name="email"
           type="email"
           placeholder="Email"
@@ -81,7 +81,7 @@ function SettingsGeneral(props) {
         )}
       </div>
       <button
-        className="py-2 px-4 w-full text-white bg-blue-500 rounded border-0 hover:bg-blue-600 focus:outline-none mt-4"
+        className="py-2 px-4 w-full text-white bg-indigo-500 rounded border-0 hover:bg-indigo-600 focus:outline-none mt-4"
         type="submit"
         disabled={pending}
       >

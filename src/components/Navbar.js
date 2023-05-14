@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Logo from "./Logo";
+import Logo from "./atoms/Logo";
 import Link from "next/link";
 import { useAuth } from "util/auth";
 import { useRouter } from "next/router";

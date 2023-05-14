@@ -86,13 +86,13 @@ function DashboardItems({ host }) {
                                     {deepform.name}
                                     <div className="ml-auto space-x-2">
                                         {/* <button
-                    className="text-blue-600"
+                    className="text-indigo-600"
                     onClick={() => handleStarItem(item)}
                   >
                     {item.featured ? "unstar" : "star"}
                   </button> */}
                                         <button
-                                            className="text-blue-600"
+                                            className="text-indigo-600"
                                             onClick={() =>
                                                 setUpdatingDeepformId(
                                                     deepform.id
@@ -102,7 +102,7 @@ function DashboardItems({ host }) {
                                             Open
                                         </button>
                                         <button
-                                            className="text-blue-600"
+                                            className="text-indigo-600"
                                             onClick={() =>
                                                 confirmDelete(deepform.id)
                                             }

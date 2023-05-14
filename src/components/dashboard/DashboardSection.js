@@ -16,7 +16,7 @@ function DashboardSection({ host }) {
                         {/* </div> */}
                     </div>
                     <div className="p-4 w-full md:w-1/2">
-                        <div className="p-6 rounded-xl border border-gray-200 prose prose-a:text-blue-600 max-w-none">
+                        <div className="p-6 rounded-xl border border-gray-200 prose prose-a:text-indigo-600 max-w-none">
                             <h3 className="mb-4">Deepform Dashboard</h3>
                             <p>
                                 Welcome to Deepform! On your left, you can

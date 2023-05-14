@@ -84,7 +84,7 @@ function ReauthModal(props) {
                 {props.provider === "password" && (
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <input
-                      className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-blue-500 focus:ring-1"
+                      className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
                       name="pass"
                       type="password"
                       placeholder="Password"
@@ -101,7 +101,7 @@ function ReauthModal(props) {
 
                     <div className="mt-4">
                       <button
-                        className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                         type="button"
                         onClick={() => props.onDone()}
                         ref={cancelButtonRef}
@@ -109,7 +109,7 @@ function ReauthModal(props) {
                         Cancel
                       </button>
                       <button
-                        className="inline-flex justify-center py-2 px-4 ml-3 text-sm font-medium text-white bg-blue-500 rounded-md border border-transparent hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        className="inline-flex justify-center py-2 px-4 ml-3 text-sm font-medium text-white bg-indigo-500 rounded-md border border-transparent hover:bg-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                         type="submit"
                         disabled={pending}
                       >

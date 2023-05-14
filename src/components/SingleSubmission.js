@@ -15,7 +15,7 @@ function SingleSubmission({ submission }) {
             <p>{submission?.summary}</p>
             <div className="flex justify-end">
                 <button
-                    className=" inline-flex justify-center py-2 px-4 w-fit text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className=" inline-flex justify-center py-2 px-4 w-fit text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                     onClick={() =>
                         submission?.id ? confirmDelete() : null
                     }

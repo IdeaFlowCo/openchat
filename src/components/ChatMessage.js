@@ -1,8 +1,9 @@
 import React from "react";
+import AppearAnimation from "./atoms/AppearAnimation";
 
 function ChatMessage({ message, sender }) {
     return (
-        <div
+        <AppearAnimation
             className={`px-5 py-3 rounded-2xl border-[0.5px] border-black/1 w-fit ${
                 sender !== "AI"
                     ? " bg-indigo-600 text-white self-end"
@@ -10,7 +11,7 @@ function ChatMessage({ message, sender }) {
             }`}
         >
             <p className="text-md max-w-md">{message}</p>
-        </div>
+        </AppearAnimation>
     );
 }
 
