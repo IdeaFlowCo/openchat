@@ -27,17 +27,21 @@ function DeepformSection(props) {
     const sendMessage = async (message) => {
         setLoading(true);
 
-        // For either text or audio, send message to API route /api/openai
-        const finalMessage = transcript ? transcript : message;
+        // Error Handling
+        if (!message) {
+            toast.error("Please enter a message or record an audio clip.");
+            setLoading(false);
+            return;
+        }
         setTextInput("");
         setMessages((prevMessages) => [
             ...prevMessages,
-            { message: finalMessage, sender: "human" },
+            { message: message, sender: "human" },
         ]);
 
         // Create data object to send to API route /api/openai
         const data = {
-            messages: [...messages, { message: finalMessage, sender: "human" }],
+            messages: [...messages, { message, sender: "human" }],
             prompt: deepformData.prompt,
             deepformId: props.id,
         };
@@ -87,13 +91,15 @@ function DeepformSection(props) {
 
             const data = await response.json();
             const { text } = data;
-
+            sendMessage(text);
+            setLoading(false);
             return {
                 blob,
                 text,
             };
         } catch (error) {
             console.error(error);
+            setLoading(false);
             return {
                 blob,
                 text: "Failed to transcribe the audio.",
@@ -132,14 +138,14 @@ function DeepformSection(props) {
                         </label>
                         <main className="">
                             <div>
-                                <p>Recording: {recording ? "true" : "false"}</p>
-                                <p>Speaking: {speaking ? "true" : "false"}</p>
+                                {/* <p>Recording: {recording ? "true" : "false"}</p> */}
+                                {/* <p>Speaking: {speaking ? "true" : "false"}</p> */}
                                 {/* <p>
                                     Transcribing:{" "}
                                     {transcribing ? "true" : "false"}
                                 </p> */}
-                                <p>Transcribed Text: {transcript?.text}</p>
-                                <button onClick={() => startRecording()}>
+                                {/* <p>Transcribed Text: {transcript?.text}</p> */}
+                                {/* <button onClick={() => startRecording()}>
                                     Start
                                 </button>
                                 <button onClick={() => pauseRecording()}>
@@ -147,51 +153,54 @@ function DeepformSection(props) {
                                 </button>
                                 <button onClick={() => stopRecording()}>
                                     Stop
-                                </button>
+                                </button> */}
                             </div>
-                            {/* {isRecording ? (
-                                    <button
-                                        onClick={stopRecording}
-                                        disabled={!isRecording}
-                                        className="mr-4 bg-indigo-600 border text-white hover:opacity-70 rounded-full p-4 "
+                            {!recording ? (
+                                <button
+                                    onClick={() => startRecording()}
+                                    disabled={recording}
+                                    className="mr-4 bg-indigo-600 border text-white hover:opacity-70 rounded-full p-4 "
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={1.5}
-                                            stroke="currentColor"
-                                            className="w-6 h-6"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={startRecording}
-                                        disabled={isRecording}
-                                        className="mr-4 border border-black/10 rounded-full p-4"
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+                                        />
+                                    </svg>
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        setLoading(true);
+                                        stopRecording();
+                                    }}
+                                    disabled={!recording}
+                                    className="mr-4 border border-black/10 rounded-full p-4"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={1.5}
-                                            stroke="currentColor"
-                                            className="w-6 h-6"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
-                                            />
-                                        </svg>
-                                    </button>
-                                )} */}
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
+                                </button>
+                            )}
                         </main>
 
                         <input
@@ -210,7 +219,13 @@ function DeepformSection(props) {
                         <button
                             type="submit"
                             onClick={() => sendMessage(textInput)}
-                            className="ml-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            disabled={loading}
+                            className={
+                                loading
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : "" +
+                                      "ml-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            }
                         >
                             Send
                         </button>
