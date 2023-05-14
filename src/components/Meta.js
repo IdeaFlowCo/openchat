@@ -11,7 +11,7 @@ function Meta(props) {
     // Site name
     siteName: "Deepform",
     // Your production domain (example: https://myapp.com)
-    domain: "",
+    domain: "https://deepform.ai",
     // Your Twitter handle (example: @divjoy)
     twitterHandle: "",
   };

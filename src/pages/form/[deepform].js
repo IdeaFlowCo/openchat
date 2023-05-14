@@ -21,7 +21,7 @@ function DeepformPage(props) {
 
     return (
         <>
-            <Meta title={deepformData?.name + " | Deepform"} />
+            <Meta title={"Answer Deepform"} />
             <AnswerDeepform id={deepformId} />
         </>
     );
