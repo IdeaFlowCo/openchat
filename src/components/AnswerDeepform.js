@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useDeepform } from "util/db";
 import ChatMessage from "./ChatMessage";
-import { apiRequest } from "util/util";
+import { toast } from "react-hot-toast";
+import { useWhisper } from "@chengsokdara/use-whisper";
 
 function DeepformSection(props) {
     const { data: deepformData, status: deepformStatus } = useDeepform(
@@ -19,53 +20,98 @@ function DeepformSection(props) {
     ]);
 
     const [textInput, setTextInput] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // console.log("deepformData", deepformData);
 
     const sendMessage = async (message) => {
+        setLoading(true);
+
+        // For either text or audio, send message to API route /api/openai
+        const finalMessage = transcript ? transcript : message;
         setTextInput("");
         setMessages((prevMessages) => [
-          ...prevMessages,
-          { message: message, sender: "human" },
+            ...prevMessages,
+            { message: finalMessage, sender: "human" },
         ]);
-      
+
         // Create data object to send to API route /api/openai
         const data = {
-          messages: [...messages, { message, sender: "human" }],
-          prompt: deepformData.prompt,
-          deepformId: props.id,
+            messages: [...messages, { message: finalMessage, sender: "human" }],
+            prompt: deepformData.prompt,
+            deepformId: props.id,
         };
-      
+
         console.log("data", data);
-      
+
         // Send data to API route /api/openai
         await fetch("/api/openai", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: data ? JSON.stringify(data) : undefined,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: data ? JSON.stringify(data) : undefined,
         })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("data.text", data.text);
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              { message: data.text, sender: "AI" },
-            ]);
-            if (data.isEndOfInterview) {
-              // Time out for 3 seconds, then redirect to Deepform home page
-              setTimeout(() => {
-                window.location.href = "/";
-              }, 5000);
-            }
-          })
-          .catch((err) => {
-            console.log("err", err);
-            alert("Error sending message. Please try again.");
-          });
-      };
-      
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("data.text", data.text);
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { message: data.text, sender: "AI" },
+                ]);
+                if (data.isEndOfInterview) {
+                    // Time out for 3 seconds, then redirect to Deepform home page
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 5000);
+                }
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log("err", err);
+                setLoading(false);
+                alert("Error sending message. Please try again.");
+            });
+    };
+
+    // Whisper
+    const onTranscribe = async (blob) => {
+        const formData = new FormData();
+        formData.append("file", blob, "audio.wav");
+
+        try {
+            const response = await fetch("/api/whisper", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+            const { text } = data;
+
+            return {
+                blob,
+                text,
+            };
+        } catch (error) {
+            console.error(error);
+            return {
+                blob,
+                text: "Failed to transcribe the audio.",
+            };
+        }
+    };
+
+    const {
+        recording,
+        speaking,
+        transcribing,
+        transcript,
+        pauseRecording,
+        startRecording,
+        stopRecording,
+    } = useWhisper({
+        onTranscribe,
+    });
 
     return (
         <section className="flex justify-center items-start mx-4 sm:mx-auto h-fit-content pt-4 pb-96 sm:pt-12">
@@ -80,10 +126,73 @@ function DeepformSection(props) {
             </div>
             <div className="fixed bottom-10 sm:bottom-4 inset-auto w-full h-32">
                 <div className="flex flex-col justify-center items-center gap-4">
-                    <div className="flex justify-center items-center w-full">
+                    <div className="flex justify-center items-center w-full px-4">
                         <label htmlFor="chat" className="sr-only">
                             Chat
                         </label>
+                        <main className="">
+                            <div>
+                                <p>Recording: {recording ? "true" : "false"}</p>
+                                <p>Speaking: {speaking ? "true" : "false"}</p>
+                                {/* <p>
+                                    Transcribing:{" "}
+                                    {transcribing ? "true" : "false"}
+                                </p> */}
+                                <p>Transcribed Text: {transcript?.text}</p>
+                                <button onClick={() => startRecording()}>
+                                    Start
+                                </button>
+                                <button onClick={() => pauseRecording()}>
+                                    Pause
+                                </button>
+                                <button onClick={() => stopRecording()}>
+                                    Stop
+                                </button>
+                            </div>
+                            {/* {isRecording ? (
+                                    <button
+                                        onClick={stopRecording}
+                                        disabled={!isRecording}
+                                        className="mr-4 bg-indigo-600 border text-white hover:opacity-70 rounded-full p-4 "
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={1.5}
+                                            stroke="currentColor"
+                                            className="w-6 h-6"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M6 18L18 6M6 6l12 12"
+                                            />
+                                        </svg>
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={startRecording}
+                                        disabled={isRecording}
+                                        className="mr-4 border border-black/10 rounded-full p-4"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={1.5}
+                                            stroke="currentColor"
+                                            className="w-6 h-6"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"
+                                            />
+                                        </svg>
+                                    </button>
+                                )} */}
+                        </main>
 
                         <input
                             name="chat"
