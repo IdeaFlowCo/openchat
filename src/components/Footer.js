@@ -142,7 +142,8 @@ export default function Footer() {
                         /> */}
                         <Logo />
                         <p className="text-sm leading-6 text-gray-600">
-                            Accelerating customer empathy using A.I.
+                            Accelerating customer empathy with artificial
+                            intelligence.
                         </p>
                         {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (
