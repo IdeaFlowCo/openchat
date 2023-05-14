@@ -4,6 +4,8 @@ import NewsletterSection from "components/NewsletterSection";
 import Link from "next/link";
 import AbstractBg from "components/atoms/AbstractBg";
 import FeatureSection from "components/FeatureSection";
+import { Transition } from "@headlessui/react";
+import CallToAction from "components/CallToAction";
 function IndexPage(props) {
     return (
         <>
@@ -12,15 +14,24 @@ function IndexPage(props) {
                 <AbstractBg />
                 <div className="py-14 sm:py-24 lg:pb-40">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mx-auto max-w-2xl text-center">
-                            <h1 className="font-satoshi text-5xl font-bold tracking-tight text-gray-900 md:text-6xl">
-                                Deeply understand your users 100x faster with A.I.
+                        <Transition
+                            appear={true}
+                            show={true}
+                            enter="transition ease-out duration-500 delay-500"
+                            enterFrom="opacity-0 translate-y-1"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in duration-150"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-1"
+                            className="mx-auto max-w-2xl text-center"
+                        >
+                            <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
+                                Continuous user research, automated by A.I.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Deepform trains and deploys A.I. user researchers
-                                that consistently gather deep insights from your
-                                users via automated conversational
-                                interviews.
+                                Deepform lets you train A.I. to conduct user
+                                interviews anytime, anywhere, without the hassle
+                                of scheduling or conducting them yourself.
                             </p>
                             <div className="mt-10 flex items-center justify-center gap-x-6">
                                 <Link href="/dashboard">
@@ -34,6 +45,20 @@ function IndexPage(props) {
                                         <span aria-hidden="true">→</span>
                                     </button>
                                 </Link>
+                            </div>
+                        </Transition>
+                        <div className="relative overflow-y-hidden pt-16">
+                            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                                <img
+                                    src="https://tailwindui.com/img/component-images/project-app-screenshot.png"
+                                    alt="App screenshot"
+                                    className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
+                                    width={2432}
+                                    height={1442}
+                                />
+                                <div className="relative" aria-hidden="true">
+                                    <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
+                                </div>
                             </div>
                         </div>
                         {/* <div className="mt-16 flow-root sm:mt-24">
@@ -62,7 +87,8 @@ function IndexPage(props) {
                     />
                 </div>
                 <FeatureSection />
-                <NewsletterSection />
+                <CallToAction />
+                {/* <NewsletterSection /> */}
             </div>
         </>
     );

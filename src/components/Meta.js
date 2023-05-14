@@ -19,7 +19,7 @@ function Meta(props) {
   // Default meta values for current page (override with props)
   const defaultPageMeta = {
     // Page title
-    title: "Deepform",
+    title: "Deepform - Train and Deploy A.I. User Researchers",
     // Page description
     description: `Deepform trains and deploys AI user researchers 
     to consistently gather deep insights from your users 

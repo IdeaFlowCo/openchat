@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import DashboardItems from "components/dashboard/DashboardItems";
+import DeepformTable from "components/dashboard/DeepformTable";
 import { useAuth } from "util/auth";
 
-function DashboardSection({ host }) {
+function DashboardHome({ host }) {
     const auth = useAuth();
 
     return (
@@ -12,7 +12,7 @@ function DashboardSection({ host }) {
                 <div className="flex flex-wrap">
                     <div className="p-4 w-full md:w-1/2">
                         {/* <div className="rounded border border-gray-200"> */}
-                            <DashboardItems host={host}/>
+                            <DeepformTable host={host}/>
                         {/* </div> */}
                     </div>
                     <div className="p-4 w-full md:w-1/2">
@@ -82,4 +82,4 @@ function DashboardSection({ host }) {
     );
 }
 
-export default DashboardSection;
+export default DashboardHome;

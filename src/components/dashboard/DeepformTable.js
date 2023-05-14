@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import EditDeepformModal from "components/EditDeepformModal";
+import EditDeepformModal from "components/dashboard/EditDeepformModal";
 import { useAuth } from "util/auth";
 import { useRouter } from "next/router";
 // import { updateItem, deleteItem, useItemsByOwner } from "util/db";
 import { deleteDeepform, useDeepformsByOwner } from "util/db";
 
-function DashboardItems({ host }) {
+function DeepformTable({ host }) {
     const auth = useAuth();
     const router = useRouter();
 
@@ -133,4 +133,4 @@ function DashboardItems({ host }) {
     );
 }
 
-export default DashboardItems;
+export default DeepformTable;

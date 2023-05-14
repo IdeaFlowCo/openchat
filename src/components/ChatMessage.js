@@ -1,5 +1,5 @@
 import React from "react";
-import AppearAnimation from "./atoms/AppearAnimation";
+import AppearAnimation from "./atoms/BasicAppearAnimation";
 
 function ChatMessage({ message, sender }) {
     return (

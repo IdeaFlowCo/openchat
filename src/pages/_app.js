@@ -6,18 +6,20 @@ import { AuthProvider } from "util/auth";
 import { QueryClientProvider } from "util/db";
 import { Toaster } from "react-hot-toast";
 import Navbar from "components/Navbar";
+import Footer from "components/Footer";
 
 function MyApp({ Component, pageProps }) {
     return (
         <QueryClientProvider>
             <AuthProvider>
-                <Chat />
+                {/* <Chat /> */}
                 <>
                     {/* <Navbar /> */}
                     <Navbar />
 
                     <Component {...pageProps} />
                     <Toaster />
+                    <Footer />
                 </>
             </AuthProvider>
         </QueryClientProvider>

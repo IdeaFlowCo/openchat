@@ -19,20 +19,20 @@ import {
 import Link from "next/link";
 import { useAuth } from "util/auth";
 import Logo from "components/atoms/Logo";
-import DashboardSection from "./DashboardSection";
+import DashboardHome from "./home/DashboardHome";
 
 const navigation = [
-    { name: "Home", href: "#", icon: HomeIcon, current: true },
-    // { name: "Deepforms", href: "#", icon: FolderIcon, current: false },
-    // { name: "Submissions", href: "#", icon: UsersIcon, current: false },
-    //   { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
-    //   { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
-    //   { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
+    { name: "Home", href: "/dashboard", icon: HomeIcon },
+    { name: "Deepforms", href: "/dashboard/deepforms", icon: FolderIcon },
+    { name: "Submissions", href: "/dashboard/submissions", icon: UsersIcon },
+    //   { name: 'Calendar', href: '#', icon: CalendarIcon },
+    //   { name: 'Documents', href: '#', icon: DocumentDuplicateIcon },
+    //   { name: 'Reports', href: '#', icon: ChartPieIcon },
 ];
 const teams = [
-    //   { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-    //   { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-    //   { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
+    { id: 1, name: "Product", href: "#", initial: "H" },
+    { id: 2, name: "Sales", href: "#", initial: "T" },
+    { id: 3, name: "Marketing", href: "#", initial: "W" },
 ];
 
 // Aren't using this because Signout has a special need to call auth.signout()
@@ -45,7 +45,11 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function NewDashboardSection({ host }) {
+export default function DashboardLayout({
+    children,
+    currentPage,
+    currentTeam,
+}) {
     const auth = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -144,30 +148,35 @@ export default function NewDashboardSection({ host }) {
                                                                         item.name
                                                                     }
                                                                 >
-                                                                    <a
+                                                                    <Link
                                                                         href={
                                                                             item.href
                                                                         }
-                                                                        className={classNames(
-                                                                            item.current
-                                                                                ? "bg-gray-50 text-indigo-600"
-                                                                                : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                                                                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                                                        )}
                                                                     >
-                                                                        <item.icon
+                                                                        <div
                                                                             className={classNames(
-                                                                                item.current
-                                                                                    ? "text-indigo-600"
-                                                                                    : "text-gray-400 group-hover:text-indigo-600",
-                                                                                "h-6 w-6 shrink-0"
+                                                                                item.name ===
+                                                                                    currentPage
+                                                                                    ? "bg-gray-50 text-indigo-600"
+                                                                                    : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+                                                                                "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                                                             )}
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                        {
-                                                                            item.name
-                                                                        }
-                                                                    </a>
+                                                                        >
+                                                                            <item.icon
+                                                                                className={classNames(
+                                                                                    item.name ===
+                                                                                        currentPage
+                                                                                        ? "text-indigo-600"
+                                                                                        : "text-gray-400 group-hover:text-indigo-600",
+                                                                                    "h-6 w-6 shrink-0"
+                                                                                )}
+                                                                                aria-hidden="true"
+                                                                            />
+                                                                            {
+                                                                                item.name
+                                                                            }
+                                                                        </div>
+                                                                    </Link>
                                                                 </li>
                                                             )
                                                         )}
@@ -183,50 +192,54 @@ export default function NewDashboardSection({ host }) {
                                                     >
                                                         {teams.map((team) => (
                                                             <li key={team.name}>
-                                                                <a
+                                                                <Link
                                                                     href={
                                                                         team.href
                                                                     }
-                                                                    className={classNames(
-                                                                        team.current
-                                                                            ? "bg-gray-50 text-indigo-600"
-                                                                            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                                                                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                                                    )}
                                                                 >
-                                                                    <span
+                                                                    <div
                                                                         className={classNames(
-                                                                            team.current
-                                                                                ? "text-indigo-600 border-indigo-600"
-                                                                                : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
-                                                                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
+                                                                            team.name ===
+                                                                                currentTeam
+                                                                                ? "bg-gray-50 text-indigo-600"
+                                                                                : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+                                                                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                                                         )}
                                                                     >
-                                                                        {
-                                                                            team.initial
-                                                                        }
-                                                                    </span>
-                                                                    <span className="truncate">
-                                                                        {
-                                                                            team.name
-                                                                        }
-                                                                    </span>
-                                                                </a>
+                                                                        <span
+                                                                            className={classNames(
+                                                                                team.name ===
+                                                                                    currentTeam
+                                                                                    ? "text-indigo-600 border-indigo-600"
+                                                                                    : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
+                                                                                "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
+                                                                            )}
+                                                                        >
+                                                                            {
+                                                                                team.initial
+                                                                            }
+                                                                        </span>
+                                                                        <span className="truncate">
+                                                                            {
+                                                                                team.name
+                                                                            }
+                                                                        </span>
+                                                                    </div>
+                                                                </Link>
                                                             </li>
                                                         ))}
                                                     </ul>
                                                 </li>
                                                 <li className="mt-auto">
-                                                    <a
-                                                        href="#"
-                                                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                                                    >
-                                                        <Cog6ToothIcon
-                                                            className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                                                            aria-hidden="true"
-                                                        />
-                                                        Settings
-                                                    </a>
+                                                    <Link href="/settings">
+                                                        <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+                                                            <Cog6ToothIcon
+                                                                className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                                                                aria-hidden="true"
+                                                            />
+                                                            Settings
+                                                        </div>
+                                                    </Link>
                                                 </li>
                                             </ul>
                                         </nav>
@@ -258,26 +271,29 @@ export default function NewDashboardSection({ host }) {
                                     <ul role="list" className="-mx-2 space-y-1">
                                         {navigation.map((item) => (
                                             <li key={item.name}>
-                                                <a
-                                                    href={item.href}
-                                                    className={classNames(
-                                                        item.current
-                                                            ? "bg-gray-50 text-indigo-600"
-                                                            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                                                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                                    )}
-                                                >
-                                                    <item.icon
+                                                <Link href={item.href}>
+                                                    <div
                                                         className={classNames(
-                                                            item.current
-                                                                ? "text-indigo-600"
-                                                                : "text-gray-400 group-hover:text-indigo-600",
-                                                            "h-6 w-6 shrink-0"
+                                                            item.name ===
+                                                                currentPage
+                                                                ? "bg-gray-50 text-indigo-600"
+                                                                : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+                                                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                                         )}
-                                                        aria-hidden="true"
-                                                    />
-                                                    {item.name}
-                                                </a>
+                                                    >
+                                                        <item.icon
+                                                            className={classNames(
+                                                                item.name ===
+                                                                    currentPage
+                                                                    ? "text-indigo-600"
+                                                                    : "text-gray-400 group-hover:text-indigo-600",
+                                                                "h-6 w-6 shrink-0"
+                                                            )}
+                                                            aria-hidden="true"
+                                                        />
+                                                        {item.name}
+                                                    </div>
+                                                </Link>
                                             </li>
                                         ))}
                                     </ul>
@@ -292,44 +308,44 @@ export default function NewDashboardSection({ host }) {
                                     >
                                         {teams.map((team) => (
                                             <li key={team.name}>
-                                                <a
-                                                    href={team.href}
-                                                    className={classNames(
-                                                        team.current
-                                                            ? "bg-gray-50 text-indigo-600"
-                                                            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                                                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                                    )}
-                                                >
-                                                    <span
+                                                <Link href={team.href}>
+                                                    <div
                                                         className={classNames(
                                                             team.current
-                                                                ? "text-indigo-600 border-indigo-600"
-                                                                : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
-                                                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
+                                                                ? "bg-gray-50 text-indigo-600"
+                                                                : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+                                                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                                         )}
                                                     >
-                                                        {team.initial}
-                                                    </span>
-                                                    <span className="truncate">
-                                                        {team.name}
-                                                    </span>
-                                                </a>
+                                                        <span
+                                                            className={classNames(
+                                                                team.current
+                                                                    ? "text-indigo-600 border-indigo-600"
+                                                                    : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
+                                                                "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
+                                                            )}
+                                                        >
+                                                            {team.initial}
+                                                        </span>
+                                                        <span className="truncate">
+                                                            {team.name}
+                                                        </span>
+                                                    </div>
+                                                </Link>
                                             </li>
                                         ))}
                                     </ul>
                                 </li>
                                 <li className="mt-auto">
-                                    <a
-                                        href="#"
-                                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                                    >
-                                        <Cog6ToothIcon
-                                            className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                                            aria-hidden="true"
-                                        />
-                                        Settings
-                                    </a>
+                                    <Link href="/settings">
+                                        <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
+                                            <Cog6ToothIcon
+                                                className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
+                                                aria-hidden="true"
+                                            />
+                                            Settings
+                                        </div>
+                                    </Link>
                                 </li>
                             </ul>
                         </nav>
@@ -360,7 +376,7 @@ export default function NewDashboardSection({ host }) {
                                 method="GET"
                             >
                                 {/* TODO: add search functionality */}
-                                {/* <label
+                                <label
                                     htmlFor="search-field"
                                     className="sr-only"
                                 >
@@ -376,11 +392,11 @@ export default function NewDashboardSection({ host }) {
                                     placeholder="Search..."
                                     type="search"
                                     name="search"
-                                /> */}
+                                />
                             </form>
                             <div className="flex items-center gap-x-4 lg:gap-x-6">
                                 {/* TODO: Notifications */}
-                                {/* <button
+                                <button
                                     type="button"
                                     className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
                                 >
@@ -391,7 +407,7 @@ export default function NewDashboardSection({ host }) {
                                         className="h-6 w-6"
                                         aria-hidden="true"
                                     />
-                                </button> */}
+                                </button>
 
                                 {/* Separator */}
                                 <div
@@ -513,7 +529,8 @@ export default function NewDashboardSection({ host }) {
                     <main className="py-10">
                         <div className="px-4 sm:px-6 lg:px-8">
                             {/* Your content */}
-                            <DashboardSection host={host} />
+
+                            {children}
                         </div>
                     </main>
                 </div>

@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
-import IconCopyToClipboard from "./IconCopyToClipboard";
+import IconCopyToClipboard from "../IconCopyToClipboard";
 
 function EditDeepformModal({ id, onDone, host }) {
     const auth = useAuth();
@@ -193,7 +193,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                                     </CopyToClipboard>
                                                 </div>
                                                 <Link
-                                                    href={`/submissions/${id}`}
+                                                    href={`/dashboard/submissions/${id}`}
                                                     // target={"_blank"}
                                                 >
                                                     <button className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
