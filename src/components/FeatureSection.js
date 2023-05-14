@@ -6,21 +6,21 @@ import {
 
 const features = [
     {
-        name: "Push to deploy.",
+        name: "Uninterrupted Research",
         description:
-            "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+            "With Deepform, user research never sleeps. Conduct insightful user interviews any time of the day, without the need for manual scheduling.",
         icon: CloudArrowUpIcon,
     },
     {
-        name: "SSL certificates.",
+        name: "Secure Conversations",
         description:
-            "Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.",
+            "Your users' privacy is our top priority. All conversations are conducted in a secure environment, ensuring data integrity and confidentiality.",
         icon: LockClosedIcon,
     },
     {
-        name: "Database backups.",
+        name: "Insightful Summaries",
         description:
-            "Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi lobortis.",
+            "Deepform does more than transcribe. It analyzes and summarizes the user interview, delivering actionable insights directly to your inbox.",
         icon: ServerIcon,
     },
 ];
@@ -34,16 +34,17 @@ export default function FeatureSection() {
                         <div className="lg:pr-8 lg:pt-4">
                             <div className="lg:max-w-lg">
                                 <h2 className="text-base font-semibold leading-7 text-indigo-600">
-                                    Deploy faster
+                                    Accelerate research
                                 </h2>
                                 <p className="font-satoshi mt-2 text-4xl font-medium tracking-tight text-gray-900">
-                                    A better workflow
+                                    Continuous User Insights, Simplified
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                                    Lorem ipsum, dolor sit amet consectetur
-                                    adipisicing elit. Maiores impedit
-                                    perferendis suscipit eaque, iste dolor
-                                    cupiditate blanditiis ratione.
+                                    Deepform is a next-generation tool that
+                                    revolutionizes user research. Our AI-driven
+                                    solution lets you conduct user interviews
+                                    anytime, anywhere, without the hassle of
+                                    scheduling or conducting them yourself.
                                 </p>
                                 <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                                     {features.map((feature) => (
@@ -82,16 +83,17 @@ export default function FeatureSection() {
                         <div className="lg:ml-auto lg:pl-4 lg:pt-4">
                             <div className="lg:max-w-lg">
                                 <h2 className="text-base font-semibold leading-7 text-indigo-600">
-                                    Deploy faster
+                                    Accelerate research
                                 </h2>
                                 <p className="font-satoshi mt-2 text-4xl font-medium tracking-tight text-gray-900">
-                                    A better workflow
+                                    Continuous User Insights, Simplified
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                                    Lorem ipsum, dolor sit amet consectetur
-                                    adipisicing elit. Maiores impedit
-                                    perferendis suscipit eaque, iste dolor
-                                    cupiditate blanditiis ratione.
+                                    Deepform is a next-generation tool that
+                                    revolutionizes user research. Our AI-driven
+                                    solution lets you conduct user interviews
+                                    anytime, anywhere, without the hassle of
+                                    scheduling or conducting them yourself.
                                 </p>
                                 <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                                     {features.map((feature) => (
@@ -130,12 +132,13 @@ export default function FeatureSection() {
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl lg:mx-0">
                         <h2 className="font-satoshi text-4xl font-medium tracking-tight text-gray-900 sm:text-5xl">
-                            Stay on top of customer support
+                            Stay on top of customer empathy
                         </h2>
                         <p className="mt-6 text-lg leading-8 text-gray-600">
-                            Lorem ipsum dolor sit amet consect adipisicing elit.
-                            Possimus magnam voluptatum cupiditate veritatis in
-                            accusamus quisquam.
+                            Your customers are constantly evolving. Deepform
+                            helps you stay on top of their needs by delivering
+                            actionable insights to your product team on a
+                            continuous basis, 100x faster and cheaper.
                         </p>
                     </div>
                     <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">

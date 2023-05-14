@@ -13,6 +13,11 @@
   ```
 */
 import { useRouter } from "next/router";
+import Logo from "./atoms/Logo";
+import { useForm } from "react-hook-form";
+import newsletter from "util/newsletter";
+import { useState } from "react";
+
 const navigation = {
     solutions: [
         { name: "Marketing", href: "#" },
@@ -21,13 +26,13 @@ const navigation = {
         { name: "Insights", href: "#" },
     ],
     support: [
-        { name: "Pricing", href: "#" },
+        { name: "Pricing", href: "/pricing" },
         { name: "Documentation", href: "#" },
         { name: "Guides", href: "#" },
         { name: "API Status", href: "#" },
     ],
     company: [
-        { name: "About", href: "#" },
+        { name: "About", href: "/about" },
         { name: "Blog", href: "#" },
         { name: "Jobs", href: "#" },
         { name: "Press", href: "#" },
@@ -111,6 +116,17 @@ export default function Footer() {
     ) {
         return null;
     }
+    const [subscribed, setSubscribed] = useState(false);
+    const { handleSubmit, register, errors } = useForm();
+
+    const onSubmit = ({ email }) => {
+        setSubscribed(true);
+        // Parent component can optionally
+        // find out when subscribed.
+        props.onSubscribed && props.onSubscribed();
+        // Subscribe them
+        newsletter.subscribe({ email });
+    };
     return (
         <footer className="bg-white" aria-labelledby="footer-heading">
             <h2 id="footer-heading" className="sr-only">
@@ -119,14 +135,14 @@ export default function Footer() {
             <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
                 <div className="xl:grid xl:grid-cols-3 xl:gap-8">
                     <div className="space-y-8">
-                        <img
+                        {/* <img
                             className="h-7"
                             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                             alt="Company name"
-                        />
+                        /> */}
+                        <Logo />
                         <p className="text-sm leading-6 text-gray-600">
-                            Making the world a better place through constructing
-                            elegant hierarchies.
+                            Accelerating customer empathy using A.I.
                         </p>
                         {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (
@@ -229,28 +245,39 @@ export default function Footer() {
                             your inbox weekly.
                         </p>
                     </div>
-                    <form className="mt-6 sm:flex sm:max-w-md lg:mt-0">
-                        <label htmlFor="email-address" className="sr-only">
-                            Email address
-                        </label>
-                        <input
-                            type="email"
-                            name="email-address"
-                            id="email-address"
-                            autoComplete="email"
-                            required
-                            className="w-full min-w-0 appearance-none rounded-md border-0 bg-white px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:w-56 sm:text-sm sm:leading-6"
-                            placeholder="Enter your email"
-                        />
-                        <div className="mt-4 sm:ml-4 sm:mt-0 sm:flex-shrink-0">
-                            <button
-                                type="submit"
-                                className="flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                Subscribe
-                            </button>
+                    {subscribed === false && (
+                        <form
+                            onSubmit={handleSubmit(onSubmit)}
+                            className="mt-6 sm:flex sm:max-w-md lg:mt-0"
+                        >
+                            <label htmlFor="email-address" className="sr-only">
+                                Email address
+                            </label>
+                            <input
+                                name="email"
+                                type="email"
+                                placeholder="Enter your email"
+                                ref={register({
+                                    required: "Please enter an email address",
+                                })}
+                                required
+                                className="w-full min-w-0 appearance-none rounded-md border-0 bg-white px-3 py-1.5 text-base text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:w-56 sm:text-sm sm:leading-6"
+                            />
+                            <div className="mt-4 sm:ml-4 sm:mt-0 sm:flex-shrink-0">
+                                <button
+                                    type="submit"
+                                    className="flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                >
+                                    Subscribe
+                                </button>
+                            </div>
+                        </form>
+                    )}
+                    {subscribed === true && (
+                        <div className="text-center text-sm font-semibold leading-6 text-gray-900">
+                            You are subscribed!
                         </div>
-                    </form>
+                    )}
                 </div>
                 <div className="mt-8 border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
                     <div className="flex space-x-6 md:order-2">
@@ -269,7 +296,7 @@ export default function Footer() {
                         ))}
                     </div>
                     <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-                        &copy; 2020 Your Company, Inc. All rights reserved.
+                        &copy; 2023 Deepform. All rights reserved.
                     </p>
                 </div>
             </div>
