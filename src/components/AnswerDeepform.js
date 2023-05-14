@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDeepform } from "util/db";
 import ChatMessage from "./ChatMessage";
 import { toast } from "react-hot-toast";
@@ -117,20 +117,37 @@ function DeepformSection(props) {
         stopRecording,
     } = useWhisper({
         onTranscribe,
+        removeSilence: true,
+        whisperConfig: {
+            language: "en",
+        },
     });
 
+    // UseEffect that scrolls down to the bottom of the chat
+    // whenever a new message is sent
+    useEffect(() => {
+        const chat = document.getElementById("chat");
+        chat.scrollTop = chat.scrollHeight;
+    }, [messages]);
+
     return (
-        <section className="flex justify-center items-start mx-4 sm:mx-auto h-fit-content pt-4 pb-96 sm:pt-12">
-            <div className="container flex flex-col gap-2 max-w-3xl">
-                {messages.map((message, index) => (
-                    <ChatMessage
-                        key={index}
-                        message={message.message}
-                        sender={message.sender}
-                    />
-                ))}
+        <section className="chat flex flex-col justify-center items-center mx-4 sm:mx-auto">
+            <div
+                id="chat"
+                className="flex justify-center items-start py-5 w-full h-[80vh] overflow-auto"
+            >
+                <div className="container flex flex-col gap-2 max-w-3xl">
+                    {messages.map((message, index) => (
+                        <ChatMessage
+                            key={index}
+                            message={message.message}
+                            sender={message.sender}
+                        />
+                    ))}
+                </div>
             </div>
-            <div className="fixed bottom-10 sm:bottom-4 inset-auto w-full h-32">
+
+            <div className="w-full h-[20vh]">
                 <div className="flex flex-col justify-center items-center gap-4">
                     <div className="flex justify-center items-center w-full px-4">
                         <label htmlFor="chat" className="sr-only">
@@ -221,10 +238,10 @@ function DeepformSection(props) {
                             onClick={() => sendMessage(textInput)}
                             disabled={loading}
                             className={
-                                loading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "" +
-                                      "ml-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                "ml-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" +
+                                (loading
+                                    ? " opacity-50 cursor-not-allowed"
+                                    : "")
                             }
                         >
                             Send
