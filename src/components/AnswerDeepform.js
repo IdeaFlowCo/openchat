@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useDeepform } from "util/db";
 import ChatMessage from "./ChatMessage";
 import { toast } from "react-hot-toast";
 import { useWhisper } from "@chengsokdara/use-whisper";
+import { Dialog, Transition } from "@headlessui/react";
+import { CheckIcon } from "@heroicons/react/24/outline";
+import EndInterviewModal from "./EndInterviewModal";
 
 function AnswerDeepform(props) {
     const { data: deepformData, status: deepformStatus } = useDeepform(
@@ -21,6 +24,7 @@ function AnswerDeepform(props) {
 
     const [textInput, setTextInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showEndInterviewModal, setShowEndInterviewModal] = useState(false);
 
     // console.log("deepformData", deepformData);
 
@@ -64,6 +68,7 @@ function AnswerDeepform(props) {
                     { message: data.text, sender: "AI" },
                 ]);
                 if (data.isEndOfInterview) {
+                    setShowEndInterviewModal(false);
                     // Time out for 3 seconds, then redirect to Deepform home page
                     setTimeout(() => {
                         window.location.href = "/";
@@ -279,7 +284,10 @@ function AnswerDeepform(props) {
                         </a>
                         <button
                             type="submit"
-                            onClick={() => sendMessage("Sorry, I have to go!")}
+                            onClick={() => {
+                                setShowEndInterviewModal(true);
+                                sendMessage("Sorry, I have to go!");
+                            }}
                             className="ml-4 nline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             End Interview
@@ -287,6 +295,8 @@ function AnswerDeepform(props) {
                     </div>
                 </div>
             </div>
+
+            <EndInterviewModal open={showEndInterviewModal} />
         </>
         // </section>
     );
