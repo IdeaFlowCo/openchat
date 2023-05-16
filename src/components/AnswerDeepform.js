@@ -4,7 +4,7 @@ import ChatMessage from "./ChatMessage";
 import { toast } from "react-hot-toast";
 import { useWhisper } from "@chengsokdara/use-whisper";
 
-function DeepformSection(props) {
+function AnswerDeepform(props) {
     const { data: deepformData, status: deepformStatus } = useDeepform(
         props.id
     );
@@ -272,4 +272,4 @@ function DeepformSection(props) {
     );
 }
 
-export default DeepformSection;
+export default AnswerDeepform;

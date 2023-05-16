@@ -6,7 +6,7 @@ import {
     SystemChatMessage,
     AIChatMessage,
 } from "langchain/schema";
-import { createSubmission } from "util/db";
+import { createSubmission, createMessages } from "util/db";
 import injectIntoBasePrompt from "util/injectIntoBasePrompt";
 
 export default async function handler(req, res) {
@@ -67,6 +67,36 @@ export default async function handler(req, res) {
         });
 
         console.log("submissionResponse", submissionResponse);
+
+        // Save transcript by calling createMessages with an array of messages 
+        // (don't forget the latest message, in the response variable)
+
+        // We will need to build up an array of objects with the following structure:
+        // {
+        //     submission: submissionResponse.id,
+        //     message: "message text",
+        //     sender: "AI" or "Human",
+        // }
+        let messagesToSave = [];
+        for (let i = 0; i < messages.length; i++) {
+            messagesToSave.push({
+                submission_id: submissionResponse[0].id,
+                message: messages[i].message,
+                sender: messages[i].sender,
+            });
+        }
+
+        // Latest response from AI
+        messagesToSave.push({
+            submission_id: submissionResponse[0].id,
+            message: response.text,
+            sender: "AI",
+        });
+
+        const messagesResponse = await createMessages(messagesToSave);
+
+        console.log("Finished saving transcript and summary!");
+        console.log("messagesResponse", messagesResponse);
     }
 
     let modifiedResponse = {
