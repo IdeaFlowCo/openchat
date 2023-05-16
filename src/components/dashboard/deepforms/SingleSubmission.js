@@ -8,7 +8,7 @@ function SingleSubmission({ submission }) {
         }
     };
     return (
-        <div className="flex flex-col gap-4 border-2 border-black/10 p-8 rounded-xl">
+        <div className="flex flex-col gap-4 border border-black/10 p-8 rounded-xl">
             <h1 className="text-sm text-black/40">
                 Submission Id: {submission?.id}
             </h1>

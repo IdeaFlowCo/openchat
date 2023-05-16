@@ -24,7 +24,7 @@ import DashboardHome from "./home/DashboardHome";
 const navigation = [
     { name: "Home", href: "/dashboard", icon: HomeIcon },
     { name: "Deepforms", href: "/dashboard/deepforms", icon: FolderIcon },
-    { name: "Submissions", href: "/dashboard/submissions", icon: UsersIcon },
+    // { name: "Submissions", href: "", icon: UsersIcon },
     //   { name: 'Calendar', href: '#', icon: CalendarIcon },
     //   { name: 'Documents', href: '#', icon: DocumentDuplicateIcon },
     //   { name: 'Reports', href: '#', icon: ChartPieIcon },

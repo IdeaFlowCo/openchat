@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import DeepformTable from "components/dashboard/DeepformTable";
+import DeepformTable from "components/dashboard/deepforms/DeepformTable";
 import { useAuth } from "util/auth";
 
 function DashboardHome({ host }) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import EditDeepformModal from "components/dashboard/EditDeepformModal";
+import EditDeepformModal from "components/dashboard/deepforms/EditDeepformModal";
 import { useAuth } from "util/auth";
 import { useRouter } from "next/router";
 // import { updateItem, deleteItem, useItemsByOwner } from "util/db";

@@ -1,6 +1,5 @@
 import React from "react";
 import Meta from "components/Meta";
-import DashboardSubmissions from "components/dashboard/submissions/DashboardSubmissions";
 import { requireAuth } from "util/auth";
 import DashboardLayout from "components/dashboard/DashboardLayout";
 import DashboardDeepforms from "components/dashboard/deepforms/DashboardDeepforms";

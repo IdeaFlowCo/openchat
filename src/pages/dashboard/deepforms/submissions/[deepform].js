@@ -1,7 +1,7 @@
 import React from "react";
 import Meta from "components/Meta";
 import { requireAuth } from "util/auth";
-import SubmissionsForDeepFormSection from "components/dashboard/submissions/SubmissionsForDeepFormSection";
+import SubmissionsForDeepFormSection from "components/dashboard/deepforms/SubmissionsForDeepFormSection";
 import { useRouter } from "next/router";
 import { useDeepform } from "util/db";
 
