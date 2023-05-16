@@ -20,28 +20,28 @@ import { useState } from "react";
 
 const navigation = {
     solutions: [
-        { name: "Marketing", href: "#" },
-        { name: "Analytics", href: "#" },
-        { name: "Commerce", href: "#" },
-        { name: "Insights", href: "#" },
+        { name: "User Research", href: "/" },
+        // { name: "Analytics", href: "#" },
+        // { name: "Commerce", href: "#" },
+        // { name: "Insights", href: "#" },
     ],
     support: [
         { name: "Pricing", href: "/pricing" },
-        { name: "Documentation", href: "#" },
-        { name: "Guides", href: "#" },
-        { name: "API Status", href: "#" },
+        // { name: "Documentation", href: "#" },
+        // { name: "Guides", href: "#" },
+        // { name: "API Status", href: "#" },
     ],
     company: [
         { name: "About", href: "/about" },
-        { name: "Blog", href: "#" },
-        { name: "Jobs", href: "#" },
-        { name: "Press", href: "#" },
-        { name: "Partners", href: "#" },
+        // { name: "Blog", href: "#" },
+        // { name: "Jobs", href: "#" },
+        // { name: "Press", href: "#" },
+        // { name: "Partners", href: "#" },
     ],
     legal: [
-        { name: "Claim", href: "#" },
-        { name: "Privacy", href: "#" },
-        { name: "Terms", href: "#" },
+        { name: "Claim", href: "/legal/claims" },
+        { name: "Privacy", href: "/legal/privacy-policy" },
+        { name: "Terms", href: "/legal/terms-of-service" },
     ],
     social: [
         {
@@ -132,7 +132,7 @@ export default function Footer() {
             <h2 id="footer-heading" className="sr-only">
                 Footer
             </h2>
-            <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
+            <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32 ">
                 <div className="xl:grid xl:grid-cols-3 xl:gap-8">
                     <div className="space-y-8">
                         {/* <img
@@ -141,9 +141,8 @@ export default function Footer() {
                             alt="Company name"
                         /> */}
                         <Logo />
-                        <p className="text-sm leading-6 text-gray-600">
-                            Accelerating customer empathy with artificial
-                            intelligence.
+                        <p className="text-sm leading-6 text-gray-600 max-w-[300px]">
+                            Creating a new era of customer empathy with AI.
                         </p>
                         {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (

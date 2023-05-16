@@ -1,62 +1,80 @@
 import React from "react";
 
 function LegalTerms(props) {
-  return (
-    <div className="prose prose-a:text-indigo-600 max-w-none">
-      <h1>Terms of Service</h1>
-      <p>
-        This document is a placeholder. You should replace this with your own
-        Terms of Service or create one using&nbsp;
-        <a href="https://avodocs.com" target="_blank" rel="noreferrer">
-          avodocs.com
-        </a>
-        ,&nbsp;
-        <a href="https://getterms.io" target="_blank" rel="noreferrer">
-          getterms.io
-        </a>{" "}
-        or&nbsp;
-        <a href="https://termly.io" target="_blank" rel="noreferrer">
-          termly.io
-        </a>
-        . We've included some example HTML structure below to make adding your
-        content easier ↴
-      </p>
-      <p>
-        These Terms of Service govern your use of {props.domain} and any related
-        services provided by {props.companyName}. By accessing {props.domain},
-        you agree to abide by these Terms of Service and to comply with all
-        applicable laws and regulations.
-      </p>
-      <p>
-        If you do not agree with these Terms of Service, you are prohibited from
-        using or accessing {props.domain} and from using any other services we
-        provide. We reserve the right to review and amend any of these Terms of
-        Service at our sole discretion. Upon doing so, we will update this page.
-        Any changes to these Terms of Service will take effect immediately from
-        the date of publication.
-      </p>
-      <p>This policy was last updated on October 5th, 2021.</p>
-      <h2>Limitations of Use</h2>
-      <p>
-        By using {props.domain}, you warrant on behalf of yourself, your users,
-        and other parties you represent that you will not:
-      </p>
-      <ol>
-        <li>
-          modify, copy, prepare derivative works of, decompile, or reverse
-          engineer any materials and software contained on the GetTerms.io
-          website.
-        </li>
-        <li>
-          remove any copyright or other proprietary notations from any materials
-          and software on the {props.domain} website.
-        </li>
-        <li>etc</li>
-      </ol>
-      <h2>Another header</h2>
-      <p>Another paragraph of text</p>
-    </div>
-  );
+    return (
+        <div className="prose prose-a:text-indigo-600 max-w-none">
+            <h1 className="font-satoshi font-medium tracking-tight">
+                Terms of Service
+            </h1>
+            <p>
+                Please read these Terms of Service ("Terms", "Terms of Service")
+                carefully before using the Deepform website (the "Service")
+                operated by Deepform ("us", "we", or "our").
+            </p>
+            <h2 className="font-satoshi font-medium tracking-tight">
+                Your access to and use of the Service
+            </h2>
+            <p>
+                Your access to and use of the Service is conditioned upon your
+                acceptance of and compliance with these Terms. These Terms apply
+                to all visitors, users and others who wish to access or use the
+                Service.
+            </p>
+            <h2 className="font-satoshi font-medium tracking-tight">
+                Termination
+            </h2>
+            <p>
+                We may terminate or suspend your access to the Service
+                immediately, without prior notice or liability, under our sole
+                discretion, for any reason whatsoever and without limitation,
+                including but not limited to a breach of the Terms.
+            </p>
+            <h2 className="font-satoshi font-medium tracking-tight">
+                Links to Other Web Sites
+            </h2>
+            <p>
+                Our Service may contain links to third party web sites or
+                services that are not owned or controlled by Deepform. Deepform
+                has no control over, and assumes no responsibility for the
+                content, privacy policies, or practices of any third party web
+                sites or services.
+            </p>
+            <h2 className="font-satoshi font-medium tracking-tight">
+                Limitation Of Liability
+            </h2>
+            <p>
+                In no event shall Deepform, nor its directors, employees,
+                partners, agents, suppliers, or affiliates, be liable for any
+                indirect, incidental, special, consequential or punitive
+                damages, including without limitation, loss of profits, data,
+                use, goodwill, or other intangible losses, resulting from (i)
+                your access to or use of or inability to access or use the
+                Service; (ii) any conduct or content of any third party on the
+                Service; (iii) any content obtained from the Service; and (iv)
+                unauthorized access, use or alteration of your transmissions or
+                content, whether based on warranty, contract, tort (including
+                negligence) or any other legal theory, whether or not we have
+                been informed of the possibility of such damage, and even if a
+                remedy set forth herein is found to have failed of its essential
+                purpose.
+            </p>
+            <h2 className="font-satoshi font-medium tracking-tight">Changes</h2>
+            <p>
+                We reserve the right, at our sole discretion, to modify or
+                replace these Terms at any time. By continuing to access or use
+                our Service after any revisions become effective, you agree to
+                be bound by the revised terms. If you do not agree to the new
+                terms, you are no longer authorized to use the Service.
+            </p>
+            <h2 className="font-satoshi font-medium tracking-tight">
+                Contact Us
+            </h2>
+            <p>
+                If you have any questions about these Terms, please contact us
+                at support@deepform.com.
+            </p>
+        </div>
+    );
 }
 
 export default LegalTerms;
