@@ -131,7 +131,8 @@ function DeepformSection(props) {
     }, [messages]);
 
     return (
-        <section className="chat flex flex-col justify-center items-center sm:mx-auto">
+        <>
+         {/* <section className="flex flex-col justify-center items-center sm:mx-auto h-[80vh] b"> */}
             <div
                 id="chat"
                 className="flex justify-center items-start p-4 sm:pt-10 w-full h-[80vh] overflow-auto"
@@ -266,7 +267,8 @@ function DeepformSection(props) {
                     </div>
                 </div>
             </div>
-        </section>
+            </>
+        // </section>
     );
 }
 
