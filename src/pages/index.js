@@ -7,6 +7,10 @@ import FeatureSection from "components/FeatureSection";
 import { Transition } from "@headlessui/react";
 import CallToAction from "components/CallToAction";
 import DeepformDashboard from "../../public/images/DeepformDashboard.png";
+import TestimonialSection from "components/TestimonialSection";
+import FAQ from "components/FAQ";
+import CTAButtons from "components/atoms/CTAButtons";
+
 function IndexPage(props) {
     return (
         <>
@@ -34,19 +38,7 @@ function IndexPage(props) {
                                 interviews anytime, anywhere, without the hassle
                                 of scheduling or conducting them yourself.
                             </p>
-                            <div className="mt-10 flex items-center justify-center gap-x-6">
-                                <Link href="/dashboard">
-                                    <button className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                        Get started
-                                    </button>
-                                </Link>
-                                <Link href="/about">
-                                    <button className="text-sm font-semibold leading-6 text-gray-900">
-                                        Contact Us{" "}
-                                        <span aria-hidden="true">→</span>
-                                    </button>
-                                </Link>
-                            </div>
+                            <CTAButtons centered={true} />
                         </Transition>
                         <div className="relative overflow-y-hidden pt-16">
                             <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -88,6 +80,8 @@ function IndexPage(props) {
                     />
                 </div> */}
                 <FeatureSection />
+                <TestimonialSection />
+                <FAQ />
                 <CallToAction />
                 {/* <NewsletterSection /> */}
             </div>

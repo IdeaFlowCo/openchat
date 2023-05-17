@@ -135,7 +135,7 @@ export default function Footer() {
             </h2>
             <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32 ">
                 <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-                    <div className="space-y-8">
+                    <div className="space-y-4">
                         {/* <img
                             className="h-7"
                             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -143,7 +143,8 @@ export default function Footer() {
                         /> */}
                         <Logo />
                         <p className="text-sm leading-6 text-gray-600 max-w-[300px]">
-                            Creating a new era of customer empathy with AI.
+                            Building a new era of customer empathy.
+
                         </p>
                         {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (
@@ -282,7 +283,7 @@ export default function Footer() {
                 </div>
                 <div className="mt-8 border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
                     <div className="flex space-x-6 md:order-2">
-                        {navigation.social.map((item) => (
+                        {/* {navigation.social.map((item) => (
                             <a
                                 key={item.name}
                                 href={item.href}
@@ -294,7 +295,7 @@ export default function Footer() {
                                     aria-hidden="true"
                                 />
                             </a>
-                        ))}
+                        ))} */}
                     </div>
                     <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
                         &copy; 2023 Deepform. All rights reserved.

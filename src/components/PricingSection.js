@@ -2,6 +2,7 @@ import { CheckIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useAuth } from "util/auth";
 import FAQ from "./FAQ";
+import TestimonialSection from "./TestimonialSection";
 
 const tiers = [
     {
@@ -168,6 +169,7 @@ export default function PricingSection() {
                 </div>
                 {/* FAQ Section */}
                 <FAQ />
+                <TestimonialSection />
             </div>
         </div>
     );

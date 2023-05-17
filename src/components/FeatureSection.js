@@ -9,7 +9,8 @@ import {
 } from "@heroicons/react/20/solid";
 import AnswerDeepform from "../../public/images/AnswerDeepform.png";
 import SubmissionsDeepform from "../../public/images/SubmissionsDeepform.png";
-import FAQ from "./FAQ";
+import Link from "next/link";
+import CTAButtons from "./atoms/CTAButtons";
 
 const featuresSection1 = [
     {
@@ -111,6 +112,7 @@ export default function FeatureSection() {
                                         </div>
                                     ))}
                                 </dl>
+                                <CTAButtons centered={false} />
                             </div>
                         </div>
                         <img
@@ -159,6 +161,7 @@ export default function FeatureSection() {
                                         </div>
                                     ))}
                                 </dl>
+                                <CTAButtons centered={false} />
                             </div>
                         </div>
                         <div className="flex items-start justify-end lg:order-first">
@@ -172,7 +175,6 @@ export default function FeatureSection() {
                         </div>
                     </div>
                 </div>
-                <FAQ />
             </div>
 
             {/* <div className="bg-transparent py-24">

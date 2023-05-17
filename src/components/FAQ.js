@@ -41,7 +41,7 @@ const faqs = [
 
 function FAQ() {
     return (
-        <div className="mx-auto mt-24 max-w-7xl px-6 sm:mt-56 lg:px-8">
+        <div className="mx-auto my-24 max-w-7xl px-6 lg:px-8">
             <h2 className="font-satoshi text-4xl font-medium leading-10 tracking-tight text-gray-900">
                 Frequently asked questions
             </h2>
