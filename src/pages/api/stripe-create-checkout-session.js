@@ -34,7 +34,7 @@ export default requireAuth(async (req, res) => {
       payment_method_types: ["card"],
       subscription_data: {
         // Add a trial period for this subscription
-        trial_period_days: 14,
+        // trial_period_days: 14,
         // Uncomment to add a coupon code from request body
         //coupon: body.coupon
       },

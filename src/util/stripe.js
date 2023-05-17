@@ -18,6 +18,9 @@ export async function redirectToCheckout(planId) {
     priceId: getStripePriceId(planId),
     successUrl: `${window.location.origin}/dashboard?paid=true`,
     cancelUrl: `${window.location.origin}/pricing`,
+    subscriptionData: {
+      trial_period_days: 0,
+    }
   });
 
   // Ensure if user clicks browser back button from checkout they go to /pricing
