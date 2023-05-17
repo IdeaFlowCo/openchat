@@ -31,9 +31,6 @@ export default function Navbar() {
         return null;
     }
 
-
-
-
     return (
         // <div className="bg-transparent">
         <header className="z-50 relative">
@@ -76,13 +73,13 @@ export default function Navbar() {
                         </button>
                     </Link>
 
-                    {(!auth.user || !auth.user.stripeSubscriptionId) && (
-                        <Link href="/pricing">
-                            <button className="text-sm font-semibold leading-6 text-gray-900">
-                                Pricing
-                            </button>
-                        </Link>
-                    )}
+                    {/* {(!auth.user || !auth.user.stripeSubscriptionId) && ( */}
+                    <Link href="/pricing">
+                        <button className="text-sm font-semibold leading-6 text-gray-900">
+                            Pricing
+                        </button>
+                    </Link>
+                    {/* )} */}
 
                     {auth.user && (
                         <>

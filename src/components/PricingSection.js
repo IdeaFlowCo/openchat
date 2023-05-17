@@ -145,25 +145,49 @@ export default function PricingSection() {
                                     ))}
                                 </ul>
                             </div>
-                            <Link
-                                href={
-                                    auth.user
-                                        ? `/purchase/${tier.id}`
-                                        : `/auth/signup?next=/purchase/${tier.id}`
-                                }
-                            >
-                                <a
-                                    aria-describedby={tier.id}
-                                    className={classNames(
-                                        tier.mostPopular
-                                            ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
-                                            : "text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300",
-                                        "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    )}
+                            {tier?.id === "starter" ? (
+                                <Link
+                                    href={
+                                        auth.user
+                                            ? "/dashboard"
+                                            : "/auth/signup"
+                                    }
                                 >
-                                    Buy plan
-                                </a>
-                            </Link>
+                                    <a
+                                        aria-describedby={tier.id}
+                                        className={classNames(
+                                            tier.mostPopular
+                                                ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
+                                                : "text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300",
+                                            "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        )}
+                                    >
+                                        {auth.user
+                                            ? "Go to dashboard"
+                                            : "Sign up for free"}
+                                    </a>
+                                </Link>
+                            ) : (
+                                <Link
+                                    href={
+                                        auth.user
+                                            ? `/purchase/${tier.id}`
+                                            : `/auth/signup?next=/purchase/${tier.id}`
+                                    }
+                                >
+                                    <a
+                                        aria-describedby={tier.id}
+                                        className={classNames(
+                                            tier.mostPopular
+                                                ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
+                                                : "text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300",
+                                            "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        )}
+                                    >
+                                        Buy plan
+                                    </a>
+                                </Link>
+                            )}
                         </div>
                     ))}
                 </div>
