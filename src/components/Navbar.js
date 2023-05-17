@@ -72,6 +72,13 @@ export default function Navbar() {
                             About
                         </button>
                     </Link>
+                    <a
+                        href="https://deepform.ai/form/36"
+                        target="_blank"
+                        className="text-sm font-semibold leading-6 text-gray-900"
+                    >
+                        Demo Deepform
+                    </a>
 
                     {/* {(!auth.user || !auth.user.stripeSubscriptionId) && ( */}
                     <Link href="/pricing">
@@ -158,14 +165,38 @@ export default function Navbar() {
                                     </button>
                                 </Link>
 
-                                {(!auth.user ||
-                                    !auth.user.stripeSubscriptionId) && (
-                                    <Link href="/pricing">
-                                        <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                                            Pricing
-                                        </button>
-                                    </Link>
-                                )}
+                                <a
+                                    href="https://deepform.ai/form/36"
+                                    target="_blank"
+                                    className="-mx-3 flex justify-start gap-2 items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                                >
+                                    Demo Deepform
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                        className="w-4 h-4 mt-[0.5px]"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z"
+                                            clipRule="evenodd"
+                                        />
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </a>
+
+                                {/* {(!auth.user || !auth.user.stripeSubscriptionId) && ( */}
+                                <Link href="/pricing">
+                                    <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                                        Pricing
+                                    </button>
+                                </Link>
+                                {/* )} */}
 
                                 {auth.user && (
                                     <>
