@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }) {
     return (
         <QueryClientProvider>
             <AuthProvider>
-                {/* <Chat /> */}
+                <Chat />
                 <>
                     {/* <Navbar /> */}
                     <Navbar />
