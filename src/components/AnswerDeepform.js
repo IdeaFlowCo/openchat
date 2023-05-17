@@ -96,8 +96,7 @@ function AnswerDeepform(props) {
 
             const data = await response.json();
             const { text } = data;
-            sendMessage(text);
-            setLoading(false);
+            await sendMessage(text);
             return {
                 blob,
                 text,
