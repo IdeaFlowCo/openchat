@@ -5,6 +5,7 @@ import { useAuth } from "util/auth";
 
 function DashboardHome({ host }) {
     const auth = useAuth();
+    console.log("auth.user", auth.user);
 
     return (
         <section className="py-6">

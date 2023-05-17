@@ -2,28 +2,75 @@ import {
     CloudArrowUpIcon,
     LockClosedIcon,
     ServerIcon,
+    ArrowUpOnSquareStackIcon,
+    MicrophoneIcon,
+    DocumentTextIcon,
+    PencilSquareIcon,
 } from "@heroicons/react/20/solid";
+import AnswerDeepform from "../../public/images/AnswerDeepform.png";
+import SubmissionsDeepform from "../../public/images/SubmissionsDeepform.png";
+import FAQ from "./FAQ";
 
-const features = [
+const featuresSection1 = [
     {
-        name: "Uninterrupted Research",
+        name: "Easy Setup",
         description:
-            "With Deepform, user research never sleeps. Conduct insightful user interviews any time of the day, without the need for manual scheduling.",
+            "Simply create a Deepform and tell the A.I. your research goal.",
         icon: CloudArrowUpIcon,
     },
     {
-        name: "Secure Conversations",
+        name: "Instant Deployment",
         description:
-            "Your users' privacy is our top priority. All conversations are conducted in a secure environment, ensuring data integrity and confidentiality.",
-        icon: LockClosedIcon,
+            "Send a Deepform link to your users and start conducting automated interviews immediately.",
+        icon: ArrowUpOnSquareStackIcon,
     },
     {
-        name: "Insightful Summaries",
-        description:
-            "Deepform does more than transcribe. It analyzes and summarizes the user interview, delivering actionable insights directly to your inbox.",
-        icon: ServerIcon,
+        name: "Text and Voice Interviews",
+        description: "Your users can respond to the A.I. in text or voice.",
+        icon: MicrophoneIcon,
     },
 ];
+
+const featuresSection2 = [
+    {
+        name: "A.I. Summary",
+        description:
+            "Easily get up to speed on key insights, notable remarks, and trends via A.I. summaries.",
+        icon: DocumentTextIcon,
+    },
+    {
+        name: "Full Transcripts",
+        description:
+            "Review full transcripts of every interview, so you can dig deeper into the data.",
+        icon: PencilSquareIcon,
+    },
+    {
+        name: "Cross Interview Analysis",
+        description:
+            "Uncover trends across 1000s of interviews with ease via A.I. analysis.",
+        icon: MicrophoneIcon,
+    },
+];
+
+// const featuresSection3 = [
+//     {
+//         name: "Easy Setup",
+//         description:
+//             "Simply create a Deepform and tell the A.I. your research goal.",
+//         icon: CloudArrowUpIcon,
+//     },
+//     {
+//         name: "Instant Deployment",
+//         description:
+//             "Send a Deepform link to your users and start conducting automated interviews immediately.",
+//         icon: ArrowUpOnSquareStackIcon,
+//     },
+//     {
+//         name: "Text and Voice Interviews",
+//         description: "Your users can respond to the A.I. in text or voice.",
+//         icon: MicrophoneIcon,
+//     },
+// ];
 
 export default function FeatureSection() {
     return (
@@ -34,20 +81,19 @@ export default function FeatureSection() {
                         <div className="lg:pr-8 lg:pt-4">
                             <div className="lg:max-w-lg">
                                 <h2 className="text-base font-semibold leading-7 text-indigo-600">
-                                    Accelerate research
+                                    Collect
                                 </h2>
                                 <p className="font-satoshi mt-2 text-4xl font-medium tracking-tight text-gray-900">
-                                    Continuous User Insights, Simplified
+                                    Automate your insight collection
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                                    Deepform is a next-generation tool that
-                                    revolutionizes user research. Our AI-driven
-                                    solution lets you conduct user interviews
-                                    anytime, anywhere, without the hassle of
-                                    scheduling or conducting them yourself.
+                                    Gather user insights at 100x the speed and a
+                                    fraction of the cost of manual interviews,
+                                    freeing you to do what you're passionate
+                                    about: analyzing and acting on the data.
                                 </p>
                                 <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
-                                    {features.map((feature) => (
+                                    {featuresSection1.map((feature) => (
                                         <div
                                             key={feature.name}
                                             className="relative pl-9"
@@ -68,7 +114,7 @@ export default function FeatureSection() {
                             </div>
                         </div>
                         <img
-                            src="https://tailwindui.com/img/component-images/dark-project-app-screenshot.png"
+                            src={AnswerDeepform.src}
                             alt="Product screenshot"
                             className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
                             width={2432}
@@ -83,20 +129,19 @@ export default function FeatureSection() {
                         <div className="lg:ml-auto lg:pl-4 lg:pt-4">
                             <div className="lg:max-w-lg">
                                 <h2 className="text-base font-semibold leading-7 text-indigo-600">
-                                    Accelerate research
+                                    Analyze
                                 </h2>
                                 <p className="font-satoshi mt-2 text-4xl font-medium tracking-tight text-gray-900">
-                                    Continuous User Insights, Simplified
+                                    Make insight driven decisions
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                                    Deepform is a next-generation tool that
-                                    revolutionizes user research. Our AI-driven
-                                    solution lets you conduct user interviews
-                                    anytime, anywhere, without the hassle of
-                                    scheduling or conducting them yourself.
+                                    After every interview, Deepform presents you
+                                    the data in a simple, easy to understand
+                                    format. Make insight driven decisions with
+                                    confidence.
                                 </p>
                                 <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
-                                    {features.map((feature) => (
+                                    {featuresSection2.map((feature) => (
                                         <div
                                             key={feature.name}
                                             className="relative pl-9"
@@ -118,7 +163,7 @@ export default function FeatureSection() {
                         </div>
                         <div className="flex items-start justify-end lg:order-first">
                             <img
-                                src="https://tailwindui.com/img/component-images/dark-project-app-screenshot.png"
+                                src={SubmissionsDeepform.src}
                                 alt="Product screenshot"
                                 className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem]"
                                 width={2432}
@@ -127,23 +172,25 @@ export default function FeatureSection() {
                         </div>
                     </div>
                 </div>
+                <FAQ />
             </div>
-            <div className="bg-transparent py-24">
+
+            {/* <div className="bg-transparent py-24">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl lg:mx-0">
                         <h2 className="font-satoshi text-4xl font-medium tracking-tight text-gray-900 sm:text-5xl">
-                            Stay on top of customer empathy
+                            Your customers are constantly evolving.
                         </h2>
                         <p className="mt-6 text-lg leading-8 text-gray-600">
-                            Your customers are constantly evolving. Deepform
-                            helps you stay on top of their needs by delivering
-                            actionable insights to your product team on a
-                            continuous basis, 100x faster and cheaper.
+                            Inject Deepforms into every customer touchpoint to
+                            keep up with their changing needs, so you can build
+                            products they love.
                         </p>
                     </div>
                     <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-                        <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-                            {features.map((feature) => (
+                        
+                        <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3"> */}
+            {/* {featuresSection3.map((feature) => (
                                 <div
                                     key={feature.name}
                                     className="flex flex-col"
@@ -162,7 +209,7 @@ export default function FeatureSection() {
                                             {feature.description}
                                         </p>
                                         <p className="mt-6">
-                                            {/* <a
+                                            <a
                                                 href={feature.href}
                                                 className="text-sm font-semibold leading-6 text-indigo-600"
                                             >
@@ -170,15 +217,15 @@ export default function FeatureSection() {
                                                 <span aria-hidden="true">
                                                     →
                                                 </span>
-                                            </a> */}
+                                            </a>
                                         </p>
                                     </dd>
                                 </div>
-                            ))}
-                        </dl>
+                            ))} */}
+            {/* </dl>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 }

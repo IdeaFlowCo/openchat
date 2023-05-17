@@ -110,12 +110,6 @@ const navigation = {
 
 export default function Footer() {
     const router = useRouter();
-    if (
-        router.pathname.startsWith("/form") ||
-        router.pathname.startsWith("/dashboard")
-    ) {
-        return null;
-    }
     const [subscribed, setSubscribed] = useState(false);
     const { handleSubmit, register, errors } = useForm();
 
@@ -127,6 +121,13 @@ export default function Footer() {
         // Subscribe them
         newsletter.subscribe({ email });
     };
+    
+    if (
+        router.pathname.startsWith("/form") ||
+        router.pathname.startsWith("/dashboard")
+    ) {
+        return null;
+    }
     return (
         <footer className="bg-white" aria-labelledby="footer-heading">
             <h2 id="footer-heading" className="sr-only">

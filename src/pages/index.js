@@ -6,6 +6,7 @@ import AbstractBg from "components/atoms/AbstractBg";
 import FeatureSection from "components/FeatureSection";
 import { Transition } from "@headlessui/react";
 import CallToAction from "components/CallToAction";
+import DeepformDashboard from "../../public/images/DeepformDashboard.png";
 function IndexPage(props) {
     return (
         <>
@@ -26,7 +27,7 @@ function IndexPage(props) {
                             className="mx-auto max-w-2xl text-center"
                         >
                             <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
-                                Continuous user research, automated by A.I.
+                                A.I. that conducts user interviews for you
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
                                 Deepform lets you train A.I. to conduct user
@@ -50,7 +51,7 @@ function IndexPage(props) {
                         <div className="relative overflow-y-hidden pt-16">
                             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                                 <img
-                                    src="https://tailwindui.com/img/component-images/project-app-screenshot.png"
+                                    src={DeepformDashboard.src}
                                     alt="App screenshot"
                                     className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
                                     width={2432}

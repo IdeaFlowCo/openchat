@@ -36,6 +36,7 @@
     "react-hot-toast": "^2.4.0",
     "react-query": "3.32.1",
     "stripe": "8.132.0",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss": "3.0.23"
   },
   "scripts": {

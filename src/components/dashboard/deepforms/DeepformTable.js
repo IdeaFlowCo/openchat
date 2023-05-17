@@ -4,6 +4,8 @@ import { useAuth } from "util/auth";
 import { useRouter } from "next/router";
 // import { updateItem, deleteItem, useItemsByOwner } from "util/db";
 import { deleteDeepform, useDeepformsByOwner } from "util/db";
+import { toast } from "react-hot-toast";
+import Link from "next/link";
 
 function DeepformTable({ host }) {
     const auth = useAuth();
@@ -26,17 +28,30 @@ function DeepformTable({ host }) {
             deleteDeepform(id);
         }
     };
-    // const canUseStar =
-    //   auth.user.planIsActive &&
-    //   (auth.user.planId === "pro" || auth.user.planId === "business");
+    const canCreateUnlimitedDeepforms =
+        auth.user.planIsActive &&
+        (auth.user.planId === "pro" || auth.user.planId === "business");
 
-    // const handleStarItem = (item) => {
-    //   if (canUseStar) {
-    //     updateItem(item.id, { featured: !item.featured });
-    //   } else {
-    //     alert("You must upgrade to the pro or business plan to use this feature");
-    //   }
-    // };
+    // If the user is on the free plan, they can only create 2 Deepforms.
+    const handleCreateDeepform = () => {
+        if (canCreateUnlimitedDeepforms || deepforms.length < 2) {
+            setCreatingDeepform(true);
+        } else {
+            toast((t) => (
+                <span className="flex gap-2">
+                    Upgrade to Pro or Business to create more Deepforms.{" "}
+                    <Link href="/pricing">
+                        <button
+                            onClick={() => toast.dismiss(t.id)}
+                            className=" inline-flex justify-center self-end py-2 px-4 w-fit text-sm font-medium rounded-md bg-indigo-600 hover:bg-indigo-500 text-white border border-gray-300"
+                        >
+                            Upgrade
+                        </button>
+                    </Link>
+                </span>
+            ));
+        }
+    };
 
     return (
         <>
@@ -51,7 +66,7 @@ function DeepformTable({ host }) {
                     <span className="text-xl">Your Deepforms</span>
                     <button
                         className="py-2 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded border-0  focus:outline-none"
-                        onClick={() => setCreatingDeepform(true)}
+                        onClick={() => handleCreateDeepform()}
                     >
                         Create Deepform
                     </button>
@@ -83,7 +98,9 @@ function DeepformTable({ host }) {
                                     }
                                     key={index}
                                 >
-                                    <p className="whitespace-nowrap overflow-scroll max-w-[60%] sm:max-w-[50%] xl:max-w-[70%]">{deepform.name}</p>
+                                    <p className="whitespace-nowrap overflow-scroll scrollbar-hide max-w-[60%] sm:max-w-[50%] xl:max-w-[70%]">
+                                        {deepform.name}
+                                    </p>
 
                                     <div className="ml-auto space-x-2">
                                         {/* <button
