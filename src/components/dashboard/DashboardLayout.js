@@ -182,7 +182,7 @@ export default function DashboardLayout({
                                                         )}
                                                     </ul>
                                                 </li>
-                                                <li>
+                                                {/* <li>
                                                     <div className="text-xs font-semibold leading-6 text-gray-400">
                                                         Your teams
                                                     </div>
@@ -229,7 +229,7 @@ export default function DashboardLayout({
                                                             </li>
                                                         ))}
                                                     </ul>
-                                                </li>
+                                                </li> */}
                                                 <li className="mt-auto">
                                                     <Link href="/settings/general">
                                                         <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
@@ -298,7 +298,7 @@ export default function DashboardLayout({
                                         ))}
                                     </ul>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <div className="text-xs font-semibold leading-6 text-gray-400">
                                         {teams.length > 0 ? "Your Teams" : ""}
                                     </div>
@@ -335,7 +335,7 @@ export default function DashboardLayout({
                                             </li>
                                         ))}
                                     </ul>
-                                </li>
+                                </li> */}
                                 <li className="mt-auto">
                                     <Link href="/settings/general">
                                         <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
@@ -376,7 +376,7 @@ export default function DashboardLayout({
                                 method="GET"
                             >
                                 {/* TODO: add search functionality */}
-                                <label
+                                {/* <label
                                     htmlFor="search-field"
                                     className="sr-only"
                                 >
@@ -392,11 +392,11 @@ export default function DashboardLayout({
                                     placeholder="Search..."
                                     type="search"
                                     name="search"
-                                />
+                                /> */}
                             </form>
                             <div className="flex items-center gap-x-4 lg:gap-x-6">
                                 {/* TODO: Notifications */}
-                                <button
+                                {/* <button
                                     type="button"
                                     className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
                                 >
@@ -407,7 +407,7 @@ export default function DashboardLayout({
                                         className="h-6 w-6"
                                         aria-hidden="true"
                                     />
-                                </button>
+                                </button> */}
 
                                 {/* Separator */}
                                 <div
