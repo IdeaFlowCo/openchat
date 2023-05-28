@@ -16,6 +16,7 @@
     "@stripe/stripe-js": "1.11.0",
     "@supabase/supabase-js": "2.15.0",
     "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "0.5.2",
     "analytics": "0.3.1",
     "autoprefixer": "10.4.4",
@@ -44,5 +45,9 @@
     "build": "next build",
     "start": "next start",
     "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe-webhook"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.3.0"
   }
 }

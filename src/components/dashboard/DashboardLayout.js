@@ -23,7 +23,7 @@ import DashboardHome from "./home/DashboardHome";
 
 const navigation = [
     { name: "Home", href: "/dashboard", icon: HomeIcon },
-    { name: "Deepforms", href: "/dashboard/deepforms", icon: FolderIcon },
+    // { name: "Deepforms", href: "/dashboard/deepforms", icon: FolderIcon },
     // { name: "Submissions", href: "", icon: UsersIcon },
     //   { name: 'Calendar', href: '#', icon: CalendarIcon },
     //   { name: 'Documents', href: '#', icon: DocumentDuplicateIcon },

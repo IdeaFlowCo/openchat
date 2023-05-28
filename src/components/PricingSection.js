@@ -71,12 +71,11 @@ export default function PricingSection() {
                         Pricing
                     </h2>
                     <p className="font-satoshi mt-2 text-5xl font-medium tracking-tight text-gray-900 sm:text-6xl">
-                        Get started for free
+                       Cheaper than building the wrong features.
                     </p>
                 </div>
                 <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-                    Automate your user interviews with AI. Get 100x more
-                    customer insights, 100x faster and cheaper.{" "}
+                    Capture, organize, and analyze product feedback with AI. {" "}
                     <span className="text-indigo-600">
                         Money back guarantee if you aren't satisfied.
                     </span>

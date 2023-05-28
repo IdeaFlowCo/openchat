@@ -53,6 +53,160 @@ export async function updateUser(uid, data) {
     return response;
 }
 
+/**** PORTALS ****/
+
+// Fetch portal data
+export function usePortal(id) {
+    return useQuery(
+        ["portal", { id }],
+        () =>
+            supabase
+                .from("portals")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch the singular portal that belongs to an admin
+export function usePortalByAdmin(admin) {
+    return useQuery(
+        ["portal", { admin }],
+        () => 
+            supabase
+                .from("portals")
+                .select()
+                .eq("id", admin.portal_id)
+                .single()
+                .then(handle),
+        { enabled: !!admin }
+    );
+}
+
+// Create a new portal
+export async function createPortal(data) {
+    const response = await supabase
+        .from("portals")
+        .insert([data])
+        .select()
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await client.invalidateQueries(["portals"]);
+    return response;
+}
+
+// Update an existing portal
+export async function updatePortal(id, data) {
+    const response = await supabase
+        .from("portals")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["portal", { id }]),
+        client.invalidateQueries(["portals"]),
+    ]);
+    return response;
+}
+
+// Delete an existing portal
+export async function deletePortal(id) {
+    const response = await supabase
+        .from("portals")
+        .delete()
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["portal", { id }]),
+        client.invalidateQueries(["portals"]),
+    ]);
+    return response;
+}
+
+/**** FEEDBACK ****/
+
+// Fetch feedback data
+export function useFeedback(id) {
+    return useQuery(
+        ["feedback", { id }],
+        () =>
+            supabase
+                .from("feedback")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch all feedback by portal
+export function useFeedbackByPortal(portalId) {
+    return useQuery(
+        ["feedback", { portalId }],
+        () =>
+            supabase
+                .from("feedback")
+                .select()
+                .eq("portal_id", portalId)
+                .order("created_at", { ascending: false })
+                .then(handle),
+        { enabled: !!portalId }
+    );
+}
+
+// Create a new feedback
+export async function createFeedback(data) {
+    const response = await supabase
+        .from("feedback")
+        .insert([data])
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await client.invalidateQueries(["feedback"]);
+    return response;
+}
+
+// Update an existing feedback
+export async function updateFeedback(id, data) {
+    const response = await supabase
+        .from("feedback")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["feedback", { id }]),
+        client.invalidateQueries(["feedback"]),
+    ]);
+    return response;
+}
+
+// Delete an existing feedback
+export async function deleteFeedback(id) {
+    const response = await supabase
+        .from("feedback")
+        .delete()
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["feedback", { id }]),
+        client.invalidateQueries(["feedback"]),
+    ]);
+    return response;
+}
+
+
+
+
+
+
+// Old Deepform Survey Stuff
+
 /**** DEEPFORMS ****/
 /* Example query functions (modify to your needs) */
 

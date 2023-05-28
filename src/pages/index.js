@@ -31,12 +31,11 @@ function IndexPage(props) {
                             className="mx-auto max-w-2xl text-center"
                         >
                             <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
-                                A.I. that conducts user interviews for you
+                                The feedback portal from the future.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Deepform lets you train A.I. to conduct user
-                                interviews anytime, anywhere, without the hassle
-                                of scheduling or conducting them yourself.
+                                Capture, organize, and analyze product feedback
+                                in one place to build better products that your customers love.
                             </p>
                             <CTAButtons centered={true} />
                         </Transition>
@@ -79,9 +78,9 @@ function IndexPage(props) {
                         }}
                     />
                 </div> */}
-                <FeatureSection />
+                {/* <FeatureSection /> */}
                 <TestimonialSection />
-                <FAQ />
+                {/* <FAQ /> */}
                 <CallToAction />
                 {/* <NewsletterSection /> */}
             </div>
