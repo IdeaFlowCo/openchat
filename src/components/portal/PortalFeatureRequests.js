@@ -6,6 +6,7 @@ import {
     ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 import StatusBadge from "components/atoms/StatusBadge";
+import PreviewFeatureRequest from "./PreviewFeatureRequest";
 
 const oldNav = [
     // { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
@@ -122,50 +123,47 @@ export default function PortalFeatureRequests() {
         ```
       */}
             <div className="fixed bottom-0 flex h-[calc(100vh-65px)] w-screen overflow-auto">
-                {/* Static sidebar for desktop */}
-                <div className="fixed hidden h-screen bg-transparent lg:flex lg:w-72 lg:flex-col">
-                    {/* Sidebar component, swap this element with another sidebar if you like */}
-                    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-gray-50 px-6">
-                        <nav className="mt-10 flex flex-1 flex-col">
-                            <ul
-                                role="list"
-                                className="flex flex-1 flex-col gap-y-7"
-                            >
-                                <li>
-                                    <ul role="list" className="-mx-2 space-y-1">
-                                        {oldNav.map((item) => (
-                                            <li key={item.name}>
-                                                <a
-                                                    href={item.href}
+                {/* Sidebar component, swap this element with another sidebar if you like */}
+                <div className="fixed hidden h-screen grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-gray-50 px-6 lg:flex lg:w-52 lg:flex-col xl:w-72">
+                    <nav className="mt-10 flex flex-1 flex-col">
+                        <ul
+                            role="list"
+                            className="flex flex-1 flex-col gap-y-7"
+                        >
+                            <li>
+                                <ul role="list" className="-mx-2 space-y-1">
+                                    {oldNav.map((item) => (
+                                        <li key={item.name}>
+                                            <a
+                                                href={item.href}
+                                                className={classNames(
+                                                    item.current
+                                                        ? "bg-gray-50 text-indigo-600"
+                                                        : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                                )}
+                                            >
+                                                <item.icon
                                                     className={classNames(
                                                         item.current
-                                                            ? "bg-gray-50 text-indigo-600"
-                                                            : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                                                        "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                                            ? "text-indigo-600"
+                                                            : "text-gray-400 group-hover:text-indigo-600",
+                                                        "h-6 w-6 shrink-0"
                                                     )}
-                                                >
-                                                    <item.icon
-                                                        className={classNames(
-                                                            item.current
-                                                                ? "text-indigo-600"
-                                                                : "text-gray-400 group-hover:text-indigo-600",
-                                                            "h-6 w-6 shrink-0"
-                                                        )}
-                                                        aria-hidden="true"
-                                                    />
-                                                    {item.name}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+                                                    aria-hidden="true"
+                                                />
+                                                {item.name}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <main className="flex h-fit w-screen items-center justify-center py-6 px-4 sm:py-8 lg:ml-72 lg:py-10">
-                    <section className="flex w-full max-w-3xl flex-col lg:w-4/6 gap-12">
-                        <div className="flex justify-between ">
+                <main className="flex h-fit w-screen items-center justify-center py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72">
+                    <section className="flex w-full max-w-3xl flex-col gap-12 lg:w-4/6 ">
+                        <div className="flex justify-between">
                             <div className="flex flex-col gap-4">
                                 <h1 className="font-satoshi text-3xl font-medium tracking-tight text-gray-900 md:text-4xl">
                                     Deepform Feature Requests
@@ -176,7 +174,7 @@ export default function PortalFeatureRequests() {
                             </div>
                             <button
                                 type="button"
-                                className="text-md absolute bottom-5 right-5 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
+                                className="text-md fixed bottom-5 right-5 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
                             >
                                 <PlusSmallIcon className="-ml-2 h-5 w-5" />
                                 Add an Idea
@@ -184,62 +182,11 @@ export default function PortalFeatureRequests() {
                         </div>
                         <div>
                             {requests.map((request) => (
-                                <Fragment key={request.id}>
-                                    <div className=" first:border-t flex w-full gap-5 border-b py-8 px-6 hover:bg-gray-50/80 transition-all hover:cursor-pointer">
-                                        <button className=" flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2">
-                                            <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
-                                            <h1 className=" text-xl">
-                                                {request.votes}
-                                            </h1>
-                                        </button>
-                                        <div className="flex flex-grow flex-col">
-                                            <h1 className="text-lg font-medium line-clamp-1">
-                                                {request.title}
-                                            </h1>
-                                            <p className="mt-1 text-sm font-light text-gray-500 line-clamp-2">
-                                                {request.description}
-                                            </p>
-                                            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                                                <div className="flex flex-wrap items-center justify-start gap-2">
-                                                    <p className="text-[11px] font-medium text-gray-600">
-                                                        {request.fullName}
-                                                    </p>
-                                                    <p className="text-lg font-bold">
-                                                        ·
-                                                    </p>
-                                                    <p className="text-[11px] font-light text-gray-600">
-                                                        {request.date}
-                                                    </p>
-                                                    <p className="flex gap-2">
-                                                        {request.topics.map(
-                                                            (topic, index) => (
-                                                                <Fragment
-                                                                    key={topic}
-                                                                >
-                                                                    <p className="text-[11px] font-light text-gray-600">
-                                                                        #{topic}
-                                                                    </p>
-                                                                </Fragment>
-                                                            )
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <StatusBadge
-                                                    portalData={portalData}
-                                                    currentStatus={
-                                                        request.status
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
-                                            <ChatBubbleLeftIcon className="h-5 w-5   font-extralight text-gray-400" />
-                                            <p className="text-[11px] font-light text-gray-500">
-                                                {request.comments}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Fragment>
+                                <PreviewFeatureRequest
+                                    key={request.id}
+                                    request={request}
+                                    portalData={portalData}
+                                />
                             ))}
                         </div>
                     </section>

@@ -12,7 +12,7 @@ function PublicPortalPage(props) {
     const { portal: portalId } = router.query;
 
     const { data: portalData, status: portalStatus } = usePortal(portalId);
-    console.log("portalData", portalData);
+    // console.log("portalData", portalData);
 
     // If this Deepform doesn't exist, redirect to dashboard
     if (portalStatus && portalStatus === "error") {
