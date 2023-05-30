@@ -74,7 +74,7 @@ export function usePortal(id) {
 export function usePortalByAdmin(admin) {
     return useQuery(
         ["portal", { admin }],
-        () => 
+        () =>
             supabase
                 .from("portals")
                 .select()
@@ -132,7 +132,7 @@ export async function deletePortal(id) {
 // Fetch feedback data
 export function useFeedback(id) {
     return useQuery(
-        ["feedback", { id }],
+        ["singleFeedback", { id }],
         () =>
             supabase
                 .from("feedback")
@@ -151,7 +151,12 @@ export function useFeedbackByPortal(portalId) {
         () =>
             supabase
                 .from("feedback")
-                .select()
+                .select(
+                    `*,
+                    users("*"),
+                    upvotes("*")
+                    `
+                )
                 .eq("portal_id", portalId)
                 .order("created_at", { ascending: false })
                 .then(handle),
@@ -179,7 +184,7 @@ export async function updateFeedback(id, data) {
         .then(handle);
     // Invalidate and refetch queries that could have old data
     await Promise.all([
-        client.invalidateQueries(["feedback", { id }]),
+        client.invalidateQueries(["singleFeedback", { id }]),
         client.invalidateQueries(["feedback"]),
     ]);
     return response;
@@ -194,13 +199,91 @@ export async function deleteFeedback(id) {
         .then(handle);
     // Invalidate and refetch queries that could have old data
     await Promise.all([
-        client.invalidateQueries(["feedback", { id }]),
+        client.invalidateQueries(["singleFeedback", { id }]),
         client.invalidateQueries(["feedback"]),
     ]);
     return response;
 }
 
 
+// /**** UPVOTES ****/
+
+// Fetch upvote data
+export function useUpvote(id) {
+    return useQuery(
+        ["upvote", { id }],
+        () =>
+            supabase
+                .from("upvotes")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch all upvotes by feedback
+export function useUpvotesByFeedback(feedbackId) {
+    return useQuery(
+        ["upvotes", { feedbackId }],
+        () =>
+            supabase
+                .from("upvotes")
+                .select(`*, users ("*")`)
+                .eq("feedback_id", feedbackId)
+                .order("created_at", { ascending: false })
+                .then(handle),
+        { enabled: !!feedbackId }
+    );
+}
+
+// Create a new upvote
+export async function createUpvote(data) {
+    const response = await supabase
+        .from("upvotes")
+        .insert([data])
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["upvotes"]),
+        client.invalidateQueries(["singleFeedback"], { id: data.feedback_id }),
+        client.invalidateQueries(["feedback"]),
+    ]);
+    return response;
+}
+
+// Update an existing upvote
+export async function updateUpvote(id, data) {
+    const response = await supabase
+        .from("upvotes")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["upvote", { id }]),
+        client.invalidateQueries(["upvotes"]),
+    ]);
+    return response;
+}
+
+// Delete an existing upvote
+export async function deleteUpvote(data) {
+    const response = await supabase
+        .from("upvotes")
+        .delete()
+        .eq("id", data.upvote_id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["upvote", { id: data.upvote_id }]),
+        client.invalidateQueries(["upvotes"]),
+        client.invalidateQueries(["singleFeedback"], { id: data.feedback_id }),
+        client.invalidateQueries(["feedback"]),
+    ]);
+    return response;
+}
 
 
 

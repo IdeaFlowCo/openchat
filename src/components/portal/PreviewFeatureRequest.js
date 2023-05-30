@@ -8,6 +8,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import StatusBadge from "components/atoms/StatusBadge";
+import { useAuth } from "util/auth";
+import { createUpvote, deleteUpvote } from "util/db";
 
 const comments = [
     {
@@ -33,26 +35,34 @@ const comments = [
     },
 ];
 
-function PreviewFeatureRequest({ request, portalData }) {
-    const [votes, setVotes] = useState(request.votes);
-    const [upvoted, setUpvoted] = useState(false);
+function PreviewFeatureRequest({ singleFeedback, portalData }) {
+    const auth = useAuth();
     const [open, setOpen] = useState(false);
-    const openModal = () => {
-        console.log("open modal");
-    };
-
+    console.log("singleFeedback", singleFeedback);
+    console.log("portalData", portalData);
     const handleClickVote = (e) => {
         e.stopPropagation();
-        if (upvoted) {
-            setVotes(votes - 1);
-            setUpvoted(false);
-            return;
+        const authUserUpvote = singleFeedback.upvotes.find(
+            (upvote) => upvote.voter === auth.user.uid
+        );
+        if (
+            authUserUpvote
+        ) {
+            console.log("authUserUpvote found", authUserUpvote);
+            deleteUpvote({
+                feedback_id: singleFeedback.id,
+                upvote_id: authUserUpvote.id,
+            });
+        } else {
+            console.log("not found");
+            createUpvote({
+                feedback_id: singleFeedback.id,
+                voter: auth.user.uid,
+            });
         }
-        setVotes(votes + 1);
-        setUpvoted(true);
     };
     return (
-        <Fragment key={request.id}>
+        <Fragment key={singleFeedback.id}>
             <div
                 onClick={() => setOpen(true)}
                 className=" flex w-full gap-5 border-b py-8 px-6 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80"
@@ -62,28 +72,30 @@ function PreviewFeatureRequest({ request, portalData }) {
                     className="z-50 flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
                 >
                     <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
-                    <h1 className=" text-xl">{votes}</h1>
+                    <h1 className=" text-xl">
+                        {singleFeedback.upvotes.length}
+                    </h1>
                 </button>
                 <div className="flex flex-grow flex-col">
                     <h1 className="text-lg font-medium line-clamp-1">
-                        {request.title}
+                        {singleFeedback.title}
                     </h1>
                     <p className="mt-1 text-sm font-light text-gray-500 line-clamp-2">
-                        {request.description}
+                        {singleFeedback.description}
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center justify-start gap-2">
                             <p className="text-[11px] font-medium text-gray-600">
-                                {request.fullName}
+                                {singleFeedback.users.name}
                             </p>
                             <p className="text-lg font-bold">·</p>
                             <p className="text-[11px] font-light text-gray-600">
-                                {request.date}
+                                {singleFeedback.date}
                             </p>
                             <div className="flex gap-2">
-                                {request.topics.map((topic, index) => (
+                                {singleFeedback.topics.map((topic, index) => (
                                     <Fragment key={index}>
-                                        <p className="text-[11px] font-light text-gray-600">
+                                        <p className="whitespace-nowrap text-[11px] font-light text-gray-600">
                                             #{topic}
                                         </p>
                                     </Fragment>
@@ -92,14 +104,14 @@ function PreviewFeatureRequest({ request, portalData }) {
                         </div>
                         <StatusBadge
                             portalData={portalData}
-                            currentStatus={request.status}
+                            currentStatus={singleFeedback.status}
                         />
                     </div>
                 </div>
                 <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
                     <ChatBubbleLeftIcon className="h-5 w-5 font-extralight text-gray-400" />
                     <p className="text-[11px] font-light text-gray-500">
-                        {request.comments}
+                        {singleFeedback.comments}
                     </p>
                 </div>
             </div>
@@ -153,7 +165,7 @@ function PreviewFeatureRequest({ request, portalData }) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="relative -mt-3 flex flex-1 flex-col gap-4 px-4 sm:px-6">
+                                            <div className="relative -mt-3 flex flex-1 flex-col gap-4 px-4 sm:px-10">
                                                 {/* CONTENT OF SLIDEOVER */}
                                                 <div className=" flex w-full gap-5 py-8 px-6 transition-all">
                                                     <button
@@ -164,23 +176,31 @@ function PreviewFeatureRequest({ request, portalData }) {
                                                     >
                                                         <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
                                                         <h1 className=" text-xl">
-                                                            {votes}
+                                                            {
+                                                                singleFeedback
+                                                                    .upvotes
+                                                                    .length
+                                                            }
                                                         </h1>
                                                     </button>
                                                     <div className="flex flex-grow flex-col">
                                                         <h1 className="text-lg font-medium">
-                                                            {request.title}
+                                                            {
+                                                                singleFeedback.title
+                                                            }
                                                         </h1>
                                                         <p className="mt-1 text-sm font-light text-gray-500">
                                                             {
-                                                                request.description
+                                                                singleFeedback.description
                                                             }
                                                         </p>
                                                         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                                                             <div className="flex flex-wrap items-center justify-start gap-2">
                                                                 <p className="text-[11px] font-medium text-gray-600">
                                                                     {
-                                                                        request.fullName
+                                                                        singleFeedback
+                                                                            .users
+                                                                            .name
                                                                     }
                                                                 </p>
                                                                 <p className="text-lg font-bold">
@@ -188,11 +208,11 @@ function PreviewFeatureRequest({ request, portalData }) {
                                                                 </p>
                                                                 <p className="text-[11px] font-light text-gray-600">
                                                                     {
-                                                                        request.date
+                                                                        singleFeedback.date
                                                                     }
                                                                 </p>
                                                                 <div className="flex gap-2">
-                                                                    {request.topics.map(
+                                                                    {singleFeedback.topics.map(
                                                                         (
                                                                             topic,
                                                                             index
@@ -218,7 +238,7 @@ function PreviewFeatureRequest({ request, portalData }) {
                                                                     portalData
                                                                 }
                                                                 currentStatus={
-                                                                    request.status
+                                                                    singleFeedback.status
                                                                 }
                                                             />
                                                         </div>
@@ -323,7 +343,7 @@ function PreviewFeatureRequest({ request, portalData }) {
                                                                     }`}
                                                                 >
                                                                     {
-                                                                        request.comments
+                                                                        singleFeedback.comments
                                                                     }{" "}
                                                                     Comments
                                                                 </button>
@@ -453,7 +473,7 @@ function PreviewFeatureRequest({ request, portalData }) {
                                                                             key={
                                                                                 comment.id
                                                                             }
-                                                                            className="flex space-x-3 justify-start items-center"
+                                                                            className="flex items-center justify-start space-x-3"
                                                                         >
                                                                             <div className="flex-shrink-0">
                                                                                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-300 bg-indigo-100">

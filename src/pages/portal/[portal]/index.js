@@ -23,7 +23,7 @@ function PublicPortalPage(props) {
         <>
             <Meta title={"Feedback Portal"} />
             <PortalLayout portalId={portalData?.id} />
-            <PortalFeatureRequests />
+            <PortalFeatureRequests portalData={portalData} />
         </>
     );
 }

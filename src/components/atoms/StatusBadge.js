@@ -6,14 +6,17 @@ function StatusBadge({ portalData, currentStatus }) {
     const [borderColor, setBorderColor] = useState("border-gray-500");
 
     useEffect(() => {
-        const status = portalData.statuses.find(
-            (status) => status.name === currentStatus
-        );
-        setBackgroundColor(status.backgroundColor);
-        setTextColor(status.textColor);
-        setBorderColor(status.borderColor);
-    }, [currentStatus]);
+        if (portalData && currentStatus) {
+            const status = portalData.statuses.find(
+                (status) => status.name === currentStatus
+            );
 
+            setBackgroundColor(status.backgroundColor);
+            setTextColor(status.textColor);
+            setBorderColor(status.borderColor);
+        }
+    }, [currentStatus, portalData]);
+    if (!currentStatus) return null;
     return (
         <p
             className={

@@ -7,6 +7,8 @@ import {
 } from "@heroicons/react/24/outline";
 import StatusBadge from "components/atoms/StatusBadge";
 import PreviewFeatureRequest from "./PreviewFeatureRequest";
+import AddIdea from "./AddIdea";
+import { useFeedbackByPortal } from "util/db";
 
 const oldNav = [
     // { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
@@ -64,7 +66,7 @@ const requests = [
     },
 ];
 
-const portalData = {
+const portalDataTest = {
     id: "1",
     createdAt: "2021-05-24T00:00:00.000Z",
     statuses: [
@@ -111,7 +113,11 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function PortalFeatureRequests() {
+export default function PortalFeatureRequests({ portalData }) {
+    const { data: feedback, status: feedbackStatus } = useFeedbackByPortal(
+        portalData?.id
+    );
+    // console.log("feedback", feedback)
     return (
         <>
             {/*
@@ -172,19 +178,13 @@ export default function PortalFeatureRequests() {
                                     Feature suggestions for Deepform 💡
                                 </p>
                             </div>
-                            <button
-                                type="button"
-                                className="text-md fixed bottom-5 right-5 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
-                            >
-                                <PlusSmallIcon className="-ml-2 h-5 w-5" />
-                                Add an Idea
-                            </button>
+                            <AddIdea portalId={portalData?.id} />
                         </div>
                         <div>
-                            {requests.map((request) => (
+                            {feedback?.map((singleFeedback) => (
                                 <PreviewFeatureRequest
-                                    key={request.id}
-                                    request={request}
+                                    key={singleFeedback.id}
+                                    singleFeedback={singleFeedback}
                                     portalData={portalData}
                                 />
                             ))}
