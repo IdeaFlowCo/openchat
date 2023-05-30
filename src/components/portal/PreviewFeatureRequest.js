@@ -86,14 +86,14 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center justify-start gap-2">
                             <p className="text-[11px] font-medium text-gray-600">
-                                {singleFeedback.users.name}
+                                {singleFeedback.users?.name}
                             </p>
                             <p className="text-lg font-bold">·</p>
                             <p className="text-[11px] font-light text-gray-600">
                                 {singleFeedback.date}
                             </p>
                             <div className="flex gap-2">
-                                {singleFeedback.topics.map((topic, index) => (
+                                {singleFeedback.topics?.map((topic, index) => (
                                     <Fragment key={index}>
                                         <p className="whitespace-nowrap text-[11px] font-light text-gray-600">
                                             #{topic}
@@ -178,8 +178,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                         <h1 className=" text-xl">
                                                             {
                                                                 singleFeedback
-                                                                    .upvotes
-                                                                    .length
+                                                                    .upvotes?.length
                                                             }
                                                         </h1>
                                                     </button>
@@ -199,8 +198,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                                 <p className="text-[11px] font-medium text-gray-600">
                                                                     {
                                                                         singleFeedback
-                                                                            .users
-                                                                            .name
+                                                                            .users?.name
                                                                     }
                                                                 </p>
                                                                 <p className="text-lg font-bold">

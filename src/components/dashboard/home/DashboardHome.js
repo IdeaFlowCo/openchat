@@ -15,7 +15,7 @@ function DashboardHome({ host }) {
     const handleCreatePortal = async () => {
         const portal = await createPortal({});
         if (portal.length === 0) {
-            alert("Error creating portal");
+        alert("Error creating portal");
             return;
         }
         await updateUser(auth.user.uid, { portal_id: portal[0].id });
@@ -66,7 +66,7 @@ function DashboardHome({ host }) {
                             </div>
                         </div>
                     ) : (
-                        <Link href={`/portal/${portalData.id}`}>
+                        <Link href={`/portal/${portalData?.id}`}>
                             <button className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                 Go to Portal
                             </button>
