@@ -118,6 +118,7 @@ export default function PortalFeatureRequests({ portalData }) {
         portalData?.id
     );
     console.log("feedback", feedback)
+
     return (
         <>
             {/*

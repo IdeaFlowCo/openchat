@@ -7,15 +7,17 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 
 function DashboardHome({ host }) {
     const auth = useAuth();
-    // console.log("auth.user", auth.user);
+    console.log("auth.user", auth.user);
     const { data: portalData, status: portalStatus } = usePortal(
         auth.user.portal_id
     );
 
+    console.log("portalData in DashboardHome", portalData);
+
     const handleCreatePortal = async () => {
         const portal = await createPortal({});
         if (portal.length === 0) {
-        alert("Error creating portal");
+            alert("Error creating portal");
             return;
         }
         await updateUser(auth.user.uid, { portal_id: portal[0].id });
@@ -25,8 +27,8 @@ function DashboardHome({ host }) {
         <section className="py-6">
             <div className="container mx-auto">
                 <div className="flex flex-wrap">
-                    {portalData === null ? (
-                        <div className="flex justify-center items center p-4 w-full">
+                    {portalData === undefined || portalData === null ? (
+                        <div className="items center flex w-full justify-center p-4">
                             <div className="text-center">
                                 <svg
                                     className="mx-auto h-12 w-12 text-gray-400"

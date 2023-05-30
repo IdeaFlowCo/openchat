@@ -153,8 +153,12 @@ export function useFeedbackByPortal(portalId) {
                 .from("feedback")
                 .select(
                     `*,
-                    users("*"),
-                    upvotes("*")
+                    users (
+                        "*"
+                    ),
+                    upvotes (
+                        "*"
+                    )
                     `
                 )
                 .eq("portal_id", portalId)
@@ -205,7 +209,6 @@ export async function deleteFeedback(id) {
     return response;
 }
 
-
 // /**** UPVOTES ****/
 
 // Fetch upvote data
@@ -240,10 +243,7 @@ export function useUpvotesByFeedback(feedbackId) {
 
 // Create a new upvote
 export async function createUpvote(data) {
-    const response = await supabase
-        .from("upvotes")
-        .insert([data])
-        .then(handle);
+    const response = await supabase.from("upvotes").insert([data]).then(handle);
     // Invalidate and refetch queries that could have old data
     await Promise.all([
         client.invalidateQueries(["upvotes"]),
@@ -284,9 +284,6 @@ export async function deleteUpvote(data) {
     ]);
     return response;
 }
-
-
-
 
 // Old Deepform Survey Stuff
 

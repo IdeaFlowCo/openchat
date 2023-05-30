@@ -9,7 +9,7 @@ import {
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import StatusBadge from "components/atoms/StatusBadge";
 import { useAuth } from "util/auth";
-import { createUpvote, deleteUpvote } from "util/db";
+import { createUpvote, deleteUpvote, useUpvotesByFeedback } from "util/db";
 
 const comments = [
     {
@@ -40,14 +40,16 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
     const [open, setOpen] = useState(false);
     console.log("singleFeedback", singleFeedback);
     console.log("portalData", portalData);
+    const { data: upvotesData, status: upvotesStatus } = useUpvotesByFeedback(
+        singleFeedback.id
+    );
+    console.log("upvotesData", upvotesData);
     const handleClickVote = (e) => {
         e.stopPropagation();
         const authUserUpvote = singleFeedback.upvotes.find(
             (upvote) => upvote.voter === auth.user.uid
         );
-        if (
-            authUserUpvote
-        ) {
+        if (authUserUpvote) {
             console.log("authUserUpvote found", authUserUpvote);
             deleteUpvote({
                 feedback_id: singleFeedback.id,
@@ -178,7 +180,8 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                         <h1 className=" text-xl">
                                                             {
                                                                 singleFeedback
-                                                                    .upvotes?.length
+                                                                    .upvotes
+                                                                    ?.length
                                                             }
                                                         </h1>
                                                     </button>
@@ -198,7 +201,8 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                                 <p className="text-[11px] font-medium text-gray-600">
                                                                     {
                                                                         singleFeedback
-                                                                            .users?.name
+                                                                            .users
+                                                                            ?.name
                                                                     }
                                                                 </p>
                                                                 <p className="text-lg font-bold">
@@ -333,7 +337,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                         <Tab className="outline-none">
                                                             {({ selected }) => (
                                                                 /* Use the `selected` state to conditionally style the selected tab. */
-                                                                <button
+                                                                <div
                                                                     className={`text-sm font-light ${
                                                                         selected
                                                                             ? " text-indigo-600"
@@ -344,13 +348,13 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                                         singleFeedback.comments
                                                                     }{" "}
                                                                     Comments
-                                                                </button>
+                                                                </div>
                                                             )}
                                                         </Tab>
                                                         <Tab className="outline-none">
                                                             {({ selected }) => (
                                                                 /* Use the `selected` state to conditionally style the selected tab. */
-                                                                <button
+                                                                <div
                                                                     className={`text-sm font-light ring-0 focus:outline-none ${
                                                                         selected
                                                                             ? " text-indigo-600"
@@ -358,7 +362,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                                     }`}
                                                                 >
                                                                     Voters
-                                                                </button>
+                                                                </div>
                                                             )}
                                                         </Tab>
                                                     </Tab.List>
@@ -463,20 +467,20 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                         </Tab.Panel>
                                                         <Tab.Panel>
                                                             <div className="mt-5 space-y-6">
-                                                                {comments.map(
+                                                                {upvotesData?.map(
                                                                     (
-                                                                        comment
+                                                                        upvote
                                                                     ) => (
                                                                         <div
                                                                             key={
-                                                                                comment.id
+                                                                                upvote.id
                                                                             }
                                                                             className="flex items-center justify-start space-x-3"
                                                                         >
                                                                             <div className="flex-shrink-0">
                                                                                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-300 bg-indigo-100">
                                                                                     <h1 className="text-indigo-500 ">
-                                                                                        {comment.fullName.charAt(
+                                                                                        {upvote.users?.name.charAt(
                                                                                             0
                                                                                         )}
                                                                                     </h1>
@@ -490,7 +494,8 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                                                             className="font-medium text-gray-900"
                                                                                         >
                                                                                             {
-                                                                                                comment.fullName
+                                                                                                upvote
+                                                                                                    .users?.name
                                                                                             }
                                                                                         </a>
                                                                                     </div>
