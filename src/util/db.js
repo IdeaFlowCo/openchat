@@ -285,6 +285,187 @@ export async function deleteUpvote(data) {
     return response;
 }
 
+/**** COMMENTS ****/
+
+// Fetch comment data
+export function useComment(id) {
+    return useQuery(
+        ["comment", { id }],
+        () =>
+            supabase
+                .from("comments")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch all comments by feedback
+export function useCommentsByFeedback(feedbackId) {
+    return useQuery(
+        ["comments", { feedbackId }],
+        () =>
+            supabase
+                .from("comments")
+                .select(`*, users ("*")`)
+                .eq("feedback_id", feedbackId)
+                .filter("parent_comment_id", "is", null)
+                .order("created_at", { ascending: false })
+                .then(handle),
+        { enabled: !!feedbackId }
+    );
+}
+
+// Fetch count of replies for parent_comment_id TODO: IDK why this doesn't work
+// export function useRepliesCount(parentCommentId) {
+//     return useQuery(
+//         ["repliesCount", { parentCommentId }],
+//         () =>
+//             supabase
+//                 .from("comments")
+//                 .select("*", { count: "exact", head: true })
+//                 .eq("parent_comment_id", parentCommentId)
+//                 .then(handle)
+//         // { enabled: !!parentCommentId }
+//     );
+// }
+
+// Fetch all comments by parent_comment_id
+export function useCommentsByParentComment(parentCommentId) {
+    return useQuery(
+        ["replies", { parentCommentId }],
+        () =>
+            supabase
+                .from("comments")
+                .select(`*, users ("*")`)
+                .eq("parent_comment_id", parentCommentId)
+                .order("created_at", { ascending: true })
+                .then(handle),
+        { enabled: !!parentCommentId }
+    );
+}
+
+// Create a new comment
+export async function createComment(data) {
+    const response = await supabase
+        .from("comments")
+        .insert([data])
+        .select()
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([client.invalidateQueries(["comments"]), 
+    client.invalidateQueries(["replies"], { parentCommentId: data.parent_comment_id})
+]);
+
+    return response;
+}
+
+// Update an existing comment
+export async function updateComment(id, data) {
+    const response = await supabase
+        .from("comments")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["comment", { id }]),
+        client.invalidateQueries(["comments"]),
+    ]);
+    return response;
+}
+
+// Delete an existing comment
+export async function deleteComment(data) {
+    const response = await supabase
+        .from("comments")
+        .delete()
+        .eq("id", data.comment_id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["comment", { id: data.comment_id }]),
+        client.invalidateQueries(["comments"]),
+    ]);
+    return response;
+}
+
+/**** COMMENT_LIKES ****/
+
+// Fetch commentlike data
+export function useCommentLike(id) {
+    return useQuery(
+        ["commentLike", { id }],
+        () =>
+            supabase
+                .from("commentLikes")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch all commentLikes by comment
+export function useCommentLikesByComment(commentId) {
+    return useQuery(
+        ["commentLikes", { commentId }],
+        () =>
+            supabase
+                .from("commentLikes")
+                .select(`*, users ("*")`)
+                .eq("comment_id", commentId)
+                .order("created_at", { ascending: false })
+                .then(handle),
+        { enabled: !!commentId }
+    );
+}
+
+// Create a new commentLike
+export async function createCommentLike(data) {
+    const response = await supabase
+        .from("commentLikes")
+        .insert([data])
+        .select()
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([client.invalidateQueries(["commentLikes"])]);
+    return response;
+}
+
+// Update an existing commentLike
+export async function updateCommentLike(id, data) {
+    const response = await supabase
+        .from("commentLikes")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["commentLike", { id }]),
+        client.invalidateQueries(["commentLikes"]),
+    ]);
+    return response;
+}
+
+// Delete an existing commentLike
+export async function deleteCommentLike(data) {
+    const response = await supabase
+        .from("commentLikes")
+        .delete()
+        .eq("id", data.commentLike_id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["commentLike", { id: data.commentLike_id }]),
+        client.invalidateQueries(["commentLikes"]),
+    ]);
+    return response;
+}
+
 // Old Deepform Survey Stuff
 
 /**** DEEPFORMS ****/

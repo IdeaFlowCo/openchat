@@ -117,7 +117,7 @@ export default function PortalFeatureRequests({ portalData }) {
     const { data: feedback, status: feedbackStatus } = useFeedbackByPortal(
         portalData?.id
     );
-    console.log("feedback", feedback)
+    // console.log("feedback", feedback)
 
     return (
         <>
