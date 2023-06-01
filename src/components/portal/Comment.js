@@ -11,7 +11,7 @@ import {
 import { formatDateString } from "./PreviewFeatureRequest";
 import Replies from "./Replies";
 
-function Comment({ comment, isReply = false }) {
+function Comment({ comment, isReply = false, checkAuth }) {
     const auth = useAuth();
     const [openReplies, setOpenReplies] = useState(false);
     const [scrollToReply, setScrollToReply] = useState(false);
@@ -21,6 +21,10 @@ function Comment({ comment, isReply = false }) {
         useCommentsByParentComment(comment.id);
 
     const handleThumbsUpComment = async () => {
+        // Check if user is logged in. If they aren't, show the AuthModal.
+        const isLoggedIn = checkAuth();
+        if (!isLoggedIn) return;
+
         const authUserCommentLike = commentLikesData?.find(
             (commentLike) => commentLike.liked_by === auth.user.uid
         );
@@ -115,7 +119,7 @@ function Comment({ comment, isReply = false }) {
                 {openReplies ? (
                     <div>
                         <button
-                            className="mb-4 text-[11px] text-indigo-600"
+                            className="mb-5 text-[11px] text-indigo-600"
                             onClick={() => setOpenReplies(false)}
                         >
                             <span className="mr-2">⏷</span>Hide{" "}
@@ -125,6 +129,7 @@ function Comment({ comment, isReply = false }) {
                             commentId={comment.id}
                             repliesData={repliesData}
                             feedbackId={comment.feedback_id}
+                            checkAuth={checkAuth}
                         />
                     </div>
                 ) : (

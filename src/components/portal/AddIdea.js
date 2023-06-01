@@ -1,4 +1,4 @@
-import { Fragment, useState, useRef } from "react";
+import { Fragment, useState, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
     PlusSmallIcon,
@@ -20,18 +20,27 @@ const topics = [
     "Mobile 📱",
     "Customer Support 🙋‍♀️",
     "Internal Tooling ⚙️",
-    ];
-function AddIdea({ portalId }) {
+];
+function AddIdea({ portalId, checkAuth }) {
     const auth = useAuth();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [failedSubmitNoAuth, setFailedSubmitNoAuth] = useState(false);
     const [formAlert, setFormAlert] = useState(null);
     const cancelButtonRef = useRef(null);
 
     const { register, handleSubmit, errors } = useForm();
 
     const onSubmit = (data) => {
+        // Check if user is logged in. If they aren't, show the AuthModal.
+        const isLoggedIn = checkAuth();
+        if (!isLoggedIn) {
+            setFailedSubmitNoAuth(true);
+            return;
+        }
+
         setLoading(true);
+
         // console.log("data", data);
         const query = createFeedback({
             creator: auth.user.uid,
@@ -53,6 +62,18 @@ function AddIdea({ portalId }) {
                 });
             });
     };
+
+    useEffect(() => {
+        if (auth.user && failedSubmitNoAuth) {
+            console.log("helllllo");
+            setFailedSubmitNoAuth(false);
+            document
+                .getElementById("addIdeaForm")
+                .dispatchEvent(
+                    new Event("submit", { cancelable: true, bubbles: true })
+                );
+        }
+    }, [auth.user]);
     return (
         <div>
             <button
@@ -127,6 +148,7 @@ function AddIdea({ portalId }) {
                                                     onSubmit={handleSubmit(
                                                         onSubmit
                                                     )}
+                                                    id={`addIdeaForm`}
                                                     className="flex flex-col gap-4 "
                                                 >
                                                     <div className="flex flex-col gap-4">
@@ -218,7 +240,6 @@ function AddIdea({ portalId }) {
                                                                             {
                                                                                 topic
                                                                             }
-                                                                            
                                                                         </label>
                                                                     </div>
                                                                 )

@@ -13,6 +13,7 @@ function AuthPage(props) {
         type={router.query.type}
         providers={["google", "facebook", "twitter"]}
         afterAuthPath={router.query.next || "/dashboard"}
+        redirect={true}
       />
     </>
   );

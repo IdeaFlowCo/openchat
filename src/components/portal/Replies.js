@@ -3,12 +3,16 @@ import { useCommentsByParentComment, createComment } from "util/db";
 import Comment from "./Comment";
 import { useAuth } from "util/auth";
 
-function Replies({ commentId, repliesData, feedbackId }) {
+function Replies({ commentId, repliesData, feedbackId, checkAuth }) {
     const auth = useAuth();
     const [usersReply, setUsersReply] = useState("");
     const [loading, setLoading] = useState(false);
     const handleAddReply = async () => {
         setLoading(true);
+        // Check if user is logged in. If they aren't, show the AuthModal.
+        const isLoggedIn = checkAuth();
+        if (!isLoggedIn) return;    
+        
         const reply = await createComment({
             feedback_id: feedbackId,
             body: usersReply,

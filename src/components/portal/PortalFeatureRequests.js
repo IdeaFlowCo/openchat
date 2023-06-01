@@ -9,6 +9,8 @@ import StatusBadge from "components/atoms/StatusBadge";
 import PreviewFeatureRequest from "./PreviewFeatureRequest";
 import AddIdea from "./AddIdea";
 import { useFeedbackByPortal } from "util/db";
+import { useAuth } from "util/auth";
+import AuthModal from "./AuthModal";
 
 const oldNav = [
     // { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
@@ -24,111 +26,30 @@ const oldNav = [
     // { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
 ];
 
-const requests = [
-    {
-        id: 1,
-        fullName: "Mike Hill",
-        title: "Custom Links in the Menu",
-        description:
-            "I'd like to add some custom links to the menu. Things like links to our help docs or maybe an on boarding video.",
-        votes: 5,
-        comments: 2,
-        url: "#",
-        date: "May 18",
-        topics: ["Feature Request", "API", "Integrations"],
-        status: "Under Consideration",
-    },
-    {
-        id: 2,
-        fullName: "Whitney Francis",
-        title: "Dark mode please!",
-        description:
-            "It would be great to have a dark mode option. I love the app but my eyes are getting tired.",
-        votes: 3,
-        comments: 0,
-        url: "#",
-        date: "May 20",
-        topics: ["Feature Request", "Design"],
-        status: "Planned",
-    },
-    {
-        id: 3,
-        fullName: "Kristin Watson",
-        title: "Ability to reorder the menu items",
-        description:
-            "I'd like to be able to reorder the menu items so that I can put the most important items at the top.",
-        votes: 2,
-        comments: 3,
-        url: "#",
-        date: "May 21",
-        topics: ["Feature Request", "Design"],
-        status: "In Development",
-    },
-];
-
-const portalDataTest = {
-    id: "1",
-    createdAt: "2021-05-24T00:00:00.000Z",
-    statuses: [
-        {
-            name: "Under Consideration",
-            description: "This feature is under consideration",
-            textColor: "text-yellow-500",
-            backgroundColor: "bg-yellow-100",
-            borderColor: "border-yellow-500",
-        },
-        {
-            name: "Planned",
-            description: "This feature is planned",
-            textColor: "text-blue-500",
-            backgroundColor: "bg-blue-100",
-            borderColor: "border-blue-500",
-        },
-        {
-            name: "In Development",
-
-            description: "This feature is in development",
-            textColor: "text-green-500",
-            backgroundColor: "bg-green-100",
-            borderColor: "border-green-500",
-        },
-        {
-            name: "Launched",
-            description: "This feature has been launched",
-            textColor: "text-orange-500",
-            backgroundColor: "bg-orange-100",
-            borderColor: "border-orange-500",
-        },
-        {
-            name: "Not in Scope",
-            description: "This feature is not in scope",
-            textColor: "text-red-500",
-            backgroundColor: "bg-red-100",
-            borderColor: "border-red-500",
-        },
-    ],
-};
-
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
 export default function PortalFeatureRequests({ portalData }) {
+    const auth = useAuth();
+    const [openAuthModal, setOpenAuthModal] = useState(false);
     const { data: feedback, status: feedbackStatus } = useFeedbackByPortal(
         portalData?.id
     );
     // console.log("feedback", feedback)
 
+    const checkAuth = () => {
+        // Check if user is logged in. If they aren't, show the AuthModal.
+        if (!auth.user) {
+            setOpenAuthModal(true);
+            return false;
+        }
+        setOpenAuthModal(false);
+        return true;
+    };
+
     return (
         <>
-            {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
             <div className="fixed bottom-0 flex h-[calc(100vh-65px)] w-screen overflow-auto">
                 {/* Sidebar component, swap this element with another sidebar if you like */}
                 <div className="fixed hidden h-screen grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-gray-50 px-6 lg:flex lg:w-52 lg:flex-col xl:w-72">
@@ -179,7 +100,10 @@ export default function PortalFeatureRequests({ portalData }) {
                                     Feature suggestions for Deepform 💡
                                 </p>
                             </div>
-                            <AddIdea portalId={portalData?.id} />
+                            <AddIdea
+                                portalId={portalData?.id}
+                                checkAuth={checkAuth}
+                            />
                         </div>
                         <div>
                             {feedback?.map((singleFeedback) => (
@@ -187,11 +111,18 @@ export default function PortalFeatureRequests({ portalData }) {
                                     key={singleFeedback.id}
                                     singleFeedback={singleFeedback}
                                     portalData={portalData}
+                                    checkAuth={checkAuth}
                                 />
                             ))}
                         </div>
                     </section>
                 </main>
+                {openAuthModal && (
+                    <AuthModal
+                        open={openAuthModal}
+                        setOpen={setOpenAuthModal}
+                    />
+                )}
             </div>
         </>
     );
