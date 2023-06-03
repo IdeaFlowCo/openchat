@@ -2,6 +2,8 @@ import React from "react";
 import { Dialog } from "@headlessui/react";
 import { updateFeedback } from "util/db";
 import { toast } from "react-hot-toast";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { deleteFeedback } from "util/db";
 
 export default function FeedbackAdminPanel({ feedbackData, portalData }) {
     // console.log("feedbackData", feedbackData);
@@ -12,16 +14,30 @@ export default function FeedbackAdminPanel({ feedbackData, portalData }) {
         toast.success(`Status updated to "${statusName}"!`);
     };
 
+    const handleDeleteFeedback = () => {
+        // Alert user to confirm delete
+        const confirmDelete = confirm(
+            "Are you sure you want to delete this feedback?"
+        );
+        if (!confirmDelete) return;
+
+        // Delete feedback
+        deleteFeedback(singleFeedback.id);
+        toast.success("Feedback deleted!");
+        setOpen(false);
+
+    };
+
     return (
-        <div className="pointer-events-auto w-screen max-w-xs border-r bg-white pt-2">
-            <div className="flex h-full flex-col overflow-y-scroll bg-white py-10 ">
-                <div className="flex flex-col gap-3 px-4 sm:px-8">
+        <div className="pointer-events-auto w-screen max-w-xs border-r bg-gray-50">
+            <div className="flex h-full flex-col justify-between gap-3 overflow-y-scroll px-4 pt-10 sm:px-8">
+                <div className="flex flex-col gap-4">
                     <h1 className="border-b pb-4 font-satoshi text-xl font-medium tracking-tight text-gray-900 md:text-2xl">
                         Admin
                     </h1>
                     <div className="flex items-center justify-start gap-2">
                         {/* <h2 className="text-lg text-gray-900">Status</h2> */}
-                        <div>
+                        <div className="">
                             <div className="flex gap-2">
                                 {/* <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -80,6 +96,20 @@ export default function FeedbackAdminPanel({ feedbackData, portalData }) {
                                 </div>
                             </fieldset>
                         </div>
+                    </div>
+                </div>
+                <div className="mb-5 flex flex-col gap-2">
+                    <h2 className="text-xs font-medium text-gray-500">
+                        Actions
+                    </h2>
+                    <div className="flex gap-4">
+                        <button
+                            type="button"
+                            onClick={() => handleDeleteFeedback()}
+                            className="rounded-md border border-gray-400 p-2 font-light text-gray-400 hover:bg-white"
+                        >
+                            <TrashIcon className="h-4 w-4" />
+                        </button>
                     </div>
                 </div>
             </div>

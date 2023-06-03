@@ -104,7 +104,7 @@ function AddIdea({
                     onClick={() => setOpen(true)}
                     className="flex items-center justify-center gap-2 rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200"
                 >
-                    <PencilSquareIcon className="h-5 w-5" />
+                    <PencilSquareIcon className="h-5 w-5 text-gray-500" />
                     <p className="text-[11px] font-light text-gray-600">Edit</p>
                 </button>
             ) : (

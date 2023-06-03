@@ -155,7 +155,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                         </div>
                         <StatusBadge
                             portalData={portalData}
-                            currentStatus={singleFeedback.status}
+                            currentStatus={singleFeedback?.status}
                         />
                     </div>
                 </div>
@@ -311,7 +311,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                 auth.user
                                                                     ?.uid ===
                                                                     singleFeedback.creator && (
-                                                                    <div className="mt-2 flex gap-2">
+                                                                    <div className="mt-4 flex gap-2 border-t pt-4">
                                                                         
                                                                         <AddIdea 
                                                                             portalId={portalData?.id}
@@ -325,7 +325,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                             }
                                                                             className="flex items-center justify-center gap-2 rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200"
                                                                         >
-                                                                            <TrashIcon className="h-5 w-5" />
+                                                                            <TrashIcon className="h-5 w-5 text-gray-500" />
                                                                             <p className="text-[11px] font-light text-gray-600">
                                                                                 Delete
                                                                             </p>
