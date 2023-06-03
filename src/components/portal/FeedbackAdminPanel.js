@@ -22,10 +22,8 @@ export default function FeedbackAdminPanel({ feedbackData, portalData }) {
         if (!confirmDelete) return;
 
         // Delete feedback
-        deleteFeedback(singleFeedback.id);
+        deleteFeedback(feedbackData?.id);
         toast.success("Feedback deleted!");
-        setOpen(false);
-
     };
 
     return (
