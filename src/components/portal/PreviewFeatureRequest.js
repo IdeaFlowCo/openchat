@@ -5,6 +5,8 @@ import {
     ChevronUpIcon,
     ChatBubbleLeftIcon,
     XMarkIcon,
+    PencilSquareIcon,
+    TrashIcon,
 } from "@heroicons/react/24/outline";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import StatusBadge from "components/atoms/StatusBadge";
@@ -16,9 +18,13 @@ import {
     useCommentsByFeedback,
     createComment,
     updateComment,
+    updateFeedback,
+    deleteFeedback,
 } from "util/db";
 import Comment from "./Comment";
 import { toast } from "react-hot-toast";
+import FeedbackAdminPanel from "./FeedbackAdminPanel";
+import AddIdea from "./AddIdea";
 
 export const formatDateString = (dateString) => {
     const date = new Date(dateString);
@@ -90,6 +96,20 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
         }
         setUsersComment("");
         setLoading(false);
+    };
+
+    const handleDeleteFeedback = () => {
+        // Alert user to confirm delete
+        const confirmDelete = confirm(
+            "Are you sure you want to delete this feedback?"
+        );
+        if (!confirmDelete) return;
+
+        // Delete feedback
+        deleteFeedback(singleFeedback.id);
+        toast.success("Feedback deleted!");
+        setOpen(false);
+
     };
 
     return (
@@ -164,17 +184,18 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                         <div className="absolute inset-0 overflow-hidden">
                             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-0 sm:pl-10">
                                 <Transition.Child
-                                    as={Fragment}
+                                    as={"div"}
                                     enter="transform transition ease-in-out duration-300 sm:duration-400"
                                     enterFrom="translate-x-full"
                                     enterTo="translate-x-0"
                                     leave="transform transition ease-in-out duration-300 sm:duration-400"
                                     leaveFrom="translate-x-0"
                                     leaveTo="translate-x-full"
+                                    className="flex"
                                 >
-                                    <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
-                                        <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
-                                            <div className="px-4 sm:px-6">
+                                    <Dialog.Panel className="pointer-events-auto w-fit">
+                                        <div className="flex h-full flex-col overflow-y-scroll bg-white">
+                                            <div className="fixed right-0 px-4 py-6 sm:px-6">
                                                 <div className="flex items-start justify-between">
                                                     <div />
                                                     <div className="ml-3 flex h-7 items-center">
@@ -196,151 +217,194 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="relative -mt-3 flex flex-1 flex-col gap-4 px-4 sm:px-10">
+                                            <div className="flex h-screen">
                                                 {/* CONTENT OF SLIDEOVER */}
-                                                <div className=" flex w-full gap-5 py-8 px-6 transition-all">
-                                                    <button
-                                                        onClick={(e) =>
-                                                            handleClickVote(e)
+                                                {auth.user?.portal_id ===
+                                                    portalData?.id && (
+                                                    <FeedbackAdminPanel
+                                                        feedbackData={
+                                                            singleFeedback
                                                         }
-                                                        className="z-50 flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
-                                                    >
-                                                        <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
-                                                        <h1 className=" text-xl">
-                                                            {
-                                                                singleFeedback
-                                                                    .upvotes
-                                                                    ?.length
+                                                        portalData={portalData}
+                                                    />
+                                                )}
+                                                <div className="relative flex flex-1 flex-col gap-4 px-4 sm:px-10">
+                                                    <div className="mt-10 flex w-full gap-5 py-8 px-6 transition-all">
+                                                        <button
+                                                            onClick={(e) =>
+                                                                handleClickVote(
+                                                                    e
+                                                                )
                                                             }
-                                                        </h1>
-                                                    </button>
-                                                    <div className="flex flex-grow flex-col">
-                                                        <h1 className="text-lg font-medium">
-                                                            {
-                                                                singleFeedback.title
-                                                            }
-                                                        </h1>
-                                                        <p className="mt-1 text-sm font-light text-gray-500">
-                                                            {
-                                                                singleFeedback.description
-                                                            }
-                                                        </p>
-                                                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                                                            <div className="flex flex-wrap items-center justify-start gap-2">
-                                                                <p className="text-[11px] font-medium text-gray-600">
-                                                                    {
-                                                                        singleFeedback
-                                                                            .users
-                                                                            ?.name
-                                                                    }
-                                                                </p>
-                                                                <p className="text-lg font-bold">
-                                                                    ·
-                                                                </p>
-                                                                <p className="text-[11px] font-light text-gray-600">
-                                                                    {formatDateString(
-                                                                        singleFeedback.created_at
-                                                                    )}
-                                                                </p>
-                                                                <div className="flex gap-2">
-                                                                    {singleFeedback.topics.map(
-                                                                        (
-                                                                            topic,
-                                                                            index
-                                                                        ) => (
-                                                                            <Fragment
-                                                                                key={
-                                                                                    index
-                                                                                }
-                                                                            >
-                                                                                <p className="text-[11px] font-light text-gray-600">
-                                                                                    #
-                                                                                    {
-                                                                                        topic
+                                                            className="z-50 flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
+                                                        >
+                                                            <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
+                                                            <h1 className=" text-xl">
+                                                                {
+                                                                    singleFeedback
+                                                                        .upvotes
+                                                                        ?.length
+                                                                }
+                                                            </h1>
+                                                        </button>
+                                                        <div className="flex flex-grow flex-col">
+                                                            <h1 className="text-lg font-medium">
+                                                                {
+                                                                    singleFeedback.title
+                                                                }
+                                                            </h1>
+                                                            <p className="mt-1 text-sm font-light text-gray-500">
+                                                                {
+                                                                    singleFeedback.description
+                                                                }
+                                                            </p>
+                                                            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                                                                <div className="flex flex-wrap items-center justify-start gap-2">
+                                                                    <p className="text-[11px] font-medium text-gray-600">
+                                                                        {
+                                                                            singleFeedback
+                                                                                .users
+                                                                                ?.name
+                                                                        }
+                                                                    </p>
+                                                                    <p className="text-lg font-bold">
+                                                                        ·
+                                                                    </p>
+                                                                    <p className="text-[11px] font-light text-gray-600">
+                                                                        {formatDateString(
+                                                                            singleFeedback.created_at
+                                                                        )}
+                                                                    </p>
+                                                                    <div className="flex gap-2">
+                                                                        {singleFeedback.topics.map(
+                                                                            (
+                                                                                topic,
+                                                                                index
+                                                                            ) => (
+                                                                                <Fragment
+                                                                                    key={
+                                                                                        index
                                                                                     }
-                                                                                </p>
-                                                                            </Fragment>
-                                                                        )
-                                                                    )}
+                                                                                >
+                                                                                    <p className="text-[11px] font-light text-gray-600">
+                                                                                        #
+                                                                                        {
+                                                                                            topic
+                                                                                        }
+                                                                                    </p>
+                                                                                </Fragment>
+                                                                            )
+                                                                        )}
+                                                                    </div>
                                                                 </div>
+                                                                <StatusBadge
+                                                                    portalData={
+                                                                        portalData
+                                                                    }
+                                                                    currentStatus={
+                                                                        singleFeedback.status
+                                                                    }
+                                                                />
                                                             </div>
-                                                            <StatusBadge
-                                                                portalData={
-                                                                    portalData
-                                                                }
-                                                                currentStatus={
-                                                                    singleFeedback.status
-                                                                }
-                                                            />
+                                                            {
+                                                                // If user is creator of feedback, show edit and delete buttons
+                                                                auth.user
+                                                                    ?.uid ===
+                                                                    singleFeedback.creator && (
+                                                                    <div className="mt-2 flex gap-2">
+                                                                        
+                                                                        <AddIdea 
+                                                                            portalId={portalData?.id}
+                                                                            checkAuth={checkAuth}
+                                                                            editMode={true}
+                                                                            feedbackData={singleFeedback}
+                                                                            />
+                                                                        <button
+                                                                            onClick={() =>
+                                                                                handleDeleteFeedback()
+                                                                            }
+                                                                            className="flex items-center justify-center gap-2 rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200"
+                                                                        >
+                                                                            <TrashIcon className="h-5 w-5" />
+                                                                            <p className="text-[11px] font-light text-gray-600">
+                                                                                Delete
+                                                                            </p>
+                                                                        </button>
+                                                                    </div>
+                                                                )
+                                                            }
                                                         </div>
-                                                    </div>
-                                                    {/* <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
+                                                        {/* <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
                                                         <ChatBubbleLeftIcon className="h-5 w-5 font-extralight text-gray-400" />
                                                         <p className="text-[11px] font-light text-gray-500">
                                                             {request.comments}
                                                         </p>
                                                     </div> */}
-                                                </div>
-                                                {/* TEXTAREA */}
-                                                <div className="flex items-start space-x-4">
-                                                    {/* <div className="flex-shrink-0">
+                                                    </div>
+                                                    {/* TEXTAREA */}
+                                                    <div className="flex items-start space-x-4">
+                                                        {/* <div className="flex-shrink-0">
                                                         <img
                                                             className="inline-block h-10 w-10 rounded-full"
                                                             src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                                                             alt=""
                                                         />
                                                     </div> */}
-                                                    <div className="relative min-w-0 flex-1 bg-gray-50">
-                                                        <div className="overflow-hidden rounded-lg border-[1px]">
-                                                            <label
-                                                                htmlFor="comment"
-                                                                className="sr-only"
-                                                            >
-                                                                Add your comment
-                                                            </label>
-                                                            <textarea
-                                                                rows={3}
-                                                                name="comment"
-                                                                id="comment"
-                                                                value={
-                                                                    usersComment
-                                                                }
-                                                                className="block w-full resize-none border-0 bg-transparent p-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                                                                placeholder="Add your comment..."
-                                                                onChange={(e) =>
-                                                                    setUsersComment(
-                                                                        e.target
-                                                                            .value
-                                                                    )
-                                                                }
-                                                                onKeyDown={(
-                                                                    e
-                                                                ) => {
-                                                                    if (
-                                                                        e.key ===
-                                                                        "Enter"
-                                                                    ) {
-                                                                        handleAddComment();
+                                                        <div className="relative min-w-0 flex-1 bg-gray-50">
+                                                            <div className="overflow-hidden rounded-lg border-[1px]">
+                                                                <label
+                                                                    htmlFor="comment"
+                                                                    className="sr-only"
+                                                                >
+                                                                    Add your
+                                                                    comment
+                                                                </label>
+                                                                <textarea
+                                                                    rows={3}
+                                                                    name="comment"
+                                                                    id="comment"
+                                                                    value={
+                                                                        usersComment
                                                                     }
-                                                                }}
-                                                            />
+                                                                    className="block w-full resize-none border-0 bg-transparent p-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                                                                    placeholder="Add your comment..."
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        setUsersComment(
+                                                                            e
+                                                                                .target
+                                                                                .value
+                                                                        )
+                                                                    }
+                                                                    onKeyDown={(
+                                                                        e
+                                                                    ) => {
+                                                                        if (
+                                                                            e.key ===
+                                                                            "Enter"
+                                                                        ) {
+                                                                            handleAddComment();
+                                                                        }
+                                                                    }}
+                                                                />
 
-                                                            {/* Spacer element to match the height of the toolbar */}
-                                                            <div
-                                                                className="py-2"
-                                                                aria-hidden="true"
-                                                            >
-                                                                {/* Matches height of button in toolbar (1px border + 36px content height) */}
-                                                                <div className="py-px">
-                                                                    <div className="h-9" />
+                                                                {/* Spacer element to match the height of the toolbar */}
+                                                                <div
+                                                                    className="py-2"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    {/* Matches height of button in toolbar (1px border + 36px content height) */}
+                                                                    <div className="py-px">
+                                                                        <div className="h-9" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
 
-                                                        <div className="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
-                                                            <div className="flex items-center space-x-5">
-                                                                <div className="flex items-center">
-                                                                    {/* <button
+                                                            <div className="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
+                                                                <div className="flex items-center space-x-5">
+                                                                    <div className="flex items-center">
+                                                                        {/* <button
                                                                             type="button"
                                                                             className="-m-2.5 flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
                                                                         >
@@ -354,134 +418,139 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                                 file
                                                                             </span>
                                                                         </button> */}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <div className="flex-shrink-0">
-                                                                <button
-                                                                    type="submit"
-                                                                    onClick={() =>
-                                                                        handleAddComment()
-                                                                    }
-                                                                    disabled={
-                                                                        loading
-                                                                    }
-                                                                    className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                                                >
-                                                                    {loading
-                                                                        ? "..."
-                                                                        : "Add Comment"}
-                                                                </button>
+                                                                <div className="flex-shrink-0">
+                                                                    <button
+                                                                        type="submit"
+                                                                        onClick={() =>
+                                                                            handleAddComment()
+                                                                        }
+                                                                        disabled={
+                                                                            loading
+                                                                        }
+                                                                        className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                                    >
+                                                                        {loading
+                                                                            ? "..."
+                                                                            : "Add Comment"}
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                {/* END TEXTAREA */}
-                                                {/* COMMENTS */}
+                                                    {/* END TEXTAREA */}
+                                                    {/* COMMENTS */}
 
-                                                <Tab.Group>
-                                                    <Tab.List className="mt-5 flex gap-3">
-                                                        <Tab className="outline-none">
-                                                            {({ selected }) => (
-                                                                /* Use the `selected` state to conditionally style the selected tab. */
-                                                                <div
-                                                                    className={`text-sm font-light ${
-                                                                        selected
-                                                                            ? " text-indigo-600"
-                                                                            : " text-gray-500"
-                                                                    }`}
-                                                                >
-                                                                    {
-                                                                        singleFeedback.comments
-                                                                    }{" "}
-                                                                    Comments
-                                                                </div>
-                                                            )}
-                                                        </Tab>
-                                                        <Tab className="outline-none">
-                                                            {({ selected }) => (
-                                                                /* Use the `selected` state to conditionally style the selected tab. */
-                                                                <div
-                                                                    className={`text-sm font-light ring-0 focus:outline-none ${
-                                                                        selected
-                                                                            ? " text-indigo-600"
-                                                                            : " text-gray-400"
-                                                                    }`}
-                                                                >
-                                                                    Voters
-                                                                </div>
-                                                            )}
-                                                        </Tab>
-                                                    </Tab.List>
-                                                    <Tab.Panels>
-                                                        <Tab.Panel>
-                                                            <div className="mt-5 space-y-6">
-                                                                {commentsData?.map(
-                                                                    (
-                                                                        comment
-                                                                    ) => (
-                                                                        <Comment
-                                                                            key={
-                                                                                comment.id
-                                                                            }
-                                                                            comment={
-                                                                                comment
-                                                                            }
-                                                                            commentsData={
-                                                                                commentsData
-                                                                            }
-                                                                            checkAuth={
-                                                                                checkAuth
-                                                                            }
-                                                                        />
-                                                                    )
+                                                    <Tab.Group>
+                                                        <Tab.List className="mt-5 flex gap-3">
+                                                            <Tab className="outline-none">
+                                                                {({
+                                                                    selected,
+                                                                }) => (
+                                                                    /* Use the `selected` state to conditionally style the selected tab. */
+                                                                    <div
+                                                                        className={`text-sm font-light ${
+                                                                            selected
+                                                                                ? " text-indigo-600"
+                                                                                : " text-gray-500"
+                                                                        }`}
+                                                                    >
+                                                                        {
+                                                                            singleFeedback.comments
+                                                                        }{" "}
+                                                                        Comments
+                                                                    </div>
                                                                 )}
-                                                            </div>
-                                                        </Tab.Panel>
-                                                        <Tab.Panel>
-                                                            <div className="mt-5 space-y-6">
-                                                                {upvotesData?.map(
-                                                                    (
-                                                                        upvote
-                                                                    ) => (
-                                                                        <div
-                                                                            key={
-                                                                                upvote.id
-                                                                            }
-                                                                            className="flex items-center justify-start space-x-3"
-                                                                        >
-                                                                            <div className="flex-shrink-0">
-                                                                                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-300 bg-indigo-100">
-                                                                                    <h1 className="text-indigo-500 ">
-                                                                                        {upvote.users?.name.charAt(
-                                                                                            0
-                                                                                        )}
-                                                                                    </h1>
+                                                            </Tab>
+                                                            <Tab className="outline-none">
+                                                                {({
+                                                                    selected,
+                                                                }) => (
+                                                                    /* Use the `selected` state to conditionally style the selected tab. */
+                                                                    <div
+                                                                        className={`text-sm font-light ring-0 focus:outline-none ${
+                                                                            selected
+                                                                                ? " text-indigo-600"
+                                                                                : " text-gray-400"
+                                                                        }`}
+                                                                    >
+                                                                        Voters
+                                                                    </div>
+                                                                )}
+                                                            </Tab>
+                                                        </Tab.List>
+                                                        <Tab.Panels>
+                                                            <Tab.Panel>
+                                                                <div className="mt-5 space-y-6">
+                                                                    {commentsData?.map(
+                                                                        (
+                                                                            comment
+                                                                        ) => (
+                                                                            <Comment
+                                                                                key={
+                                                                                    comment.id
+                                                                                }
+                                                                                comment={
+                                                                                    comment
+                                                                                }
+                                                                                commentsData={
+                                                                                    commentsData
+                                                                                }
+                                                                                checkAuth={
+                                                                                    checkAuth
+                                                                                }
+                                                                            />
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                            </Tab.Panel>
+                                                            <Tab.Panel>
+                                                                <div className="mt-5 space-y-6">
+                                                                    {upvotesData?.map(
+                                                                        (
+                                                                            upvote
+                                                                        ) => (
+                                                                            <div
+                                                                                key={
+                                                                                    upvote.id
+                                                                                }
+                                                                                className="flex items-center justify-start space-x-3"
+                                                                            >
+                                                                                <div className="flex-shrink-0">
+                                                                                    <div className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-300 bg-indigo-100">
+                                                                                        <h1 className="text-indigo-500 ">
+                                                                                            {upvote.users?.name.charAt(
+                                                                                                0
+                                                                                            )}
+                                                                                        </h1>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <div className="flex min-w-0 flex-1 flex-col gap-1">
-                                                                                <div>
-                                                                                    <div className="text-sm">
-                                                                                        <a
-                                                                                            href="#"
-                                                                                            className="font-medium text-gray-900"
-                                                                                        >
-                                                                                            {
-                                                                                                upvote
-                                                                                                    .users
-                                                                                                    ?.name
-                                                                                            }
-                                                                                        </a>
+                                                                                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                                                                                    <div>
+                                                                                        <div className="text-sm">
+                                                                                            <a
+                                                                                                href="#"
+                                                                                                className="font-medium text-gray-900"
+                                                                                            >
+                                                                                                {
+                                                                                                    upvote
+                                                                                                        .users
+                                                                                                        ?.name
+                                                                                                }
+                                                                                            </a>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                    )
-                                                                )}
-                                                            </div>
-                                                        </Tab.Panel>
-                                                    </Tab.Panels>
-                                                </Tab.Group>
-                                                {/* END COMMENTS */}
+                                                                        )
+                                                                    )}
+                                                                </div>
+                                                            </Tab.Panel>
+                                                        </Tab.Panels>
+                                                    </Tab.Group>
+                                                    {/* END COMMENTS */}
+                                                </div>
                                             </div>
                                             {/* END CONTENT OF SLIDEOVER */}
                                         </div>

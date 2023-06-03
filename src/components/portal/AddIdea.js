@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import {
     PlusSmallIcon,
     ChevronUpIcon,
+    PencilSquareIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
 import StatusBadge from "components/atoms/StatusBadge";
@@ -21,7 +22,12 @@ const topics = [
     "Customer Support 🙋‍♀️",
     "Internal Tooling ⚙️",
 ];
-function AddIdea({ portalId, checkAuth }) {
+function AddIdea({
+    portalId,
+    checkAuth,
+    editMode = false,
+    feedbackData = null,
+}) {
     const auth = useAuth();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -41,12 +47,29 @@ function AddIdea({ portalId, checkAuth }) {
 
         setLoading(true);
 
+        console.log("data", data);
+        console.log("feedbackData", feedbackData);
+        // Check if the title, description, or statuses even changed before updating
+        if (
+            editMode &&
+            feedbackData.title === data.title &&
+            feedbackData.description === data.description &&
+            JSON.stringify(feedbackData.topics) == JSON.stringify(data.topics)
+        ) {
+            console.log("no changes");
+            setLoading(false);
+            setOpen(false);
+            return;
+        }
+
         // console.log("data", data);
-        const query = createFeedback({
-            creator: auth.user.uid,
-            portal_id: portalId,
-            ...data,
-        });
+        const query = editMode
+            ? updateFeedback(feedbackData.id, data)
+            : createFeedback({
+                  creator: auth.user.uid,
+                  portal_id: portalId,
+                  ...data,
+              });
 
         query
             .then(() => {
@@ -76,14 +99,25 @@ function AddIdea({ portalId, checkAuth }) {
     }, [auth.user]);
     return (
         <div>
-            <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="text-md fixed bottom-5 right-5 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
-            >
-                <PlusSmallIcon className="-ml-2 h-5 w-5" />
-                Add an Idea
-            </button>
+            {editMode ? (
+                <button
+                    onClick={() => setOpen(true)}
+                    className="flex items-center justify-center gap-2 rounded-md bg-gray-100 px-3 py-2 hover:bg-gray-200"
+                >
+                    <PencilSquareIcon className="h-5 w-5" />
+                    <p className="text-[11px] font-light text-gray-600">Edit</p>
+                </button>
+            ) : (
+                <button
+                    type="button"
+                    onClick={() => setOpen(true)}
+                    className="text-md fixed bottom-5 right-5 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
+                >
+                    <PlusSmallIcon className="-ml-2 h-5 w-5" />
+                    Add an Idea
+                </button>
+            )}
+
             <Transition.Root show={open} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={setOpen}>
                     <Transition.Child
@@ -137,7 +171,9 @@ function AddIdea({ portalId, checkAuth }) {
                                             <div className="relative -mt-3 flex flex-1 flex-col gap-10 px-4 sm:px-10">
                                                 {/* CONTENT OF SLIDEOVER */}
                                                 <h1 className="font-satoshi text-2xl font-medium tracking-tight text-gray-900 md:text-3xl">
-                                                    Tell us about your idea!
+                                                    {editMode
+                                                        ? "Edit Idea"
+                                                        : "Tell us about your idea!"}
                                                 </h1>
                                                 {formAlert && (
                                                     <div className="mb-4 text-red-600">
@@ -169,6 +205,11 @@ function AddIdea({ portalId, checkAuth }) {
                                                                 required:
                                                                     "Please enter a title for this feedback.",
                                                             })}
+                                                            defaultValue={
+                                                                editMode
+                                                                    ? feedbackData.title
+                                                                    : ""
+                                                            }
                                                         />
 
                                                         <label
@@ -184,11 +225,15 @@ function AddIdea({ portalId, checkAuth }) {
                                                             rows={8}
                                                             placeholder="What problem does this idea solve, who benefits, and how should it work?"
                                                             className="block w-full rounded-md border-gray-200 placeholder:opacity-70 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                                            defaultValue={""}
                                                             ref={register({
                                                                 required:
                                                                     "Please enter a description for your feedback.",
                                                             })}
+                                                            defaultValue={
+                                                                editMode
+                                                                    ? feedbackData.description
+                                                                    : ""
+                                                            }
                                                         />
                                                         {errors.name && (
                                                             <p className="mt-1 text-left text-sm text-red-600">
@@ -236,6 +281,13 @@ function AddIdea({ portalId, checkAuth }) {
                                                                                 }
                                                                                 className=" h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 "
                                                                                 ref={register()}
+                                                                                defaultChecked={
+                                                                                    editMode
+                                                                                        ? feedbackData.topics.includes(
+                                                                                              topic
+                                                                                          )
+                                                                                        : false
+                                                                                }
                                                                             />
                                                                             {
                                                                                 topic

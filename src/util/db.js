@@ -355,9 +355,12 @@ export async function createComment(data) {
         .select()
         .then(handle);
     // Invalidate and refetch queries that could have old data
-    await Promise.all([client.invalidateQueries(["comments"]), 
-    client.invalidateQueries(["replies"], { parentCommentId: data.parent_comment_id})
-]);
+    await Promise.all([
+        client.invalidateQueries(["comments"]),
+        client.invalidateQueries(["replies"], {
+            parentCommentId: data.parent_comment_id,
+        }),
+    ]);
 
     return response;
 }

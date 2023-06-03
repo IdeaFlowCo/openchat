@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
     PlusSmallIcon,
@@ -33,6 +33,7 @@ function classNames(...classes) {
 export default function PortalFeatureRequests({ portalData }) {
     const auth = useAuth();
     const [openAuthModal, setOpenAuthModal] = useState(false);
+    const [userIsAdmin, setUserIsAdmin] = useState(auth.user?.portal_id === portalData?.id);
     const { data: feedback, status: feedbackStatus } = useFeedbackByPortal(
         portalData?.id
     );
@@ -47,6 +48,14 @@ export default function PortalFeatureRequests({ portalData }) {
         setOpenAuthModal(false);
         return true;
     };
+
+    useEffect(() => {
+        if (auth.user?.portal_id === portalData?.id) {
+            setUserIsAdmin(true);
+        } else {
+            setUserIsAdmin(false);
+        }
+    }, [auth.user?.portal_id, portalData?.id]);
 
     return (
         <>
@@ -90,8 +99,8 @@ export default function PortalFeatureRequests({ portalData }) {
                     </nav>
                 </div>
                 <main className="flex h-fit w-screen items-center justify-center py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72">
-                    <section className="flex w-full max-w-3xl flex-col gap-12 lg:w-4/6 ">
-                        <div className="flex justify-between">
+                    <section className="flex w-full max-w-3xl flex-col gap-12 lg:w-5/6 ">
+                        <div className="flex justify-between px-2 md:px-10">
                             <div className="flex flex-col gap-4">
                                 <h1 className="font-satoshi text-3xl font-medium tracking-tight text-gray-900 md:text-4xl">
                                     Deepform Feature Requests
