@@ -1,5 +1,6 @@
 import React from "react";
 
+// .
 function AbstractBg() {
     return (
         <div className="relative isolate">
