@@ -33,7 +33,7 @@ function Replies({ commentId, repliesData, feedbackId, checkAuth }) {
             {repliesData?.map((reply) => (
                 <Comment key={reply.id} comment={reply} isReply={true} />
             ))}
-            <div id={`replyInput-${commentId}`} className="min-w-0 flex-1 bg-gray-50">
+            <div id={`replyInput-${commentId}`} className="min-w-0 flex-1 ">
                 <form action="#" className="relative">
                     <div className="overflow-hidden rounded-lg border-[1px]">
                         <label htmlFor="comment" className="sr-only">

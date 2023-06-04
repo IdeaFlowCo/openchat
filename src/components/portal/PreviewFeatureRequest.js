@@ -228,7 +228,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                         portalData={portalData}
                                                     />
                                                 )}
-                                                <div className="relative flex flex-1 flex-col gap-4 px-4 sm:px-10 max-w-2xl w-screen">
+                                                <div className="relative flex flex-1 flex-col gap-4 px-4 sm:px-10 max-w-2xl w-screen overflow-auto">
                                                     <div className="mt-10 flex w-full gap-5 py-8 px-6 transition-all">
                                                         <button
                                                             onClick={(e) =>
