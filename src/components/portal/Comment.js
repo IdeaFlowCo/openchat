@@ -54,7 +54,7 @@ function Comment({ comment, isReply = false, checkAuth }) {
         );
 
         if (confirmDelete) {
-            await deleteComment({ comment_id: comment.id });
+            await deleteComment({ comment_id: comment.id, parent_comment_id: comment.parent_comment_id });
         }
     };
 

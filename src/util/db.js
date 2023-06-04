@@ -391,6 +391,10 @@ export async function deleteComment(data) {
     await Promise.all([
         client.invalidateQueries(["comment", { id: data.comment_id }]),
         client.invalidateQueries(["comments"]),
+        client.invalidateQueries(["replies"], {
+            parentCommentId: data.parent_comment_id,
+        }),
+
     ]);
     return response;
 }
