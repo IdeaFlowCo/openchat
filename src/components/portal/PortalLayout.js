@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Disclosure, Menu, Transition, Dialog } from "@headlessui/react";
 import {
     Bars3Icon,
@@ -18,22 +18,30 @@ import Link from "next/link";
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
-const navigation = [
-    { name: "Feature Requests", href: "#", icon: HomeIcon, current: true },
-    // { name: "Team", href: "#", icon: UsersIcon, current: false },
-    // { name: "Projects", href: "#", icon: FolderIcon, current: false },
-    // { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-    // {
-    //     name: "Documents",
-    //     href: "#",
-    //     icon: DocumentDuplicateIcon,
-    //     current: false,
-    // },
-    // { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
-];
 
-export default function PortalLayout({ portalId, children }) {
+export default function PortalLayout({
+    portalId,
+    children,
+    adminMode,
+    currentPage = "Feature Requests",
+}) {
     const auth = useAuth();
+    const [mobileNavigation, setMobileNavigation] = useState([
+        {
+            name: "Feature Requests",
+            href: `/portal/${portalId}`,
+            current: currentPage === "Feature Requests",
+            icon: HomeIcon,
+        },
+    ]);
+    const [desktopNavigation, setDesktopNavigation] = useState([
+        {
+            name: "Feature Requests",
+            href: `/portal/${portalId}`,
+            current: currentPage === "Feature Requests",
+        },
+    ]);
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
     return (
         <>
@@ -62,21 +70,47 @@ export default function PortalLayout({ portalId, children }) {
                             alt="Your Company"
                         />
                     </div>
-                    <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
+                    <div className="hidden items-center justify-center lg:ml-6 lg:flex lg:space-x-8">
                         {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                        <a
+                        {adminMode && (
+                            <div className="border-x px-2 ">
+                                <Link href={`/dashboard`}>
+                                    <div className="cursor-pointer rounded-md p-1 hover:bg-gray-100 hover:text-gray-700">
+                                        <HomeIcon
+                                            className="h-6 w-6 text-gray-900"
+                                            aria-hidden="true"
+                                        />
+                                    </div>
+                                </Link>
+                            </div>
+                        )}
+                        {desktopNavigation.map((item) => (
+                            <Link href={item.href} key={item.name}>
+                                <div
+                                    className={classNames(
+                                        item.current
+                                            ? "border-indigo-500 text-gray-900"
+                                            : "text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                                        "inline-flex h-full items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium hover:cursor-pointer"
+                                    )}
+                                >
+                                    {item.name}
+                                </div>
+                            </Link>
+                        ))}
+                        {/* <a
                             href="#"
-                            className="inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900"
+                            className="inline-flex h-full items-center border-b-2 border-indigo-500 px-1 text-sm font-medium text-gray-900"
                         >
                             Feature Requests
-                        </a>
+                        </a> */}
                         {/* <a
-                                        href="#"
-                                        className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                                    >
-                                        Team
-                                    </a>
-                                    <a
+                            href="#"
+                            className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                        >
+                            Team
+                        </a> */}
+                        {/* <a
                                         href="#"
                                         className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                                     >
@@ -175,6 +209,22 @@ export default function PortalLayout({ portalId, children }) {
                                                     )}
                                                 </Menu.Item>
                                             ))} */}
+                                        <Menu.Item key="dashboard">
+                                            {/* {({ active }) => ( */}
+                                            <Link href="/dashboard">
+                                                <button
+                                                    className={classNames(
+                                                        // active
+                                                        //     ? "bg-gray-50"
+                                                        //     : "",
+                                                        "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                                    )}
+                                                >
+                                                    Dashboard
+                                                </button>
+                                            </Link>
+                                            {/* )} */}
+                                        </Menu.Item>
                                         <Menu.Item key="settings">
                                             {/* {({ active }) => ( */}
                                             <Link href="/settings/general">
@@ -323,30 +373,34 @@ export default function PortalLayout({ portalId, children }) {
                                                     role="list"
                                                     className="-mx-2 space-y-1"
                                                 >
-                                                    {navigation.map((item) => (
-                                                        <li key={item.name}>
-                                                            <a
-                                                                href={item.href}
-                                                                className={classNames(
-                                                                    item.current
-                                                                        ? "bg-gray-50 text-indigo-600"
-                                                                        : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                                                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                                                                )}
-                                                            >
-                                                                <item.icon
+                                                    {mobileNavigation.map(
+                                                        (item) => (
+                                                            <li key={item.name}>
+                                                                <a
+                                                                    href={
+                                                                        item.href
+                                                                    }
                                                                     className={classNames(
                                                                         item.current
-                                                                            ? "text-indigo-600"
-                                                                            : "text-gray-400 group-hover:text-indigo-600",
-                                                                        "h-6 w-6 shrink-0"
+                                                                            ? "bg-gray-50 text-indigo-600"
+                                                                            : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                                                                        "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                                                     )}
-                                                                    aria-hidden="true"
-                                                                />
-                                                                {item.name}
-                                                            </a>
-                                                        </li>
-                                                    ))}
+                                                                >
+                                                                    <item.icon
+                                                                        className={classNames(
+                                                                            item.current
+                                                                                ? "text-indigo-600"
+                                                                                : "text-gray-400 group-hover:text-indigo-600",
+                                                                            "h-6 w-6 shrink-0"
+                                                                        )}
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                    {item.name}
+                                                                </a>
+                                                            </li>
+                                                        )
+                                                    )}
                                                 </ul>
                                             </li>
                                         </ul>
@@ -357,9 +411,8 @@ export default function PortalLayout({ portalId, children }) {
                     </div>
                 </Dialog>
             </Transition.Root>
-            <main className="">
+            <main className="fixed bottom-0 flex h-[calc(100vh-65px)] w-screen overflow-auto">
                 {/* Your content */}
-
                 {children}
             </main>
         </>

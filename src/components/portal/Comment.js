@@ -74,7 +74,7 @@ function Comment({ comment, isReply = false, checkAuth }) {
             <div className="flex-shrink-0">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-300 bg-indigo-100">
                     <h1 className="text-indigo-500 ">
-                        {comment.users?.name.charAt(0)}
+                        {comment.users?.name?.charAt(0)}
                     </h1>
                 </div>
             </div>

@@ -5,7 +5,7 @@ function StatusBadge({ portalData, currentStatus }) {
     // const [textColor, setTextColor] = useState("text-white");
     // const [borderColor, setBorderColor] = useState("border-gray-500");
     
-    console.log("portalData", portalData);
+    // console.log("portalData", portalData);
     useEffect(() => {
         if (portalData && currentStatus) {
             const status = portalData.statuses.find(

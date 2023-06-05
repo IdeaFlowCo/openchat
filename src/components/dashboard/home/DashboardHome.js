@@ -15,7 +15,45 @@ function DashboardHome({ host }) {
     console.log("portalData in DashboardHome", portalData);
 
     const handleCreatePortal = async () => {
-        const portal = await createPortal({});
+        const portal = await createPortal({
+            statuses: [
+                {
+                    name: "Under Consideration",
+                    textColor: "text-yellow-500",
+                    borderColor: "border-yellow-500",
+                    description: "This feature is under consideration",
+                    backgroundColor: "bg-yellow-100",
+                },
+                {
+                    name: "Planned",
+                    textColor: "text-blue-500",
+                    borderColor: "border-blue-500",
+                    description: "This feature is planned",
+                    backgroundColor: "bg-blue-100",
+                },
+                {
+                    name: "In Development",
+                    textColor: "text-green-500",
+                    borderColor: "border-green-500",
+                    description: "This feature is in development",
+                    backgroundColor: "bg-green-100",
+                },
+                {
+                    name: "Launched",
+                    textColor: "text-orange-500",
+                    borderColor: "border-orange-500",
+                    description: "This feature has been launched",
+                    backgroundColor: "bg-orange-100",
+                },
+                {
+                    name: "Not in Scope",
+                    textColor: "text-red-500",
+                    borderColor: "border-red-500",
+                    description: "This feature is not in scope",
+                    backgroundColor: "bg-red-100",
+                },
+            ],
+        });
         if (portal.length === 0) {
             alert("Error creating portal");
             return;

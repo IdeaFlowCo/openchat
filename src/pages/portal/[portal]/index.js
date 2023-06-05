@@ -5,13 +5,21 @@ import { useRouter } from "next/router";
 import { usePortal } from "util/db";
 import PortalLayout from "components/portal/PortalLayout";
 import PortalFeatureRequests from "components/portal/PortalFeatureRequests";
+import { useAuth } from "util/auth";
 
 function PublicPortalPage(props) {
+    const auth = useAuth();
     // Grab Deepform ID
     const router = useRouter();
     const { portal: portalId } = router.query;
 
+    if (portalId === "undefined") {
+        console.log("portalId is undefined")
+        router.push("/");
+        return <div></div>;
+    }
     const { data: portalData, status: portalStatus } = usePortal(portalId);
+
     // console.log("portalData", portalData);
 
     // If this Deepform doesn't exist, redirect to dashboard
@@ -19,10 +27,15 @@ function PublicPortalPage(props) {
         router.push("/");
     }
 
+    const userIsAdmin = auth.user?.portal_id === portalData?.id;
     return (
         <>
             <Meta title={"Feedback Portal"} />
-            <PortalLayout portalId={portalData?.id}>
+            <PortalLayout
+                portalId={portalData?.id}
+                adminMode={userIsAdmin}
+                currentPage={"Feature Requests"}
+            >
                 <PortalFeatureRequests portalData={portalData} />
             </PortalLayout>
         </>

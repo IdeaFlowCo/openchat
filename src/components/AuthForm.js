@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "util/auth";
+import { updateUser } from "util/db";
 
 function AuthForm(props) {
     const auth = useAuth();
@@ -15,8 +16,13 @@ function AuthForm(props) {
                 props.onAuth(user);
             });
         },
-        signup: ({ email, pass }) => {
-            return auth.signup(email, pass).then((user) => {
+        signup: ({ name, email, pass }) => {
+            return auth.signup(email, pass).then(async (user) => {
+                console.log("user", user)
+                // Add display name
+                await updateUser(user.id, {
+                    name: name,
+                });
                 // Call auth complete handler
                 props.onAuth(user);
             });
@@ -44,12 +50,13 @@ function AuthForm(props) {
     };
 
     // Handle form submission
-    const onSubmit = ({ email, pass }) => {
+    const onSubmit = ({ name, email, pass }) => {
         // Show pending indicator
         setPending(true);
 
         // Call submit handler for auth type
         submitHandlersByType[props.type]({
+            name,
             email,
             pass,
         }).catch((error) => {
@@ -64,6 +71,25 @@ function AuthForm(props) {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
+            {["signup"].includes(props.type) && (
+                <div className="mb-2">
+                    <input
+                        className="w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1"
+                        name="name"
+                        type="text"
+                        placeholder="Full Name"
+                        ref={register({
+                            required: "Please enter your name",
+                        })}
+                    />
+
+                    {errors.email && (
+                        <p className="mt-1 text-left text-sm text-red-600">
+                            {errors.email.message}
+                        </p>
+                    )}
+                </div>
+            )}
             {["signup", "signin", "forgotpass"].includes(props.type) && (
                 <div className="mb-2">
                     <input

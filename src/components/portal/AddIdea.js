@@ -24,7 +24,7 @@ const topics = [
 ];
 function AddIdea({
     portalId,
-    checkAuth,
+    checkAuth = () => true,
     editMode = false,
     feedbackData = null,
 }) {
