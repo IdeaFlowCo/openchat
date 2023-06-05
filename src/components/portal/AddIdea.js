@@ -12,16 +12,20 @@ import { createFeedback } from "util/db";
 import { useAuth } from "util/auth";
 
 const topics = [
-    "Feature Request ✨",
+    "New Feature Request ✨",
     "Bug Report 🐞",
-    "Design 🎨",
-    "API 🌐",
-    "Integrations 🔄",
-    "Analytics 📊",
-    "Mobile 📱",
-    "Customer Support 🙋‍♀️",
-    "Internal Tooling ⚙️",
+    "User Interface & Design 🎨",
+    "API & Development 🌐",
+    "Third-Party Integrations 🔗",
+    "Data & Analytics 📊",
+    "Mobile Experience 📱",
+    "Customer Support Experience 🙋‍♀️",
+    "Performance & Speed 🚀",
+    "Security & Privacy 🔒",
+    "Documentation & Guides 📚",
+    "Billing & Pricing 💰",
 ];
+
 function AddIdea({
     portalId,
     checkAuth = () => true,
@@ -33,6 +37,10 @@ function AddIdea({
     const [loading, setLoading] = useState(false);
     const [failedSubmitNoAuth, setFailedSubmitNoAuth] = useState(false);
     const [formAlert, setFormAlert] = useState(null);
+    // Want to keep track of how many topics are selected. Only 3 or less allowed
+    const [numTopicsSelected, setNumTopicsSelected] = useState(
+        editMode ? feedbackData.topics.length : 0
+    );
     const cancelButtonRef = useRef(null);
 
     const { register, handleSubmit, errors } = useForm();

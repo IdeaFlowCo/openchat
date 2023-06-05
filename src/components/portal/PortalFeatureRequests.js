@@ -61,6 +61,13 @@ export default function PortalFeatureRequests({ portalData }) {
         }
     }, [auth.user?.portal_id, portalData?.id]);
 
+    if (!portalData) {
+        return (
+            <div className="flex h-screen w-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-indigo-500"></div>
+            </div>
+        );
+    }
     return (
         <>
             {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -99,7 +106,7 @@ export default function PortalFeatureRequests({ portalData }) {
                     </ul>
                 </li>
                 <li className="">
-                    <a href="/" target="_blank" className="mt-2 py-2 px-4 text-sm">
+                    <a href="/" target="_blank" className="mt-2 py-2 px-4 text-sm text-center whitespace-nowrap">
                         Powered by <span className="font-bold">Deepform</span>
                     </a>
                 </li>

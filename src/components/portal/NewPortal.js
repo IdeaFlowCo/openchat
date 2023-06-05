@@ -75,14 +75,6 @@ export default function NewPortal() {
 
     return (
         <>
-            {/*
-          This example requires updating your template:
-  
-          ```
-          <html class="h-full bg-gray-50">
-          <body class="h-full">
-          ```
-        */}
             <div className="fixed flex h-screen min-h-full w-screen flex-1 flex-col items-center justify-between py-6 px-4 sm:px-6 lg:px-8">
                 <div className="w-fit self-start">
                     <Logo />

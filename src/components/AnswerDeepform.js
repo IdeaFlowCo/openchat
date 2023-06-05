@@ -253,7 +253,7 @@ function AnswerDeepform(props) {
                                     <svg
                                         aria-hidden="true"
                                         role="status"
-                                        class="mr-3 inline h-4 w-4 animate-spin text-gray-200 dark:text-gray-600"
+                                        className="mr-3 inline h-4 w-4 animate-spin text-gray-200 dark:text-gray-600"
                                         viewBox="0 0 100 101"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg"

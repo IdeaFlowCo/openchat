@@ -109,7 +109,6 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
         deleteFeedback(singleFeedback.id);
         toast.success("Feedback deleted!");
         setOpen(false);
-
     };
 
     return (
@@ -195,16 +194,16 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                 >
                                     <Dialog.Panel className="pointer-events-auto w-fit">
                                         <div className="flex h-full flex-col overflow-y-scroll bg-white">
-                                            <div className="fixed right-0 px-4 py-6 sm:px-6">
+                                            <div className="fixed right-0 px-4 py-6 sm:px-6 z-50">
                                                 <div className="flex items-start justify-between">
                                                     <div />
-                                                    <div className="ml-3 flex h-7 items-center">
+                                                    <div className="relative ml-3 flex h-7 items-center">
                                                         <button
                                                             type="button"
-                                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                                            onClick={() =>
-                                                                setOpen(false)
-                                                            }
+                                                            className=" rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                            onClick={() => {
+                                                                setOpen(false);
+                                                            }}
                                                         >
                                                             <span className="sr-only">
                                                                 Close panel
@@ -228,7 +227,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                         portalData={portalData}
                                                     />
                                                 )}
-                                                <div className="relative flex flex-1 flex-col gap-4 px-4 sm:px-10 max-w-2xl w-screen overflow-auto">
+                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 sm:px-10">
                                                     <div className="mt-10 flex w-full gap-5 py-8 px-6 transition-all">
                                                         <button
                                                             onClick={(e) =>
@@ -312,13 +311,20 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                     ?.uid ===
                                                                     singleFeedback.creator && (
                                                                     <div className="mt-4 flex gap-2 border-t pt-4">
-                                                                        
-                                                                        <AddIdea 
-                                                                            portalId={portalData?.id}
-                                                                            checkAuth={checkAuth}
-                                                                            editMode={true}
-                                                                            feedbackData={singleFeedback}
-                                                                            />
+                                                                        <AddIdea
+                                                                            portalId={
+                                                                                portalData?.id
+                                                                            }
+                                                                            checkAuth={
+                                                                                checkAuth
+                                                                            }
+                                                                            editMode={
+                                                                                true
+                                                                            }
+                                                                            feedbackData={
+                                                                                singleFeedback
+                                                                            }
+                                                                        />
                                                                         <button
                                                                             onClick={() =>
                                                                                 handleDeleteFeedback()

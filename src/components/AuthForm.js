@@ -83,9 +83,9 @@ function AuthForm(props) {
                         })}
                     />
 
-                    {errors.email && (
+                    {errors.name && (
                         <p className="mt-1 text-left text-sm text-red-600">
-                            {errors.email.message}
+                            {errors.name.message}
                         </p>
                     )}
                 </div>
