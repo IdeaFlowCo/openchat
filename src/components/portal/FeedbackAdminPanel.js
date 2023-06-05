@@ -1,116 +1,109 @@
-import React from "react";
-import { Dialog } from "@headlessui/react";
+import React, { useState, Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 import { updateFeedback } from "util/db";
 import { toast } from "react-hot-toast";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import {
+    TrashIcon,
+    PlusSmallIcon,
+    XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { deleteFeedback } from "util/db";
+import ContentFeedbackAdminPanel from "./ContentFeedbackAdminPanel";
+
+const classNames = (...classes) => {
+    return classes.filter(Boolean).join(" ");
+};
 
 export default function FeedbackAdminPanel({ feedbackData, portalData }) {
-    // console.log("feedbackData", feedbackData);
-    const handleChangeStatus = (statusName) => {
-        updateFeedback(feedbackData.id, {
-            status: statusName,
-        });
-        toast.success(`Status updated to "${statusName}"!`);
-    };
-
-    const handleDeleteFeedback = () => {
-        // Alert user to confirm delete
-        const confirmDelete = confirm(
-            "Are you sure you want to delete this feedback?"
-        );
-        if (!confirmDelete) return;
-
-        // Delete feedback
-        deleteFeedback(feedbackData?.id);
-        toast.success("Feedback deleted!");
-    };
+    const [open, setOpen] = useState(false);
 
     return (
-        <div className="pointer-events-auto w-screen max-w-xs border-r bg-gray-50">
-            <div className="flex h-full flex-col justify-between gap-3 overflow-y-scroll px-4 pt-10 sm:px-8">
-                <div className="flex flex-col gap-4">
-                    <h1 className="border-b pb-4 font-satoshi text-xl font-medium tracking-tight text-gray-900 md:text-2xl">
-                        Admin
-                    </h1>
-                    <div className="flex items-center justify-start gap-2">
-                        {/* <h2 className="text-lg text-gray-900">Status</h2> */}
-                        <div className="">
-                            <div className="flex gap-2">
-                                {/* <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="h-6 w-6 opacity-40"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg> */}
-                                <label className="text-base font-semibold text-gray-900">
-                                    Status
-                                </label>
-                            </div>
+        <>
+            {/* DESKTOP SIDE STATIC PANEL */}
+            <div className="hidden lg:static lg:inset-0 lg:block">
+                <ContentFeedbackAdminPanel
+                    feedbackData={feedbackData}
+                    portalData={portalData}
+                />
+            </div>
 
-                            <fieldset className="mt-4">
-                                <legend className="sr-only">
-                                    Notification method
-                                </legend>
-                                <div className="space-y-4">
-                                    {portalData.statuses.map(
-                                        (status, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex items-center"
-                                            >
-                                                <input
-                                                    id={index}
-                                                    name="status"
-                                                    type="radio"
-                                                    defaultChecked={
-                                                        status.name ===
-                                                        feedbackData.status
-                                                    }
-                                                    onClick={() =>
-                                                        handleChangeStatus(
-                                                            status.name
-                                                        )
-                                                    }
-                                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                                />
-                                                <label
-                                                    htmlFor={index}
-                                                    className="ml-3 block text-sm font-medium leading-6 text-gray-900"
-                                                >
-                                                    {status.name}
-                                                </label>
+            {/* MOBILE SIDE SLIDEOVER PANEL */}
+            {/* Mobile Button to open admin panel */}
+            <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className=" text-md fixed border border-gray-900/20 shadow-xl bottom-5 right-5 z-50 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-white px-3.5 py-2.5 font-medium text-gray-900 transition-all hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 lg:hidden"
+            >
+                {/* <PlusSmallIcon className="-ml-2 h-5 w-5" /> */}
+                Admin Panel
+            </button>
+
+            <Transition.Root show={open} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={setOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-in-out duration-500"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in-out duration-500"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-hidden">
+                        <div className="absolute inset-0 overflow-hidden">
+                            <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full ">
+                                <Transition.Child
+                                    as={Fragment}
+                                    enter="transform transition ease-in-out duration-300 sm:duration-400"
+                                    enterFrom="-translate-x-full"
+                                    enterTo="translate-x-0"
+                                    leave="transform transition ease-in-out duration-300 sm:duration-400"
+                                    leaveFrom="translate-x-0"
+                                    leaveTo="-translate-x-[300px]"
+                                >
+                                    <Dialog.Panel className="pointer-events-auto">
+                                        <div className="flex h-full flex-col overflow-y-scroll shadow-xl ">
+                                            <div className="px-4 sm:px-6">
+                                                <div className="flex items-start justify-between">
+                                                    <div />
+                                                    <div className="ml-3 flex h-7 items-center">
+                                                        <button
+                                                            type="button"
+                                                            className="z-[100] rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                            onClick={() =>
+                                                                setOpen(false)
+                                                            }
+                                                        >
+                                                            <span className="sr-only">
+                                                                Close panel
+                                                            </span>
+                                                            <XMarkIcon
+                                                                className="h-6 w-6"
+                                                                aria-hidden="true"
+                                                            />
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        )
-                                    )}
-                                </div>
-                            </fieldset>
+                                            <div className="b relative -mt-3 flex flex-1 flex-col gap-10 px-4 sm:px-10">
+                                                {/* CONTENT OF SLIDEOVER */}
+                                                <ContentFeedbackAdminPanel
+                                                    feedbackData={feedbackData}
+                                                    portalData={portalData}
+                                                />
+                                                {/* END CONTENT OF SLIDEOVER */}
+                                            </div>
+                                        </div>
+                                    </Dialog.Panel>
+                                </Transition.Child>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="mb-5 flex flex-col gap-2">
-                    <h2 className="text-xs font-medium text-gray-500">
-                        Actions
-                    </h2>
-                    <div className="flex gap-4">
-                        <button
-                            type="button"
-                            onClick={() => handleDeleteFeedback()}
-                            className="rounded-md border border-gray-400 p-2 font-light text-gray-400 hover:bg-white"
-                        >
-                            <TrashIcon className="h-4 w-4" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                </Dialog>
+            </Transition.Root>
+        </>
     );
 }

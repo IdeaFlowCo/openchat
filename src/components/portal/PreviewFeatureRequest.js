@@ -227,7 +227,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                         portalData={portalData}
                                                     />
                                                 )}
-                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 sm:px-10">
+                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 sm:px-10 pb-20">
                                                     <div className="mt-10 flex w-full gap-5 py-8 px-6 transition-all">
                                                         <button
                                                             onClick={(e) =>
@@ -235,7 +235,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                     e
                                                                 )
                                                             }
-                                                            className="z-50 flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
+                                                            className="z-50 flex h-14 w-14 sm:h-16 sm:w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
                                                         >
                                                             <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
                                                             <h1 className=" text-xl">
