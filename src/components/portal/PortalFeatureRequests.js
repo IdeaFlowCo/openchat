@@ -99,7 +99,7 @@ export default function PortalFeatureRequests({ portalData }) {
                     </ul>
                 </li>
                 <li className="">
-                    <a href="/" target="_blank" className="mt-2 py-2 px-4">
+                    <a href="/" target="_blank" className="mt-2 py-2 px-4 text-sm">
                         Powered by <span className="font-bold">Deepform</span>
                     </a>
                 </li>

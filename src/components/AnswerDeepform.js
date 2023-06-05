@@ -139,9 +139,9 @@ function AnswerDeepform(props) {
             {/* <section className="flex flex-col justify-center items-center sm:mx-auto h-[80vh] b"> */}
             <div
                 id="chat"
-                className="flex justify-center items-start p-4 sm:pt-10 w-full h-[80vh] overflow-auto"
+                className="flex h-[80vh] w-full items-start justify-center overflow-auto p-4 sm:pt-10"
             >
-                <div className="container flex flex-col gap-2 max-w-3xl">
+                <div className="container flex max-w-3xl flex-col gap-2">
                     {messages.map((message, index) => (
                         <ChatMessage
                             key={index}
@@ -152,9 +152,9 @@ function AnswerDeepform(props) {
                 </div>
             </div>
 
-            <div className="w-full h-[20vh]">
-                <div className="flex flex-col justify-center items-center gap-4">
-                    <div className="flex justify-center items-center w-full px-4">
+            <div className="h-[20vh] w-full">
+                <div className="flex flex-col items-center justify-center gap-4">
+                    <div className="flex w-full items-center justify-center px-4">
                         <label htmlFor="chat" className="sr-only">
                             Chat
                         </label>
@@ -181,7 +181,7 @@ function AnswerDeepform(props) {
                                 <button
                                     onClick={() => startRecording()}
                                     disabled={recording}
-                                    className="mr-4 bg-indigo-600 border text-white hover:opacity-70 rounded-full p-4 "
+                                    className="mr-4 rounded-full border bg-indigo-600 p-4 text-white hover:opacity-70 "
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,7 @@ function AnswerDeepform(props) {
                                         viewBox="0 0 24 24"
                                         strokeWidth={1.5}
                                         stroke="currentColor"
-                                        className="w-6 h-6"
+                                        className="h-6 w-6"
                                     >
                                         <path
                                             strokeLinecap="round"
@@ -205,7 +205,7 @@ function AnswerDeepform(props) {
                                         stopRecording();
                                     }}
                                     disabled={!recording}
-                                    className="mr-4 border border-black/10 rounded-full p-4"
+                                    className="mr-4 rounded-full border border-black/10 p-4"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -213,7 +213,7 @@ function AnswerDeepform(props) {
                                         viewBox="0 0 24 24"
                                         strokeWidth={1.5}
                                         stroke="currentColor"
-                                        className="w-6 h-6"
+                                        className="h-6 w-6"
                                     >
                                         <path
                                             strokeLinecap="round"
@@ -228,7 +228,7 @@ function AnswerDeepform(props) {
                         <input
                             name="chat"
                             id="chat"
-                            className="block w-4/6 h-12 p-4 rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
+                            className="block h-12 w-4/6 rounded-md border-0 p-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
                             placeholder="Type your response..."
                             value={textInput}
                             onChange={(e) => setTextInput(e.target.value)}
@@ -243,7 +243,7 @@ function AnswerDeepform(props) {
                             onClick={() => sendMessage(textInput)}
                             disabled={loading}
                             className={
-                                "ml-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                "ml-4 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             }
                         >
                             {!loading ? (
@@ -253,7 +253,7 @@ function AnswerDeepform(props) {
                                     <svg
                                         aria-hidden="true"
                                         role="status"
-                                        class="inline w-4 h-4 mr-3 text-gray-200 animate-spin dark:text-gray-600"
+                                        class="mr-3 inline h-4 w-4 animate-spin text-gray-200 dark:text-gray-600"
                                         viewBox="0 0 100 101"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg"
@@ -276,7 +276,7 @@ function AnswerDeepform(props) {
                         <a
                             href="/"
                             target="_blank"
-                            className="mt-2 py-2 px-4 border border-black/20 rounded-2xl"
+                            className="mt-2 rounded-2xl border border-black/20 py-2 px-4"
                         >
                             Powered by{" "}
                             <span className="font-bold">Deepform</span>
@@ -287,7 +287,7 @@ function AnswerDeepform(props) {
                                 setShowEndInterviewModal(true);
                                 sendMessage("Sorry, I have to go!");
                             }}
-                            className="ml-4 nline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="nline-flex ml-4 items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
                             End Interview
                         </button>
