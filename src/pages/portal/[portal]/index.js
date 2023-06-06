@@ -32,7 +32,7 @@ function PublicPortalPage(props) {
         <>
             <Meta title={"Feedback Portal"} />
             <PortalLayout
-                portalId={portalData?.id}
+                portalData={portalData}
                 adminMode={userIsAdmin}
                 currentPage={"Feature Requests"}
             >

@@ -10,8 +10,11 @@ import {
     CalendarIcon,
     DocumentDuplicateIcon,
     ChartPieIcon,
+    LightBulbIcon,
+    Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { PlusIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+
 import { useAuth } from "util/auth";
 import Link from "next/link";
 
@@ -20,25 +23,49 @@ function classNames(...classes) {
 }
 
 export default function PortalLayout({
-    portalId,
+    portalData,
     children,
     adminMode,
     currentPage = "Feature Requests",
 }) {
     const auth = useAuth();
-    const [mobileNavigation, setMobileNavigation] = useState([
-        {
-            name: "Feature Requests",
-            href: `/portal/${portalId}`,
-            current: currentPage === "Feature Requests",
-            icon: HomeIcon,
-        },
-    ]);
+
     const [desktopNavigation, setDesktopNavigation] = useState([
         {
             name: "Feature Requests",
-            href: `/portal/${portalId}`,
+            href: `/portal/${portalData?.id}`,
             current: currentPage === "Feature Requests",
+        },
+    ]);
+
+    const [mobileNavigation, setMobileNavigation] = useState([
+        {
+            name: "Dashboard",
+            href: `/dashboard`,
+            current: currentPage === "Dashboard",
+            icon: HomeIcon,
+            show: adminMode,
+        },
+        {
+            name: "Feature Requests",
+            href: `/portal/${portalData?.id}`,
+            current: currentPage === "Feature Requests",
+            icon: LightBulbIcon,
+            show: true,
+        },
+        {
+            name: "Settings",
+            href: `/dashboard/settings`,
+            current: currentPage === "Settings",
+            icon: Cog6ToothIcon,
+            show: adminMode,
+            children: [
+                {
+                    name: "General",
+                    href: `/dashboard/settings`,
+                    current: currentPage === "General",
+                },
+            ],
         },
     ]);
 
@@ -59,16 +86,18 @@ export default function PortalLayout({
                         </button>
                     </div>
                     <div className="flex flex-shrink-0 items-center">
-                        <img
-                            className="block h-8 w-auto lg:hidden"
-                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                            alt="Your Company"
-                        />
-                        <img
-                            className="hidden h-8 w-auto lg:block"
-                            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                            alt="Your Company"
-                        />
+                        <Link href={`/portal/${portalData?.id}`}>
+                            <button className="flex cursor-pointer items-center justify-center gap-2">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-md border border-indigo-200 bg-indigo-100 text-indigo-600">
+                                    <h1 className="text-md font-semibold">
+                                        {portalData?.portal_name?.charAt(0)}
+                                    </h1>
+                                </div>
+                                <h2 className="font-satoshi text-xl font-medium text-gray-900">
+                                    {portalData?.portal_name}
+                                </h2>
+                            </button>
+                        </Link>
                     </div>
                     <div className="hidden items-center justify-center lg:ml-6 lg:flex lg:space-x-8">
                         {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
@@ -143,7 +172,7 @@ export default function PortalLayout({
 
                             {/* Profile dropdown */}
                             <Menu as="div" className="relative">
-                                <Menu.Button className="ml-2 hidden items-center p-1.5 lg:flex">
+                                <Menu.Button className="ml-2 flex items-center p-1.5">
                                     <span className="sr-only">
                                         Open user menu
                                     </span>
@@ -152,7 +181,7 @@ export default function PortalLayout({
                                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                                             alt=""
                                         /> */}
-                                    <svg
+                                    {/* <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
@@ -165,7 +194,12 @@ export default function PortalLayout({
                                             strokeLinejoin="round"
                                             d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
                                         />
-                                    </svg>
+                                    </svg> */}
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-indigo-300 bg-indigo-100">
+                                        <h1 className="text-indigo-500 ">
+                                            {auth.user?.name?.charAt(0)}
+                                        </h1>
+                                    </div>
 
                                     <span className="hidden lg:flex lg:items-center">
                                         <span
@@ -268,7 +302,7 @@ export default function PortalLayout({
                     ) : (
                         <div>
                             <Link
-                                href={`/auth/signin?next=/portal/${portalId}`}
+                                href={`/auth/signin?next=/portal/${portalData.portal_id}`}
                             >
                                 <button
                                     type="button"
@@ -281,7 +315,7 @@ export default function PortalLayout({
                                 </button>
                             </Link>
                             <Link
-                                href={`/auth/signup?next=/portal/${portalId}`}
+                                href={`/auth/signup?next=/portal/${portalData.portal_id}`}
                             >
                                 <button
                                     type="button"
@@ -374,32 +408,87 @@ export default function PortalLayout({
                                                     className="-mx-2 space-y-1"
                                                 >
                                                     {mobileNavigation.map(
-                                                        (item) => (
-                                                            <li key={item.name}>
-                                                                <a
-                                                                    href={
-                                                                        item.href
-                                                                    }
-                                                                    className={classNames(
-                                                                        item.current
-                                                                            ? "bg-gray-50 text-indigo-600"
-                                                                            : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                                                                        "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                                        (item) =>
+                                                            item.show && (
+                                                                <>
+                                                                    <li
+                                                                        key={
+                                                                            item.name
+                                                                        }
+                                                                    >
+                                                                        <Link
+                                                                            href={
+                                                                                item.href
+                                                                            }
+                                                                        >
+                                                                            <button
+                                                                                className={classNames(
+                                                                                    item.current
+                                                                                        ? "bg-gray-50 text-indigo-600"
+                                                                                        : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                                                                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                                                                )}
+                                                                            >
+                                                                                <item.icon
+                                                                                    className={classNames(
+                                                                                        item.current
+                                                                                            ? "text-indigo-600"
+                                                                                            : "text-gray-400 group-hover:text-indigo-600",
+                                                                                        "h-6 w-6 shrink-0"
+                                                                                    )}
+                                                                                    aria-hidden="true"
+                                                                                />
+                                                                                {
+                                                                                    item.name
+                                                                                }
+                                                                            </button>
+                                                                        </Link>
+                                                                    </li>
+                                                                    {item.children && (
+                                                                        <li
+                                                                            key={
+                                                                                item.name
+                                                                            }
+                                                                        >
+                                                                            <ul
+                                                                                role="list"
+                                                                                className="-mx-2 space-y-1"
+                                                                            >
+                                                                                {item.children.map(
+                                                                                    (
+                                                                                        child
+                                                                                    ) => (
+                                                                                        <li
+                                                                                            key={
+                                                                                                child.name
+                                                                                            }
+                                                                                        >
+                                                                                            <Link
+                                                                                                href={
+                                                                                                    child.href
+                                                                                                }
+                                                                                            >
+                                                                                                <button
+                                                                                                    className={classNames(
+                                                                                                        child.current
+                                                                                                            ? "bg-gray-50 text-indigo-600"
+                                                                                                            : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                                                                                                        "group ml-16 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                                                                                    )}
+                                                                                                >
+                                                                                                    {
+                                                                                                        child.name
+                                                                                                    }
+                                                                                                </button>
+                                                                                            </Link>
+                                                                                        </li>
+                                                                                    )
+                                                                                )}
+                                                                            </ul>
+                                                                        </li>
                                                                     )}
-                                                                >
-                                                                    <item.icon
-                                                                        className={classNames(
-                                                                            item.current
-                                                                                ? "text-indigo-600"
-                                                                                : "text-gray-400 group-hover:text-indigo-600",
-                                                                            "h-6 w-6 shrink-0"
-                                                                        )}
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                    {item.name}
-                                                                </a>
-                                                            </li>
-                                                        )
+                                                                </>
+                                                            )
                                                     )}
                                                 </ul>
                                             </li>

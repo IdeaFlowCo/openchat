@@ -42,7 +42,7 @@ function PortalSettingsGeneralPage() {
         <>
             <Meta title="Settings | Dashboard | Deepform" />
             <PortalLayout
-                portalId={portalData.id}
+                portalData={portalData}
                 adminMode={true}
                 currentPage={""}
             >

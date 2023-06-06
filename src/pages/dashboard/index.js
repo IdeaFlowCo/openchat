@@ -27,7 +27,7 @@ function DashboardHomePage() {
         router.push("/portal/new");
     }
 
-    if (!portalData) {
+    if (portalData === undefined || portalData === null || !portalData) {
         // Return loader
         return (
             <PageLoader />
@@ -39,9 +39,9 @@ function DashboardHomePage() {
             <Meta title="Dashboard | Deepform" />
             {/* <DashboardSection host={host} /> */}
             <PortalLayout
-                portalId={portalData.id}
+                portalData={portalData}
                 adminMode={true}
-                currentPage={""}
+                currentPage={"Dashboard"}
             >
                 <PortalAdminDashboard portalData={portalData} />
             </PortalLayout>
