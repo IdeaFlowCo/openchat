@@ -3,44 +3,48 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 function Meta(props) {
-  const { children, ...customPageMeta } = props;
-  const router = useRouter();
+    const { children, ...customPageMeta } = props;
+    const router = useRouter();
 
-  // Meta values that are the same across all pages
-  const globalMeta = {
-    // Site name
-    siteName: "Deepform",
-    // Your production domain (example: https://myapp.com)
-    domain: "https://deepform.ai",
-    // Your Twitter handle (example: @divjoy)
-    twitterHandle: "",
-  };
+    // Meta values that are the same across all pages
+    const globalMeta = {
+        // Site name
+        siteName: "Deepform",
+        // Your production domain (example: https://myapp.com)
+        domain: "https://deepform.ai",
+        // Your Twitter handle (example: @divjoy)
+        twitterHandle: "",
+    };
 
-  // Default meta values for current page (override with props)
-  const defaultPageMeta = {
-    // Page title
-    title: "Deepform - Train and Deploy A.I. User Researchers",
-    // Page description
-    description: `Deepform trains and deploys AI user researchers 
+    // Default meta values for current page (override with props)
+    const defaultPageMeta = {
+        // Page title
+        title: "Deepform - Train and Deploy A.I. User Researchers",
+        // Page description
+        description: `Deepform trains and deploys AI user researchers 
     to consistently gather deep insights from your users 
     via automated conversational interviews.`,
-    // Social share image (create this file in /public/images/)
-    image: "/images/social.png",
-    // Page type (see https://ogp.me/#types)
-    type: "website",
-  };
+        // Social share image (create this file in /public/images/)
+        image: "/images/social.png",
+        // Page type (see https://ogp.me/#types)
+        type: "website",
+    };
 
-  // Construct meta object from global, default, and custom meta
-  const meta = { ...globalMeta, ...defaultPageMeta, ...customPageMeta };
+    // Construct meta object from global, default, and custom meta
+    const meta = { ...globalMeta, ...defaultPageMeta, ...customPageMeta };
 
-  // Note: Each tag should have a unique `key` so that they are de-deduped if other
-  // `Meta` components are rendered on the same page or within nested components.
-  // prettier-ignore
-  return (
+    // Note: Each tag should have a unique `key` so that they are de-deduped if other
+    // `Meta` components are rendered on the same page or within nested components.
+    // prettier-ignore
+    return (
     <Head>
       <title>{meta.title}</title>
       <meta content={meta.description} name="description" key="description" />
       {meta.domain && <link rel="canonical" href={`${meta.domain}${router.asPath}`} key="canonical" />}
+      <meta name="viewport" content="height=device-height, 
+                      width=device-width, initial-scale=1.0, 
+                      minimum-scale=1.0, maximum-scale=1.0, 
+                      user-scalable=no, target-densitydpi=device-dpi"></meta>
 
       {/* Open Graph */}
       <meta property="og:title" content={meta.title} key="og-title" />

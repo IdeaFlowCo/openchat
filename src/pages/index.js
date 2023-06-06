@@ -54,7 +54,7 @@ function IndexPage({ host }) {
                                     height={1442}
                                 /> */}
                                 <iframe
-                                    src={`http://${host}/portal/10`}
+                                    src={`https://${host}/portal/10`}
                                     width="100%"
                                     height="100%"
                                     frameborder="0"

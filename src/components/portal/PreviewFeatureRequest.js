@@ -115,7 +115,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
         <Fragment key={singleFeedback.id}>
             <div
                 onClick={() => setOpen(true)}
-                className=" flex w-full gap-5 border-b py-8 px-2 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80"
+                className=" flex w-full gap-5 border-b py-8 px-2 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80 "
             >
                 <button
                     onClick={(e) => handleClickVote(e)}
@@ -126,7 +126,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                         {singleFeedback.upvotes.length}
                     </h1>
                 </button>
-                <div className="flex flex-grow flex-col">
+                <div className="flex flex-col">
                     <div className="flex items-center justify-start gap-4">
                         <button
                             onClick={(e) => handleClickVote(e)}
@@ -153,7 +153,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                             <p className="text-[11px] font-light text-gray-600">
                                 {formatDateString(singleFeedback.created_at)}
                             </p>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                                 {singleFeedback.topics?.map((topic, index) => (
                                     <Fragment key={index}>
                                         <p className="whitespace-nowrap text-[11px] font-light text-gray-600">
@@ -285,7 +285,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                             singleFeedback.created_at
                                                                         )}
                                                                     </p>
-                                                                    <div className="flex gap-2">
+                                                                    <div className="flex gap-2 flex-wrap">
                                                                         {singleFeedback.topics.map(
                                                                             (
                                                                                 topic,
