@@ -115,11 +115,11 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
         <Fragment key={singleFeedback.id}>
             <div
                 onClick={() => setOpen(true)}
-                className=" flex w-full gap-5 border-b py-8 px-6 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80"
+                className=" flex w-full gap-5 border-b py-8 px-2 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80"
             >
                 <button
                     onClick={(e) => handleClickVote(e)}
-                    className="z-50 flex h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
+                    className="z-50 hidden h-16 w-16 flex-none flex-col items-center justify-center rounded-lg border hover:border-2 sm:flex"
                 >
                     <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
                     <h1 className=" text-xl">
@@ -127,10 +127,21 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                     </h1>
                 </button>
                 <div className="flex flex-grow flex-col">
-                    <h1 className="text-lg font-medium line-clamp-1">
-                        {singleFeedback.title}
-                    </h1>
-                    <p className="mt-1 text-sm font-light text-gray-500 line-clamp-2">
+                    <div className="flex items-center justify-start gap-4">
+                        <button
+                            onClick={(e) => handleClickVote(e)}
+                            className="z-50 flex h-14 w-14 flex-none flex-col items-center justify-center rounded-lg border hover:border-2 sm:hidden"
+                        >
+                            <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
+                            <h1 className=" text-xl">
+                                {singleFeedback.upvotes.length}
+                            </h1>
+                        </button>
+                        <h1 className="text-lg font-medium line-clamp-1">
+                            {singleFeedback.title}
+                        </h1>
+                    </div>
+                    <p className="mt-4 sm:mt-1 text-sm font-light text-gray-500 line-clamp-2">
                         {singleFeedback.description}
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -194,7 +205,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                 >
                                     <Dialog.Panel className="pointer-events-auto w-fit">
                                         <div className="flex h-full flex-col overflow-y-scroll bg-white">
-                                            <div className="fixed right-0 px-4 py-6 sm:px-6 z-50">
+                                            <div className="fixed right-0 z-50 px-4 py-6 sm:px-6">
                                                 <div className="flex items-start justify-between">
                                                     <div />
                                                     <div className="relative ml-3 flex h-7 items-center">
@@ -227,7 +238,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                         portalData={portalData}
                                                     />
                                                 )}
-                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 sm:px-10 pb-20">
+                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 pb-20 sm:px-10">
                                                     <div className="mt-10 flex w-full gap-5 py-8 px-6 transition-all">
                                                         <button
                                                             onClick={(e) =>
@@ -235,7 +246,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                     e
                                                                 )
                                                             }
-                                                            className="z-50 flex h-14 w-14 sm:h-16 sm:w-16 flex-none flex-col items-center justify-center rounded-lg border  hover:border-2"
+                                                            className="z-50 flex h-14 w-14 flex-none flex-col items-center justify-center rounded-lg border hover:border-2 sm:h-16  sm:w-16"
                                                         >
                                                             <ChevronUpIcon className="-mb-1 h-5 w-5 text-gray-700" />
                                                             <h1 className=" text-xl">
