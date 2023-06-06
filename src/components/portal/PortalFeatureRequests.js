@@ -133,13 +133,13 @@ export default function PortalFeatureRequests({ portalData }) {
                     >
                         {/* <div className=" mt-2 divide-y divide-gray-200 px-2 b"> */}
                         <div className="py-1">
-                            <p className="px-10 py-3 text-xs text-gray-400">
+                            <p className="px-10 py-3 text-[11px] text-gray-400">
                                 Statuses
                             </p>
                             {portalData?.statuses.map((status) => (
                                 <button
                                     className={classNames(
-                                        "flex w-full overflow-scroll whitespace-nowrap px-10 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                        "flex w-full overflow-scroll whitespace-nowrap px-10 py-3.5 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                                     )}
                                     onClick={() => {
                                         if (
@@ -170,21 +170,21 @@ export default function PortalFeatureRequests({ portalData }) {
                                     {statusesFilterList.includes(
                                         status.name
                                     ) && (
-                                        <CheckIcon className="ml-auto h-5 w-5 text-green-500" />
+                                        <CheckIcon className="ml-auto h-4 w-4 text-green-500" />
                                     )}
                                 </button>
                             ))}
                         </div>
 
                         <div className="py-1">
-                            <p className="px-10 py-3 text-xs text-gray-400">
+                            <p className="px-10 py-3 text-[11px] text-gray-400">
                                 Topics
                             </p>
                             {topics &&
                                 topics?.map((topic) => (
                                     <button
                                         className={classNames(
-                                            "flex w-full overflow-scroll whitespace-nowrap px-10 py-4 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                            "flex w-full overflow-scroll whitespace-nowrap px-10 py-4 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                                         )}
                                         onClick={() => {
                                             if (
@@ -210,7 +210,7 @@ export default function PortalFeatureRequests({ portalData }) {
                                         <p className=" truncate">{topic}</p>
 
                                         {topicsFilterList.includes(topic) && (
-                                            <CheckIcon className="ml-auto h-5 w-5 text-green-500" />
+                                            <CheckIcon className="ml-auto h-4 w-4 text-green-500" />
                                         )}
                                     </button>
                                 ))}
@@ -252,7 +252,7 @@ export default function PortalFeatureRequests({ portalData }) {
                         <span className=" font-medium text-indigo-600">
                             Deepform
                         </span>
-                        
+
                     </a>
                 </li>
                 {/* </ul> */}

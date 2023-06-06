@@ -87,7 +87,7 @@ export default function PortalLayout({
                     </div>
                     <div className="flex flex-shrink-0 items-center">
                         <Link href={`/portal/${portalData?.id}`}>
-                            <button className="flex cursor-pointer items-center justify-center gap-2">
+                            <button className="flex cursor-pointer items-center justify-center gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-md border border-indigo-200 bg-indigo-100 text-indigo-600">
                                     <h1 className="text-md font-semibold">
                                         {portalData?.portal_name?.charAt(0)}
