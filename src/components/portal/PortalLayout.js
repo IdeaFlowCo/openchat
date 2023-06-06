@@ -302,7 +302,7 @@ export default function PortalLayout({
                     ) : (
                         <div>
                             <Link
-                                href={`/auth/signin?next=/portal/${portalData.portal_id}`}
+                                href={`/auth/signin?next=/portal/${portalData?.id}`}
                             >
                                 <button
                                     type="button"
@@ -315,7 +315,7 @@ export default function PortalLayout({
                                 </button>
                             </Link>
                             <Link
-                                href={`/auth/signup?next=/portal/${portalData.portal_id}`}
+                                href={`/auth/signup?next=/portal/${portalData?.id}`}
                             >
                                 <button
                                     type="button"
