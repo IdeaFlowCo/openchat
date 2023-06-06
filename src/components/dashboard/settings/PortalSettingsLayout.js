@@ -29,7 +29,7 @@ export default function PortalSettingsLayout({
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <ul
                 role="list"
-                className="fixed hidden h-[calc(100vh-65px)] grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 px-6 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-4 xl:w-72"
+                className="fixed hidden h-[calc(100vh-65px)] grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 px-6 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-4 xl:w-64"
             >
                 <li>
                     <ul role="list" className="-mx-2 space-y-1">
@@ -72,7 +72,7 @@ export default function PortalSettingsLayout({
                     </Link>
                 </li> */}
             </ul>
-            <main className="flex h-fit min-h-[100vh] w-screen items-start justify-center bg-gray-50 py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72">
+            <main className="flex h-fit min-h-[100vh] w-screen items-start justify-center bg-gray-50 py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-64">
                 <section className="flex w-full max-w-3xl flex-col gap-12 lg:w-5/6">
                     {children}
                 </section>

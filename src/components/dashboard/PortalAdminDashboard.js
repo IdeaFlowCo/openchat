@@ -21,7 +21,7 @@ export default function PortalAdminDashboard({ portalData }) {
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <ul
                 role="list"
-                className="fixed hidden h-[calc(100vh-65px)] grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 px-6 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-4 xl:w-72"
+                className="fixed hidden h-[calc(100vh-65px)] grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 px-6 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-4 xl:w-64"
             >
                 {/* <nav className="mt-10 flex flex-1 flex-col b"> */}
                 {/* <ul role="list" className="flex flex-1 flex-col "> */}
@@ -67,9 +67,9 @@ export default function PortalAdminDashboard({ portalData }) {
                 {/* </ul> */}
                 {/* </nav> */}
             </ul>
-            <main className="flex h-full w-screen items-center justify-center bg-gray-50 py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72">
+            <main className="flex h-full w-screen items-center justify-center bg-gray-50 py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-64">
                 <section className="flex w-full max-w-3xl flex-col gap-12 lg:w-5/6">
-                    <div className="flex justify-between px-2 md:px-10">
+                    <div className="flex justify-center px-2 md:px-10 ">
                         <div className="flex flex-col gap-4">
                             <h1 className="font-satoshi text-3xl font-medium tracking-tight text-gray-900 md:text-4xl">
                                 Welcome to your admin dashboard!

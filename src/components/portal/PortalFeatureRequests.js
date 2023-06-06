@@ -73,7 +73,7 @@ export default function PortalFeatureRequests({ portalData }) {
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <ul
                 role="list"
-                className="fixed hidden h-[calc(100vh-65px)] grow flex-col items-center gap-y-5 overflow-y-auto border-r border-gray-200 px-6 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-6 xl:w-72"
+                className="fixed hidden h-[calc(100vh-65px)] grow flex-col items-center gap-y-5 overflow-y-auto border-r border-gray-200 px-6 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-6 xl:w-64"
             >
                 {/* <nav className="mt-10 flex flex-1 flex-col b"> */}
                 {/* <ul role="list" className="flex flex-1 flex-col "> */}
