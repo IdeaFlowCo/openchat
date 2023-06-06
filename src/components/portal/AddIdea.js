@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import StatusBadge from "components/atoms/StatusBadge";
 import { useForm } from "react-hook-form";
-import { createFeedback } from "util/db";
+import { createFeedback, updateFeedback } from "util/db";
 import { useAuth } from "util/auth";
 
 const topics = [

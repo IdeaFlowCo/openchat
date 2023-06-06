@@ -410,12 +410,12 @@ export default function PortalLayout({
                                                     {mobileNavigation.map(
                                                         (item) =>
                                                             item.show && (
-                                                                <>
-                                                                    <li
-                                                                        key={
-                                                                            item.name
-                                                                        }
-                                                                    >
+                                                                <div
+                                                                    key={
+                                                                        item.name
+                                                                    }
+                                                                >
+                                                                    <li>
                                                                         <Link
                                                                             href={
                                                                                 item.href
@@ -487,7 +487,7 @@ export default function PortalLayout({
                                                                             </ul>
                                                                         </li>
                                                                     )}
-                                                                </>
+                                                                </div>
                                                             )
                                                     )}
                                                 </ul>

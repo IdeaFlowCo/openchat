@@ -145,11 +145,13 @@ export function useFeedback(id) {
 }
 
 // Fetch all feedback by portal
-export function useFeedbackByPortal(portalId) {
+export function useFeedbackByPortal(portalId, statusesFilterList, topicsFilterList) {
+    
     return useQuery(
         ["feedback", { portalId }],
-        () =>
-            supabase
+        () =>{
+            // Conditional Chaining
+            let query = supabase
                 .from("feedback")
                 .select(
                     `*,
@@ -157,13 +159,36 @@ export function useFeedbackByPortal(portalId) {
                         "*"
                     ),
                     upvotes (
-                        "*"
+                        "*" 
                     )
                     `
                 )
                 .eq("portal_id", portalId)
                 .order("created_at", { ascending: false })
-                .then(handle),
+            if (statusesFilterList.length > 0) {
+                query = query.in("status", statusesFilterList)
+            }
+            if (topicsFilterList.length > 0) {
+                query = query.overlaps("topics", topicsFilterList)
+            }
+            return query.then(handle)
+
+        },
+            // supabase
+            //     .from("feedback")
+            //     .select(
+            //         `*,
+            //         users (
+            //             "*"
+            //         ),
+            //         upvotes (
+            //             "*"
+            //         )
+            //         `
+            //     )
+            //     .eq("portal_id", portalId)
+            //     .order("created_at", { ascending: false })
+            //     .then(handle),
         { enabled: !!portalId }
     );
 }
