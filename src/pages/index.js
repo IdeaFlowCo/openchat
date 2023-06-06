@@ -6,7 +6,7 @@ import AbstractBg from "components/atoms/AbstractBg";
 import FeatureSection from "components/FeatureSection";
 import { Transition } from "@headlessui/react";
 import CallToAction from "components/CallToAction";
-import DeepformDashboard from "../../public/images/DeepformDashboard.png";
+import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
 import TestimonialSection from "components/TestimonialSection";
 import FAQ from "components/FAQ";
 import CTAButtons from "components/atoms/CTAButtons";
@@ -38,22 +38,23 @@ function IndexPage({ host }) {
                                 product feedback and build delightful products
                                 that your customers love.
                             </p>
-                            <CTAButtons centered={true} />
+                            <CTAButtons centered={true} demoMode={true} />
                         </Transition>
 
-                        <div className="relative pt-16 -mx-2">
-                            <p className="mb-4 text-center font-satoshi text-indigo-600">
+                        <div className="relative -mx-2 pt-16">
+                            {/* <p className="mb-4 text-center font-satoshi text-indigo-600">
                                 See our own portal live ⬇
-                            </p>
-                            <div className="mx-auto h-[600px] max-w-7xl px-0 lg:px-8">
-                                {/* <img
-                                    src={DeepformDashboard.src}
+                            </p> */}
+                            <div className=" mx-auto h-fit max-w-7xl px-0 lg:px-8">
+                                <img
+                                    src={DeepformFeedbackPortal.src}
                                     alt="App screenshot"
                                     className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
                                     width={2432}
                                     height={1442}
-                                /> */}
-                                <iframe
+                                />
+
+                                {/* <iframe
                                     src={`https://${host}/portal/10`}
                                     width="100%"
                                     height="100%"
@@ -61,22 +62,14 @@ function IndexPage({ host }) {
                                     allow="autoplay; fullscreen; picture-in-picture"
                                     allowFullScreen
                                     className="shadow-xl"
-                                />
+                                /> */}
 
                                 {/* <div className="relative" aria-hidden="true">
                                     <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
                                 </div> */}
                             </div>
-                            <a
-                                href={`http://${host}/portal/10`}
-                                target="_blank"
-                            >
-                                <p className="mt-4 text-center font-satoshi text-gray-700 hover:text-indigo-600">
-
-                                Link to Portal
-                                </p>
-                            </a>
                         </div>
+
                         {/* <div className="mt-16 flow-root sm:mt-24">
                             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
                                 <img
@@ -90,6 +83,11 @@ function IndexPage({ host }) {
                         </div> */}
                     </div>
                 </div>
+                <a href={`/portal/10`} target="_blank">
+                    <p className="mt-4 text-center font-satoshi text-gray-700 hover:text-indigo-600">
+                        Link to Portal
+                    </p>
+                </a>
                 {/* <div
                     className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
                     aria-hidden="true"
@@ -102,7 +100,7 @@ function IndexPage({ host }) {
                         }}
                     />
                 </div> */}
-                {/* <FeatureSection /> */}
+                <FeatureSection />
                 <TestimonialSection />
                 <FAQ />
                 <CallToAction />

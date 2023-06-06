@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import DeepformDashboard from "../../public/images/DeepformDashboard.png";
-import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png"
+import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
 
 function CallToAction() {
     return (
@@ -34,7 +34,8 @@ function CallToAction() {
                             Start using Deepform today. */}
                         </h2>
                         <p className="mt-6 text-lg leading-8 text-gray-300">
-                            Capture, organize, and analyze product feedback in one place, powered by generative A.I.
+                            Capture, organize, and analyze product feedback in
+                            one place, powered by generative A.I.
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
                             <Link href="/pricing">
@@ -42,9 +43,9 @@ function CallToAction() {
                                     Get started for free
                                 </button>
                             </Link>
-                            <Link href="#">
+                            <Link href="/about">
                                 <button className="text-sm font-semibold leading-6 text-white">
-                                    Learn more <span aria-hidden="true">→</span>
+                                    Contact Us <span aria-hidden="true">→</span>
                                 </button>
                             </Link>
                         </div>

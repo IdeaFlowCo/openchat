@@ -72,7 +72,7 @@ export default function PortalLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false);
     return (
         <>
-            <div className="fixed z-50 flex h-16 w-screen justify-between border bg-white px-4 sm:px-6 lg:px-8">
+            <div className="fixed z-10 flex h-16 w-screen justify-between border bg-white px-4 sm:px-6 lg:px-8">
                 <div className="flex">
                     <div className="-ml-2 mr-2 flex items-center lg:hidden">
                         {/* Mobile menu button */}
