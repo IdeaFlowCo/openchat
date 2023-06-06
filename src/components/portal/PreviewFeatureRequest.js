@@ -238,8 +238,8 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                         portalData={portalData}
                                                     />
                                                 )}
-                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 pb-20 sm:px-10">
-                                                    <div className="mt-10 flex w-full gap-5 py-8 px-6 transition-all">
+                                                <div className="relative flex w-screen max-w-2xl flex-1 flex-col gap-4 overflow-auto px-4 pb-20 sm:px-10 ">
+                                                    <div className="mt-10 flex w-full gap-5 py-8 transition-all">
                                                         <button
                                                             onClick={(e) =>
                                                                 handleClickVote(
