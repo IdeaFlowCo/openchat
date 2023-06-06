@@ -28,7 +28,6 @@
     "next-multiparty": "^0.7.0",
     "node-fetch": "^3.3.1",
     "postcss": "8.4.12",
-    "postcss-100vh-fix": "^1.0.2",
     "query-string": "6.13.8",
     "raw-body": "2.4.1",
     "react": "17.0.2",
