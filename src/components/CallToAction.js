@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import DeepformDashboard from "../../public/images/DeepformDashboard.png";
+import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png"
 
 function CallToAction() {
     return (
@@ -28,13 +29,12 @@ function CallToAction() {
                     </svg>
                     <div className="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
                         <h2 className="font-satoshi text-4xl font-medium tracking-tight text-white sm:text-4xl">
-                            Get 100x more insights.
-                            <br />
-                            Start using Deepform today.
+                            100x your customer empathy with Deepform today.
+                            {/* <br />
+                            Start using Deepform today. */}
                         </h2>
                         <p className="mt-6 text-lg leading-8 text-gray-300">
-                            Acquire deep insights from your users via automated
-                            conversational interviews.
+                            Capture, organize, and analyze product feedback in one place, powered by generative A.I.
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
                             <Link href="/pricing">
@@ -52,7 +52,7 @@ function CallToAction() {
                     <div className="relative mt-16 h-80 lg:mt-8">
                         <img
                             className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
-                            src={DeepformDashboard.src}
+                            src={DeepformFeedbackPortal.src}
                             alt="App screenshot"
                             width={1824}
                             height={1080}

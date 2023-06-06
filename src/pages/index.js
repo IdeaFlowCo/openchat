@@ -11,7 +11,7 @@ import TestimonialSection from "components/TestimonialSection";
 import FAQ from "components/FAQ";
 import CTAButtons from "components/atoms/CTAButtons";
 
-function IndexPage(props) {
+function IndexPage({ host }) {
     return (
         <>
             <Meta />
@@ -31,27 +31,51 @@ function IndexPage(props) {
                             className="mx-auto max-w-2xl text-center"
                         >
                             <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
-                                The feedback portal from the future.
+                                The customer feedback portal from the future.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Capture, organize, and analyze product feedback
-                                in one place to build better products that your customers love.
+                                Use A.I. to capture, organize, and analyze
+                                product feedback and build delightful products
+                                that your customers love.
                             </p>
                             <CTAButtons centered={true} />
                         </Transition>
-                        <div className="relative overflow-y-hidden pt-16">
-                            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                                <img
+
+                        <div className="relative pt-16 -mx-2">
+                            <p className="mb-4 text-center font-satoshi text-indigo-600">
+                                See our own portal live ⬇
+                            </p>
+                            <div className="mx-auto h-[600px] max-w-7xl px-0 lg:px-8">
+                                {/* <img
                                     src={DeepformDashboard.src}
                                     alt="App screenshot"
                                     className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
                                     width={2432}
                                     height={1442}
+                                /> */}
+                                <iframe
+                                    src={`http://${host}/portal/10`}
+                                    width="100%"
+                                    height="100%"
+                                    frameborder="0"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    className="shadow-xl"
                                 />
-                                <div className="relative" aria-hidden="true">
+
+                                {/* <div className="relative" aria-hidden="true">
                                     <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
-                                </div>
+                                </div> */}
                             </div>
+                            <a
+                                href={`http://${host}/portal/10`}
+                                target="_blank"
+                            >
+                                <p className="mt-4 text-center font-satoshi text-gray-700 hover:text-indigo-600">
+
+                                Link to Portal
+                                </p>
+                            </a>
                         </div>
                         {/* <div className="mt-16 flow-root sm:mt-24">
                             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
@@ -80,12 +104,21 @@ function IndexPage(props) {
                 </div> */}
                 {/* <FeatureSection /> */}
                 <TestimonialSection />
-                {/* <FAQ /> */}
+                <FAQ />
                 <CallToAction />
                 {/* <NewsletterSection /> */}
             </div>
         </>
     );
+}
+
+// Get host via getServerSideProps
+export async function getServerSideProps(context) {
+    return {
+        props: {
+            host: context.req.headers.host,
+        },
+    };
 }
 
 export default IndexPage;
