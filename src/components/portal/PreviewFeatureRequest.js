@@ -115,7 +115,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
         <Fragment key={singleFeedback.id}>
             <div
                 onClick={() => setOpen(true)}
-                className=" flex w-full gap-5 border-b py-8 px-2 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80 "
+                className=" flex w-full gap-5 border-b py-8 px-2 transition-all first:border-t hover:cursor-pointer hover:bg-gray-50/80"
             >
                 <button
                     onClick={(e) => handleClickVote(e)}
@@ -126,7 +126,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                         {singleFeedback.upvotes.length}
                     </h1>
                 </button>
-                <div className="flex flex-col">
+                <div className="flex flex-col w-full">
                     <div className="flex items-center justify-start gap-4">
                         <button
                             onClick={(e) => handleClickVote(e)}
@@ -172,7 +172,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                 <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
                     <ChatBubbleLeftIcon className="h-5 w-5 font-extralight text-gray-400" />
                     <p className="text-[11px] font-light text-gray-500">
-                        {singleFeedback.comments}
+                        {/* {commentsData?.length} */}
                     </p>
                 </div>
             </div>

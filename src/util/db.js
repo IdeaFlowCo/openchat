@@ -327,7 +327,7 @@ export function useComment(id) {
     );
 }
 
-// Fetch all comments by feedback
+// Fetch all parent comments by feedback
 export function useCommentsByFeedback(feedbackId) {
     return useQuery(
         ["comments", { feedbackId }],
