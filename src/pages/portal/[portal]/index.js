@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Meta from "components/Meta";
 import { requireAuth } from "util/auth";
 import { useRouter } from "next/router";
@@ -12,9 +12,9 @@ function PublicPortalPage(props) {
     // Grab Deepform ID
     const router = useRouter();
     const { portal: portalId } = router.query;
-
+    // const [userIsAdmin, setUserIsAdmin] = useState(false);
     if (portalId === "undefined") {
-        console.log("portalId is undefined")
+        console.log("portalId is undefined");
         router.push("/");
         return <div></div>;
     }
@@ -27,7 +27,7 @@ function PublicPortalPage(props) {
         router.push("/");
     }
 
-    const userIsAdmin = auth.user?.portal_id === portalData?.id;
+    let userIsAdmin = auth.user?.portal_id === portalData?.id;
     return (
         <>
             <Meta title={"Feedback Portal"} />

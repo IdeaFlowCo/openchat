@@ -44,24 +44,22 @@ export default function PortalLayout({
             href: `/dashboard`,
             current: currentPage === "Dashboard",
             icon: HomeIcon,
-            show: adminMode,
         },
         {
             name: "Feature Requests",
             href: `/portal/${portalData?.id}`,
             current: currentPage === "Feature Requests",
             icon: LightBulbIcon,
-            show: true,
+            alwaysShow: true,
         },
         {
             name: "Settings",
             href: `/dashboard/settings`,
             current: currentPage === "Settings",
             icon: Cog6ToothIcon,
-            show: adminMode,
             children: [
                 {
-                    name: "General",
+                    name: "· General",
                     href: `/dashboard/settings`,
                     current: currentPage === "General",
                 },
@@ -409,7 +407,10 @@ export default function PortalLayout({
                                                 >
                                                     {mobileNavigation.map(
                                                         (item) =>
-                                                            item.show && (
+                                                            (auth?.user
+                                                                ?.portal_id ===
+                                                                portalData?.id ||
+                                                                item.alwaysShow) && (
                                                                 <div
                                                                     key={
                                                                         item.name
@@ -500,7 +501,7 @@ export default function PortalLayout({
                     </div>
                 </Dialog>
             </Transition.Root>
-            <main className="fixed bottom-0 pt-[65px] flex h-full w-screen overflow-auto">
+            <main className="fixed bottom-0 flex h-full w-screen overflow-auto pt-[65px]">
                 {/* Your content */}
                 {children}
             </main>
