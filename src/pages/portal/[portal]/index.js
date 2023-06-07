@@ -30,7 +30,7 @@ function PublicPortalPage(props) {
     let userIsAdmin = auth.user?.portal_id === portalData?.id;
     return (
         <>
-            <Meta title={"Feedback Portal"} />
+            <Meta title={"Feedback Portal | Deepform"} />
             <PortalLayout
                 portalData={portalData}
                 adminMode={userIsAdmin}

@@ -30,7 +30,7 @@ const featuresSection1 = [
         icon: CursorArrowRaysIcon,
     },
     {
-        name: "A.I. Followups",
+        name: "A.I. Followups (Coming soon!)",
         description:
             "Your A.I. asks followup questions to get more detail, so you can uncover the underlying problem faster.",
         icon: ArrowsPointingInIcon,
