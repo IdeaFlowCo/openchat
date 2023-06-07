@@ -120,13 +120,22 @@ export default function PortalFeatureRequests({ portalData }) {
     return (
         <>
             {/* Sidebar component, swap this element with another sidebar if you like */}
-            <ul
+            <Transition
+                as="ul"
                 role="list"
+                appear={true}
+                show={true}
+                enter="transition ease-out duration-500"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-100 translate-y-1"
                 className="fixed hidden h-[calc(100vh-65px)] grow flex-col items-center gap-y-5 overflow-y-auto border-r border-gray-200 lg:flex lg:w-52 lg:flex-col lg:justify-between lg:py-6 xl:w-64"
             >
                 {/* <nav className="mt-10 flex flex-1 flex-col b"> */}
                 {/* <ul role="list" className="flex flex-1 flex-col "> */}
-                <li className="w-full">
+                <li className="w-full ">
                     <ul
                         role="list"
                         className="max-h-[75vh] w-full space-y-1 overflow-scroll"
@@ -252,13 +261,24 @@ export default function PortalFeatureRequests({ portalData }) {
                         <span className=" font-medium text-indigo-600">
                             Deepform
                         </span>
-
                     </a>
                 </li>
                 {/* </ul> */}
                 {/* </nav> */}
-            </ul>
+            </Transition>
             <main className="flex h-fit w-screen items-center justify-center py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72">
+            {/* <Transition
+                as="main"
+                appear={true}
+                show={true}
+                enter="transition ease-out duration-500 delay-200"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-100 translate-y-1"
+                className="b flex h-fit w-screen items-center justify-center py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72"
+            > */}
                 <section className="flex w-full max-w-3xl flex-col gap-4 lg:w-5/6 ">
                     <div className="flex justify-between px-2 md:px-10">
                         <div className="flex flex-col gap-4">
@@ -484,6 +504,7 @@ export default function PortalFeatureRequests({ portalData }) {
                         ))}
                     </div>
                 </section>
+            {/* </Transition> */}
             </main>
             {openAuthModal && (
                 <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />

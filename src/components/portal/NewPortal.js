@@ -5,6 +5,7 @@ import { createPortal, updateUser } from "util/db";
 import AddIdea from "./AddIdea";
 import { useAuth } from "util/auth";
 import { useRouter } from "next/router";
+import { Transition } from "@headlessui/react";
 
 export default function NewPortal() {
     const router = useRouter();
@@ -81,7 +82,17 @@ export default function NewPortal() {
                 </div>
                 <div className="flex w-full flex-col items-center justify-start gap-4 sm:w-96">
                     {step === 1 && (
-                        <>
+                        <Transition
+                            appear={true}
+                            show={true}
+                            enter="transition ease-out duration-500 delay-500"
+                            enterFrom="opacity-0 translate-y-1"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in duration-150"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-1"
+                            className="flex w-full flex-col items-center justify-start gap-4 sm:w-96"
+                        >
                             <h1 className="font-satoshi text-3xl font-medium tracking-tight text-gray-900">
                                 Welcome!
                             </h1>
@@ -128,10 +139,20 @@ export default function NewPortal() {
                                     </div>
                                 </div>
                             </form>
-                        </>
+                        </Transition>
                     )}
                     {step === 2 && (
-                        <>
+                        <Transition
+                            appear={true}
+                            show={true}
+                            enter="transition ease-out duration-500 delay-500"
+                            enterFrom="opacity-0 translate-y-1"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in duration-150"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-1"
+                            className="flex w-full flex-col items-center justify-start gap-4 sm:w-96"
+                        >
                             <h1 className="font-satoshi text-3xl font-medium tracking-tight text-gray-900">
                                 All set! 🥳
                             </h1>
@@ -151,7 +172,7 @@ export default function NewPortal() {
                             >
                                 Go to Portal
                             </button>
-                        </>
+                        </Transition>
                     )}
                 </div>
                 <div />
