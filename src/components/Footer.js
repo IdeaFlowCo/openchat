@@ -145,7 +145,8 @@ export default function Footer() {
                         /> */}
                         <Logo />
                         <p className="text-sm leading-6 text-gray-600 max-w-[300px]">
-                            Building a new era of customer empathy.
+                            Building a new paradigm for customer empathy 
+                            through generative AI.
                         </p>
                         {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (
@@ -181,11 +182,11 @@ export default function Footer() {
                                         </li>
                                     ))}
                                     <a
-                                        href="https://deepform.ai/form/36"
+                                        href="/portal/10"
                                         target="_blank"
                                         className="flex justify-start items-center gap-2 text-sm leading-6 text-gray-600 hover:text-gray-900"
                                     >
-                                        Demo Deepform
+                                        See our portal
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 20 20"
