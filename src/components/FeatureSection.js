@@ -45,7 +45,7 @@ const featuresSection2 = [
         icon: ChatBubbleLeftRightIcon,
     },
     {
-        name: "A.I. Analysis",
+        name: "A.I. Analysis (Coming Soon)",
         description:
             "Chat with your A.I. about your data and turn raw feedback into insights. Summarize, categorize, and more.",
         icon: SparklesIcon,
