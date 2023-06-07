@@ -19,11 +19,9 @@ function Meta(props) {
     // Default meta values for current page (override with props)
     const defaultPageMeta = {
         // Page title
-        title: "Deepform - Train and Deploy A.I. User Researchers",
+        title: "Deepform - The customer feedback portal from the future.",
         // Page description
-        description: `Deepform trains and deploys AI user researchers 
-    to consistently gather deep insights from your users 
-    via automated conversational interviews.`,
+        description: `Use A.I. to capture, organize, and analyze product feedback and build delightful products that your customers love.`,
         // Social share image (create this file in /public/images/)
         image: "/images/social.png",
         // Page type (see https://ogp.me/#types)
