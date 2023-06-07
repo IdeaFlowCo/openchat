@@ -15,7 +15,7 @@ export default function NewPortal() {
     const [step, setStep] = useState(1);
 
     // If the user already has a portal, redirect to it
-    if (auth.user?.portal_id) {
+    if (step === 1 && !loading && auth.user?.portal_id) {
         router.push(`/portal/${auth.user.portal_id}`);
     }
     const onSubmit = (data) => {
@@ -138,15 +138,16 @@ export default function NewPortal() {
                             <p className="text-center font-light text-gray-700">
                                 Now, let's create your first feature request.
                                 What's a feature you're considering building?
+                                Click "Add an Idea" to add it!
                             </p>
-                            <AddIdea portalId={portalId} />
+                            <AddIdea portalId={portalId} disableFixed={true} />
                             {/* Go to newly created portal button */}
                             <button
                                 type="button"
                                 onClick={() => {
                                     router.push(`/portal/${portalId}`);
                                 }}
-                                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="group relative mt-4 flex w-fit justify-center rounded-md border border-gray-900/20 bg-white py-3 px-4 text-sm font-medium text-gray-900 shadow-sm  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Go to Portal
                             </button>
