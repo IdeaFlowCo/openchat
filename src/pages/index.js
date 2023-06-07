@@ -6,12 +6,12 @@ import AbstractBg from "components/atoms/AbstractBg";
 import FeatureSection from "components/FeatureSection";
 import { Transition } from "@headlessui/react";
 import CallToAction from "components/CallToAction";
-import DeepformDashboard from "../../public/images/DeepformDashboard.png";
+import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
 import TestimonialSection from "components/TestimonialSection";
 import FAQ from "components/FAQ";
 import CTAButtons from "components/atoms/CTAButtons";
 
-function IndexPage(props) {
+function IndexPage({ host }) {
     return (
         <>
             <Meta />
@@ -31,29 +31,45 @@ function IndexPage(props) {
                             className="mx-auto max-w-2xl text-center"
                         >
                             <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
-                                A.I. that conducts user interviews for you
+                                The customer feedback portal from the future.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Deepform lets you train A.I. to conduct user
-                                interviews anytime, anywhere, without the hassle
-                                of scheduling or conducting them yourself.
+                                Use A.I. to capture, organize, and analyze
+                                product feedback and build delightful products
+                                that your customers love.
                             </p>
-                            <CTAButtons centered={true} />
+                            <CTAButtons centered={true} demoMode={true} />
                         </Transition>
-                        <div className="relative overflow-y-hidden pt-16">
-                            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
+                        <div className="relative -mx-2 pt-16">
+                            {/* <p className="mb-4 text-center font-satoshi text-indigo-600">
+                                See our own portal live ⬇
+                            </p> */}
+                            <div className=" mx-auto h-fit max-w-7xl px-0 lg:px-8">
                                 <img
-                                    src={DeepformDashboard.src}
+                                    src={DeepformFeedbackPortal.src}
                                     alt="App screenshot"
                                     className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
                                     width={2432}
                                     height={1442}
                                 />
-                                <div className="relative" aria-hidden="true">
+
+                                {/* <iframe
+                                    src={`https://${host}/portal/10`}
+                                    width="100%"
+                                    height="100%"
+                                    frameborder="0"
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    className="shadow-xl"
+                                /> */}
+
+                                {/* <div className="relative" aria-hidden="true">
                                     <div className="absolute -inset-x-20 bottom-0 bg-gradient-to-t from-white pt-[7%]" />
-                                </div>
+                                </div> */}
                             </div>
                         </div>
+
                         {/* <div className="mt-16 flow-root sm:mt-24">
                             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
                                 <img
@@ -67,6 +83,11 @@ function IndexPage(props) {
                         </div> */}
                     </div>
                 </div>
+                <a href={`/portal/10`} target="_blank">
+                    <p className="mt-4 text-center font-satoshi text-gray-700 hover:text-indigo-600">
+                        Link to Portal
+                    </p>
+                </a>
                 {/* <div
                     className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
                     aria-hidden="true"
@@ -87,6 +108,15 @@ function IndexPage(props) {
             </div>
         </>
     );
+}
+
+// Get host via getServerSideProps
+export async function getServerSideProps(context) {
+    return {
+        props: {
+            host: context.req.headers.host,
+        },
+    };
 }
 
 export default IndexPage;

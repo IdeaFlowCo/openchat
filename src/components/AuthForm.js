@@ -1,145 +1,171 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "util/auth";
+import { updateUser } from "util/db";
 
 function AuthForm(props) {
-  const auth = useAuth();
+    const auth = useAuth();
 
-  const [pending, setPending] = useState(false);
-  const { handleSubmit, register, errors, getValues } = useForm();
+    const [pending, setPending] = useState(false);
+    const { handleSubmit, register, errors, getValues } = useForm();
 
-  const submitHandlersByType = {
-    signin: ({ email, pass }) => {
-      return auth.signin(email, pass).then((user) => {
-        // Call auth complete handler
-        props.onAuth(user);
-      });
-    },
-    signup: ({ email, pass }) => {
-      return auth.signup(email, pass).then((user) => {
-        // Call auth complete handler
-        props.onAuth(user);
-      });
-    },
-    forgotpass: ({ email }) => {
-      return auth.sendPasswordResetEmail(email).then(() => {
-        setPending(false);
-        // Show success alert message
-        props.onFormAlert({
-          type: "success",
-          message: "Password reset email sent",
+    const submitHandlersByType = {
+        signin: ({ email, pass }) => {
+            return auth.signin(email, pass).then((user) => {
+                // Call auth complete handler
+                props.onAuth(user);
+            });
+        },
+        signup: ({ name, email, pass }) => {
+            return auth.signup(email, pass).then(async (user) => {
+                console.log("user", user)
+                // Add display name
+                await updateUser(user.id, {
+                    name: name,
+                });
+                // Call auth complete handler
+                props.onAuth(user);
+            });
+        },
+        forgotpass: ({ email }) => {
+            return auth.sendPasswordResetEmail(email).then(() => {
+                setPending(false);
+                // Show success alert message
+                props.onFormAlert({
+                    type: "success",
+                    message: "Password reset email sent",
+                });
+            });
+        },
+        changepass: ({ pass }) => {
+            return auth.confirmPasswordReset(pass).then(() => {
+                setPending(false);
+                // Show success alert message
+                props.onFormAlert({
+                    type: "success",
+                    message: "Your password has been changed",
+                });
+            });
+        },
+    };
+
+    // Handle form submission
+    const onSubmit = ({ name, email, pass }) => {
+        // Show pending indicator
+        setPending(true);
+
+        // Call submit handler for auth type
+        submitHandlersByType[props.type]({
+            name,
+            email,
+            pass,
+        }).catch((error) => {
+            setPending(false);
+            // Show error alert message
+            props.onFormAlert({
+                type: "error",
+                message: error.message,
+            });
         });
-      });
-    },
-    changepass: ({ pass }) => {
-      return auth.confirmPasswordReset(pass).then(() => {
-        setPending(false);
-        // Show success alert message
-        props.onFormAlert({
-          type: "success",
-          message: "Your password has been changed",
-        });
-      });
-    },
-  };
+    };
 
-  // Handle form submission
-  const onSubmit = ({ email, pass }) => {
-    // Show pending indicator
-    setPending(true);
+    return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+            {["signup"].includes(props.type) && (
+                <div className="mb-2">
+                    <input
+                        className="w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1"
+                        name="name"
+                        type="text"
+                        placeholder="Full Name"
+                        ref={register({
+                            required: "Please enter your name",
+                        })}
+                    />
 
-    // Call submit handler for auth type
-    submitHandlersByType[props.type]({
-      email,
-      pass,
-    }).catch((error) => {
-      setPending(false);
-      // Show error alert message
-      props.onFormAlert({
-        type: "error",
-        message: error.message,
-      });
-    });
-  };
+                    {errors.name && (
+                        <p className="mt-1 text-left text-sm text-red-600">
+                            {errors.name.message}
+                        </p>
+                    )}
+                </div>
+            )}
+            {["signup", "signin", "forgotpass"].includes(props.type) && (
+                <div className="mb-2">
+                    <input
+                        className="w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1"
+                        name="email"
+                        type="email"
+                        placeholder="Email"
+                        ref={register({
+                            required: "Please enter an email",
+                        })}
+                    />
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {["signup", "signin", "forgotpass"].includes(props.type) && (
-        <div className="mb-2">
-          <input
-            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
-            name="email"
-            type="email"
-            placeholder="Email"
-            ref={register({
-              required: "Please enter an email",
-            })}
-          />
+                    {errors.email && (
+                        <p className="mt-1 text-left text-sm text-red-600">
+                            {errors.email.message}
+                        </p>
+                    )}
+                </div>
+            )}
 
-          {errors.email && (
-            <p className="mt-1 text-sm text-left text-red-600">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-      )}
+            {["signup", "signin", "changepass"].includes(props.type) && (
+                <div className="mb-2">
+                    <input
+                        className="w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1"
+                        name="pass"
+                        type="password"
+                        placeholder="Password"
+                        ref={register({
+                            required: "Please enter a password",
+                        })}
+                    />
 
-      {["signup", "signin", "changepass"].includes(props.type) && (
-        <div className="mb-2">
-          <input
-            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
-            name="pass"
-            type="password"
-            placeholder="Password"
-            ref={register({
-              required: "Please enter a password",
-            })}
-          />
+                    {errors.pass && (
+                        <p className="mt-1 text-left text-sm text-red-600">
+                            {errors.pass.message}
+                        </p>
+                    )}
+                </div>
+            )}
 
-          {errors.pass && (
-            <p className="mt-1 text-sm text-left text-red-600">
-              {errors.pass.message}
-            </p>
-          )}
-        </div>
-      )}
+            {["signup", "changepass"].includes(props.type) && (
+                <div className="mb-2">
+                    <input
+                        className="w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1"
+                        name="confirmPass"
+                        type="password"
+                        placeholder="Confirm Password"
+                        ref={register({
+                            required: "Please enter your password again",
+                            validate: (value) => {
+                                if (value === getValues().pass) {
+                                    return true;
+                                } else {
+                                    return "This doesn't match your password";
+                                }
+                            },
+                        })}
+                    />
 
-      {["signup", "changepass"].includes(props.type) && (
-        <div className="mb-2">
-          <input
-            className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
-            name="confirmPass"
-            type="password"
-            placeholder="Confirm Password"
-            ref={register({
-              required: "Please enter your password again",
-              validate: (value) => {
-                if (value === getValues().pass) {
-                  return true;
-                } else {
-                  return "This doesn't match your password";
-                }
-              },
-            })}
-          />
+                    {errors.confirmPass && (
+                        <p className="mt-1 text-left text-sm text-red-600">
+                            {errors.confirmPass.message}
+                        </p>
+                    )}
+                </div>
+            )}
 
-          {errors.confirmPass && (
-            <p className="mt-1 text-sm text-left text-red-600">
-              {errors.confirmPass.message}
-            </p>
-          )}
-        </div>
-      )}
-
-      <button
-        className="py-2 px-4 w-full text-white bg-indigo-500 rounded border-0 hover:bg-indigo-600 focus:outline-none"
-        type="submit"
-        disabled={pending}
-      >
-        {pending ? "..." : props.buttonAction}
-      </button>
-    </form>
-  );
+            <button
+                className="w-full rounded border-0 bg-indigo-500 py-2 px-4 text-white hover:bg-indigo-600 focus:outline-none"
+                type="submit"
+                disabled={pending}
+            >
+                {pending ? "..." : props.buttonAction}
+            </button>
+        </form>
+    );
 }
 
 export default AuthForm;

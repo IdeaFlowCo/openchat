@@ -7,8 +7,10 @@ import { usePortal } from "util/db";
 import PortalLayout from "components/portal/PortalLayout";
 import PortalAdminDashboard from "components/dashboard/PortalAdminDashboard";
 import { useAuth } from "util/auth";
-import PageLoader from "components/PageLoader";
-function DashboardHomePage() {
+import PortalSettingsGeneral from "components/dashboard/settings/PortalSettingsGeneral";
+import PortalSettingsLayout from "components/dashboard/settings/PortalSettingsLayout";
+
+function PortalSettingsGeneralPage() {
     const auth = useAuth();
     const router = useRouter();
 
@@ -27,26 +29,32 @@ function DashboardHomePage() {
         router.push("/portal/new");
     }
 
-    if (portalData === undefined || portalData === null || !portalData) {
+    if (!portalData) {
         // Return loader
         return (
-            <PageLoader />
+            <div className="flex h-screen w-screen items-center justify-center">
+                Loading...
+            </div>
         );
     }
 
     return (
         <>
-            <Meta title="Dashboard | Deepform" />
-            {/* <DashboardSection host={host} /> */}
+            <Meta title="Settings | Dashboard | Deepform" />
             <PortalLayout
                 portalData={portalData}
                 adminMode={true}
-                currentPage={"Dashboard"}
+                currentPage={""}
             >
-                <PortalAdminDashboard portalData={portalData} />
+                <PortalSettingsLayout
+                    currentPage={"General"}
+                    portalData={portalData}
+                >
+                    <PortalSettingsGeneral portalData={portalData} />
+                </PortalSettingsLayout>
             </PortalLayout>
         </>
     );
 }
 
-export default requireAuth(DashboardHomePage);
+export default requireAuth(PortalSettingsGeneralPage);

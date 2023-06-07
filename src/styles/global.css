@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@supports (-webkit-touch-callout: none) {
+    .h-screen {
+        height: -webkit-fill-available;
+    }
+}
+
 .b {
     border: 1px solid red;
 }
@@ -16,10 +22,10 @@ body {
 }
 
 @font-face {
-	font-family: "Satoshi";
-	src: url("/fonts/Satoshi-Light.otf");
-	font-weight: 300;
-	font-style: normal;
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Light.otf");
+    font-weight: 300;
+    font-style: normal;
 }
 
 @font-face {
@@ -30,10 +36,10 @@ body {
 }
 
 @font-face {
-	font-family: "Satoshi";
-	src: url("/fonts/Satoshi-Regular.otf");
-	font-weight: normal;
-	font-style: normal;
+    font-family: "Satoshi";
+    src: url("/fonts/Satoshi-Regular.otf");
+    font-weight: normal;
+    font-style: normal;
 }
 
 @font-face {
@@ -77,7 +83,3 @@ body {
     font-weight: 900;
     font-style: italic;
 }
-
-
-
-

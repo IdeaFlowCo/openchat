@@ -1,55 +1,60 @@
 import {
     CloudArrowUpIcon,
-    LockClosedIcon,
-    ServerIcon,
-    ArrowUpOnSquareStackIcon,
     MicrophoneIcon,
-    DocumentTextIcon,
+    ChatBubbleLeftRightIcon,
     PencilSquareIcon,
+    CursorArrowRaysIcon,
+    SparklesIcon,
+    ArrowsPointingInIcon,
+    GlobeAmericasIcon,
 } from "@heroicons/react/20/solid";
 import AnswerDeepform from "../../public/images/AnswerDeepform.png";
 import SubmissionsDeepform from "../../public/images/SubmissionsDeepform.png";
 import Link from "next/link";
 import CTAButtons from "./atoms/CTAButtons";
+import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
+import DeepformFeedback from "../../public/images/DeepformFeedbackScreenshot.png";
+import DeepformAddIdea from "../../public/images/DeepformAddIdeaScreenshot.png";
 
 const featuresSection1 = [
     {
         name: "Easy Setup",
         description:
-            "Simply create a Deepform and tell the A.I. your research goal.",
+            "Set up your feedback portal in less than a minute. No coding required.",
         icon: CloudArrowUpIcon,
     },
     {
-        name: "Instant Deployment",
+        name: "Simple to Use",
         description:
-            "Send a Deepform link to your users and start conducting automated interviews immediately.",
-        icon: ArrowUpOnSquareStackIcon,
+            "Your users can easily submit feedback, vote, and comment in a few clicks, so you can get more feedback.",
+        icon: CursorArrowRaysIcon,
     },
     {
-        name: "Text and Voice Interviews",
-        description: "Your users can respond to the A.I. in text or voice.",
-        icon: MicrophoneIcon,
+        name: "A.I. Followups",
+        description:
+            "Your A.I. asks followup questions to get more detail, so you can uncover the underlying problem faster.",
+        icon: ArrowsPointingInIcon,
     },
 ];
 
 const featuresSection2 = [
     {
-        name: "A.I. Summary",
+        name: "Intuitive Admin UI",
         description:
-            "Easily get up to speed on key insights, notable remarks, and trends via A.I. summaries.",
-        icon: DocumentTextIcon,
+            "Easily manage feedback, users, and settings in the same view as your public feedback portal.",
+        icon: ChatBubbleLeftRightIcon,
     },
     {
-        name: "Full Transcripts",
+        name: "A.I. Analysis (Coming Soon)",
         description:
-            "Review full transcripts of every interview, so you can dig deeper into the data.",
-        icon: PencilSquareIcon,
+            "Chat with your A.I. about your data and turn raw feedback into insights. Summarize, categorize, and more.",
+        icon: SparklesIcon,
     },
     {
-        name: "Cross Interview Analysis",
+        name: "Announce Updates",
         description:
-            "Uncover trends across 1000s of interviews with ease via A.I. analysis.",
-        icon: MicrophoneIcon,
+            "Keep your users updated about which ideas are planned, in progress, and shipped.",
+        icon: GlobeAmericasIcon,
     },
 ];
 
@@ -78,20 +83,20 @@ export default function FeatureSection() {
         <>
             <div className="overflow-hidden bg-transparent py-24">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+                    <div className="mx-auto grid max-w-2xl grid-cols-1 items-center justify-center gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
                         <div className="lg:pr-8 lg:pt-4">
                             <div className="lg:max-w-lg">
                                 <h2 className="text-base font-semibold leading-7 text-indigo-600">
-                                    Collect
+                                    Capture
                                 </h2>
-                                <p className="font-satoshi mt-2 text-4xl font-medium tracking-tight text-gray-900">
-                                    Automate your insight collection
+                                <p className="mt-2 font-satoshi text-4xl font-medium tracking-tight text-gray-900">
+                                    Collect deep feedback with A.I.
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                                    Gather user insights at 100x the speed and a
-                                    fraction of the cost of manual interviews,
-                                    freeing you to do what you're passionate
-                                    about: analyzing and acting on the data.
+                                    Customer feedback is the lifeblood of your
+                                    company. Collect ideas in one place and let
+                                    the most voted and commented ideas surface
+                                    to the top.
                                 </p>
                                 <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                                     {featuresSection1.map((feature) => (
@@ -116,9 +121,10 @@ export default function FeatureSection() {
                             </div>
                         </div>
                         <img
-                            src={AnswerDeepform.src}
+                            src={DeepformAddIdea.src}
                             alt="Product screenshot"
-                            className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
+                            className="rounded-xl shadow-2xl ring-1 ring-gray-900/10"
+                            // className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem] md:-ml-4 lg:-ml-0"
                             width={2432}
                             height={1442}
                         />
@@ -127,20 +133,19 @@ export default function FeatureSection() {
             </div>
             <div className="overflow-hidden bg-transparent py-24">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+                    <div className="mx-auto grid max-w-2xl grid-cols-1 items-center justify-center gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
                         <div className="lg:ml-auto lg:pl-4 lg:pt-4">
                             <div className="lg:max-w-lg">
                                 <h2 className="text-base font-semibold leading-7 text-indigo-600">
                                     Analyze
                                 </h2>
-                                <p className="font-satoshi mt-2 text-4xl font-medium tracking-tight text-gray-900">
+                                <p className="mt-2 font-satoshi text-4xl font-medium tracking-tight text-gray-900">
                                     Make insight driven decisions
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                                    After every interview, Deepform presents you
-                                    the data in a simple, easy to understand
-                                    format. Make insight driven decisions with
-                                    confidence.
+                                    Turn raw feedback into insights in minutes,
+                                    not days with an intuitive admin experience, in-depth A.I.
+                                    analysis, and more.
                                 </p>
                                 <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                                     {featuresSection2.map((feature) => (
@@ -166,9 +171,10 @@ export default function FeatureSection() {
                         </div>
                         <div className="flex items-start justify-end lg:order-first">
                             <img
-                                src={SubmissionsDeepform.src}
+                                src={DeepformFeedback.src}
                                 alt="Product screenshot"
-                                className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem]"
+                                className="rounded-xl shadow-2xl ring-1 ring-gray-900/10"
+                                // className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 sm:w-[57rem]"
                                 width={2432}
                                 height={1442}
                             />

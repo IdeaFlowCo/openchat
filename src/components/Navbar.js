@@ -26,7 +26,9 @@ export default function Navbar() {
     // If the url is /forms/[id] then we are on a form page. Don't show navbar.
     if (
         router.pathname.startsWith("/form") ||
-        router.pathname.startsWith("/dashboard")
+        router.pathname.startsWith("/dashboard") ||
+        router.pathname.startsWith("/portal") ||
+        router.pathname.startsWith("/auth")
     ) {
         return null;
     }
@@ -72,13 +74,13 @@ export default function Navbar() {
                             About
                         </button>
                     </Link>
-                    <a
+                    {/* <a
                         href="https://deepform.ai/form/36"
                         target="_blank"
                         className="text-sm font-semibold leading-6 text-gray-900"
                     >
                         Demo Deepform
-                    </a>
+                    </a> */}
 
                     {/* {(!auth.user || !auth.user.stripeSubscriptionId) && ( */}
                     <Link href="/pricing">

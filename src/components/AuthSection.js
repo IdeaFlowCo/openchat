@@ -14,7 +14,7 @@ function AuthSection(props) {
       showFooter: true,
       signinText: "Already have an account?",
       signinAction: "Sign in",
-      signinPath: "/auth/signin",
+      signinPath: props.afterAuthPath ? `/auth/signin?next=${props.afterAuthPath}` : `/auth/signin}`,
       // Terms and privacy policy agreement
       showAgreement: true,
       termsPath: "/legal/terms-of-service",
@@ -25,7 +25,7 @@ function AuthSection(props) {
       buttonAction: "Sign in",
       showFooter: true,
       signupAction: "Create an account",
-      signupPath: "/auth/signup",
+      signupPath: props.afterAuthPath ? `/auth/signup?next=${props.afterAuthPath}` : `/auth/signup`,
       forgotPassAction: "Forgot Password?",
       forgotPassPath: "/auth/forgotpass",
     },
@@ -50,7 +50,7 @@ function AuthSection(props) {
   const options = optionsByType[type];
 
   return (
-    <section className="py-12 px-4">
+    <section className="flex justify-center items-center py-12 px-4 w-screen h-screen">
       <div className="container mx-auto max-w-sm text-center">
         <h1 className="mb-6 text-3xl font-medium">{options.title}</h1>
         <Auth
