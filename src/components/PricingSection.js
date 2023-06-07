@@ -10,9 +10,10 @@ const tiers = [
         id: "starter",
         href: "#",
         priceMonthly: "$0",
-        description: "Start automating your user interviews for free.",
+        description: "Start capturing feedback with our free plan.",
         features: [
-            "2 Deepforms",
+            "20 Active Ideas",
+            "500 Monthly A.I. Credits",
             // "Up to 1,000 subscribers",
             "Basic analytics",
             "48-hour support response time",
@@ -23,12 +24,12 @@ const tiers = [
         name: "Pro",
         id: "pro",
         href: "#",
-        priceMonthly: "$29",
+        priceMonthly: "$49",
         description:
-            "Full access to all the tools you need to automate your user interviews.",
+            "Capture, organize, and analyze unlimited product feedback with AI.",
         features: [
-            "Unlimited Deepforms",
-            "Unlimited Summaries and Transcripts",
+            "Unlimited Ideas",
+            "Unlimited A.I. Insights",
             // "Up to 10,000 subscribers",
             "Advanced analytics",
             "24-hour support response time",
@@ -45,6 +46,7 @@ const tiers = [
         features: [
             "Everything in Pro",
             "Custom Onboarding",
+            "Single Sign-On (Coming soon)",
             "1-hour, dedicated support response time",
             "Dedicated Slack Channel",
             // "Unlimited Deepforms",
