@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import DeepformTable from "components/dashboard/deepforms/DeepformTable";
+import DeepformTable from "components/old/deepforms/DeepformTable";
 import { useAuth } from "util/auth";
 import { useDeepformsByOwner } from "util/db";
 

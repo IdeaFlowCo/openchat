@@ -1,8 +1,8 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
-import PageLoader from "./PageLoader";
-import Spinner from "./atoms/Spinner";
+import PageLoader from "../PageLoader";
+import Spinner from "../atoms/Spinner";
 
 export default function EndInterviewModal({ open }) {
     return (

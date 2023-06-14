@@ -19,7 +19,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "util/auth";
 import Logo from "components/atoms/Logo";
-import DashboardHome from "./home/DashboardHome";
+import DashboardHome from "../old/home/DashboardHome";
 
 const navigation = [
     { name: "Home", href: "/dashboard", icon: HomeIcon },

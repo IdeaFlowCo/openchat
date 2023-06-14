@@ -1,4 +1,4 @@
-import SubmissionTranscript from "components/SubmissionTranscript";
+import SubmissionTranscript from "components/old/SubmissionTranscript";
 import Link from "next/link";
 import React, { useState } from "react";
 import { deleteSubmission } from "util/db";

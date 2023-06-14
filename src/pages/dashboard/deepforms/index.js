@@ -2,7 +2,7 @@ import React from "react";
 import Meta from "components/Meta";
 import { requireAuth } from "util/auth";
 import DashboardLayout from "components/dashboard/DashboardLayout";
-import DashboardDeepforms from "components/dashboard/deepforms/DashboardDeepforms";
+import DashboardDeepforms from "components/old/deepforms/DashboardDeepforms";
 
 function DashboardDeepformsPage({ host }) {
     return (

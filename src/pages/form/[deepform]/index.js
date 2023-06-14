@@ -3,7 +3,7 @@ import Meta from "components/Meta";
 import { requireAuth } from "util/auth";
 import { useRouter } from "next/router";
 import { useDeepform } from "util/db";
-import AnswerDeepform from "components/AnswerDeepform";
+import AnswerDeepform from "components/old/AnswerDeepform";
 import { useAuth } from "util/auth";
 
 function DeepformPage(props) {

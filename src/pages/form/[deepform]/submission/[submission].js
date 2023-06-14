@@ -3,7 +3,7 @@ import Meta from "components/Meta";
 import { requireAuth } from "util/auth";
 import { useRouter } from "next/router";
 import { useAuth } from "util/auth";
-import SubmissionTranscript from "components/SubmissionTranscript";
+import SubmissionTranscript from "components/old/SubmissionTranscript";
 
 // NOTE: NOT IN USE RIGHT NOW
 function SubmissionPage(props) {

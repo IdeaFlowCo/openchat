@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
-import IconCopyToClipboard from "../../IconCopyToClipboard";
+import IconCopyToClipboard from "../IconCopyToClipboard";
 import SingleSubmission from "./SingleSubmission";
 
 function EditDeepformModal({ id, onDone, host }) {

@@ -1,14 +1,14 @@
 import React from "react";
 import Meta from "components/Meta";
-import DashboardHome from "components/dashboard/home/DashboardHome";
+import DashboardHome from "components/old/home/DashboardHome";
 import { requireAuth } from "util/auth";
 import { useRouter } from "next/router";
 import { usePortal } from "util/db";
 import PortalLayout from "components/portal/PortalLayout";
 import PortalAdminDashboard from "components/dashboard/PortalAdminDashboard";
 import { useAuth } from "util/auth";
-import PortalSettingsGeneral from "components/dashboard/settings/PortalSettingsGeneral";
-import PortalSettingsLayout from "components/dashboard/settings/PortalSettingsLayout";
+import PortalSettingsGeneral from "components/portal/settings/PortalSettingsGeneral";
+import PortalSettingsLayout from "components/portal/settings/PortalSettingsLayout";
 
 function PortalSettingsGeneralPage() {
     const auth = useAuth();

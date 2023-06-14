@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import DeepformTable from "components/dashboard/deepforms/DeepformTable";
+import DeepformTable from "components/old/deepforms/DeepformTable";
 import { useAuth } from "util/auth";
 import { createPortal, updateUser, usePortal } from "util/db";
 import { PlusIcon } from "@heroicons/react/20/solid";

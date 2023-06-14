@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import contact from "util/contact";
 import Link from "next/link";
-import AbstractBg from "./atoms/AbstractBg";
+import AbstractBg from "../atoms/AbstractBg";
 
 function ContactSection(props) {
     const [pending, setPending] = useState(false);

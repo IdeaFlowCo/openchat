@@ -5,7 +5,7 @@ import Link from "next/link";
 import AbstractBg from "components/atoms/AbstractBg";
 import FeatureSection from "components/FeatureSection";
 import { Transition } from "@headlessui/react";
-import CallToAction from "components/CallToAction";
+import CallToAction from "components/landing/CallToAction";
 import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
 import TestimonialSection from "components/TestimonialSection";
 import FAQ from "components/FAQ";
