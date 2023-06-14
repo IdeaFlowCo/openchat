@@ -168,11 +168,11 @@ export default function Navbar() {
                                 </Link>
 
                                 <a
-                                    href="https://deepform.ai/form/36"
+                                    href="https://deepform.ai/portal/10"
                                     target="_blank"
                                     className="-mx-3 flex justify-start gap-2 items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
-                                    Demo Deepform
+                                    See our portal
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20"
