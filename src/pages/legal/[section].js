@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Meta from "components/Meta";
-import LegalSection from "components/LegalSection";
+import LegalSection from "components/landing/LegalSection";
 
 function LegalPage(props) {
   const router = useRouter();

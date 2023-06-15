@@ -8,13 +8,12 @@ import {
     ArrowsPointingInIcon,
     GlobeAmericasIcon,
 } from "@heroicons/react/20/solid";
-import AnswerDeepform from "../../public/images/AnswerDeepform.png";
-import SubmissionsDeepform from "../../public/images/SubmissionsDeepform.png";
+import AnswerDeepform from "../../../public/images/AnswerDeepform.png";
+import SubmissionsDeepform from "../../../public/images/SubmissionsDeepform.png";
 import Link from "next/link";
-import CTAButtons from "./atoms/CTAButtons";
-import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
-import DeepformFeedback from "../../public/images/DeepformFeedbackScreenshot.png";
-import DeepformAddIdea from "../../public/images/DeepformAddIdeaScreenshot.png";
+import CTAButtons from "../atoms/CTAButtons";
+import DeepformFeedback from "../../../public/images/DeepformFeedbackScreenshot.png";
+import DeepformAddIdea from "../../../public/images/DeepformAddIdeaScreenshot.png";
 
 const featuresSection1 = [
     {

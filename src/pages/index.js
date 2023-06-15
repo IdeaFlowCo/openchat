@@ -1,14 +1,14 @@
 import React from "react";
 import Meta from "components/Meta";
-import NewsletterSection from "components/NewsletterSection";
+import NewsletterSection from "components/landing/NewsletterSection";
 import Link from "next/link";
 import AbstractBg from "components/atoms/AbstractBg";
-import FeatureSection from "components/FeatureSection";
+import FeatureSection from "components/landing/FeatureSection";
 import { Transition } from "@headlessui/react";
 import CallToAction from "components/landing/CallToAction";
 import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
-import TestimonialSection from "components/TestimonialSection";
-import FAQ from "components/FAQ";
+import TestimonialSection from "components/landing/TestimonialSection";
+import FAQ from "components/landing/FAQ";
 import CTAButtons from "components/atoms/CTAButtons";
 
 function IndexPage({ host }) {

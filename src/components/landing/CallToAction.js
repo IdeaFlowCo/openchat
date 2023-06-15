@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import DeepformDashboard from "../../public/images/DeepformDashboard.png";
-import DeepformFeedbackPortal from "../../public/images/DeepformFeedbackPortalScreenshot.png";
+import DeepformFeedbackPortal from "../../../public/images/DeepformFeedbackPortalScreenshot.png";
 
 function CallToAction() {
     return (

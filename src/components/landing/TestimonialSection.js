@@ -1,4 +1,4 @@
-import PitchLogo from "../../public/images/PitchLogoBlack.png"
+import PitchLogo from "../../../public/images/PitchLogoBlack.png"
 export default function TestimonialSection() {
     return (
         <section className="bg-white py-24">

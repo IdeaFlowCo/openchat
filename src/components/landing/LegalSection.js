@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import LegalTerms from "components/LegalTerms";
-import LegalPrivacy from "components/LegalPrivacy";
+import LegalTerms from "components/landing/LegalTerms";
+import LegalPrivacy from "components/landing/LegalPrivacy";
 import LegalClaims from "./LegalClaims";
 
 function LegalSection(props) {
