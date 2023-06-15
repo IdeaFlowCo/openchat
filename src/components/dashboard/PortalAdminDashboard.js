@@ -76,7 +76,7 @@ export default function PortalAdminDashboard({ portalData }) {
                             </h1>
                             <p className="text-gray-500">
                                 This is where you will manage your Deepform
-                                Portal. More to come soon!
+                                Portal. More to come soon! For now, you can access your portal by clicking "Feature Requests" in the navbar above!
                             </p>
                         </div>
                     </div>

@@ -49,6 +49,7 @@ function AddIdea({
 
     const { register, handleSubmit, errors } = useForm();
 
+    // console.log("feedbackData", feedbackData)
     const onSubmit = (data) => {
         // Check if user is logged in. If they aren't, show the AuthModal.
         const isLoggedIn = checkAuth();
@@ -85,6 +86,7 @@ function AddIdea({
 
         query
             .then(() => {
+                
                 setLoading(false);
                 setOpen(false);
             })
@@ -124,12 +126,9 @@ function AddIdea({
                     type="button"
                     onClick={() => setOpen(true)}
                     className={classNames(
-                        !disableFixed
-                            ? "fixed bottom-5 right-5" :
-                            "" ,
+                        !disableFixed ? "fixed bottom-5 right-5" : "",
                         "text-md flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
-                    )
-                        }
+                    )}
                     // className="text-md fixed bottom-5 right-5 mt-2 flex h-fit w-fit items-center justify-center gap-[2px] whitespace-nowrap rounded-md bg-indigo-600 px-3.5 py-2.5 font-medium text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:static sm:flex"
                 >
                     <PlusSmallIcon className="-ml-2 h-5 w-5" />
