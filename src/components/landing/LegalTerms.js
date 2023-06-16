@@ -71,7 +71,7 @@ function LegalTerms(props) {
             </h2>
             <p>
                 If you have any questions about these Terms, please contact us
-                at support@deepform.com.
+                at alan@deepform.ai.
             </p>
         </div>
     );

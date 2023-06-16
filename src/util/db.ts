@@ -205,7 +205,7 @@ export async function createFeedback(data, sendEmail = true) {
     await client.invalidateQueries(["feedback"]);
 
     // Fetch "/api/email" endpoint to send email
-    // The email should be from alanduong07@gmail.com
+    // The email should be from alan@deepform.ai
     // and to the email of the portal admin
     // with the subject "New Feedback Submitted"
 
@@ -225,7 +225,7 @@ export async function createFeedback(data, sendEmail = true) {
     const emailData: EmailData = {
         // Required
         to: portalAdmin.email,
-        from: "Deepform <onboarding@resend.dev>",
+        from: "Deepform <alan@deepform.ai>",
         subject: "Deepform: New Feedback Submitted!",
         plainText: `Hi ${
             portalAdmin.name.split(" ")[0]

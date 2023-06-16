@@ -17,8 +17,8 @@ import { GeneralEmailTemplateProps } from "types/emailTypes";
 
 export const GeneralEmailTemplate = ({
     previewText,
-    userFirstName = "",
     p1Content,
+    userFirstName = "",
     p2Content = "",
     p3Content = "",
     p4Content = "",
@@ -80,15 +80,8 @@ export const GeneralEmailTemplate = ({
                             <Hr />
 
                             <Text style={text}>
-                                {" "}
-                                To reply/contact us,
-                                <Link
-                                    style={anchor}
-                                    href="mailto:alanduong07@gmail.com"
-                                >
-                                    {" "}
-                                    email us here.
-                                </Link>
+                                If you have any questions, feel free to reply to 
+                                this email.
                             </Text>
                         </Section>
                     </Container>
