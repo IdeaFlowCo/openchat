@@ -238,7 +238,7 @@ export async function createFeedback(data, sendEmail = true) {
         p1Content: `A new idea has been submitted to your feedback portal! Please click the link below to enter your portal and view it.`,
 
         // Optional
-        userFirstName: portalAdmin.name,
+        userFirstName: portalAdmin.name.split(" ")[0],
         p2Content: `Title: ${data.title}`,
         p3Content: `Preview: ${data.description.slice(0, 100)}...`,
         p4Content: `We're actively working on a weekly update email that will replace these individual emails. Thanks for your patience!`,

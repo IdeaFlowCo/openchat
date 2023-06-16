@@ -1,4 +1,5 @@
 // Types needed for the React email template
+// If you make a change here, update the API route as well (and ofc the initial sending code)
 export interface GeneralEmailTemplateProps {
     // Required
     previewText: string;

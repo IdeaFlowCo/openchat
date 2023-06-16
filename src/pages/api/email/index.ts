@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { EmailData } from "types/emailTypes";
 import { Resend } from "resend";
 import { GeneralEmailTemplate } from "components/emails/GeneralEmailTemplate";
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Basic API route that sends a general email
@@ -41,6 +40,7 @@ export default async function handler(
                 p1Content: emailData.p1Content,
                 p2Content: emailData.p2Content ? emailData.p2Content : "",
                 p3Content: emailData.p3Content ? emailData.p3Content : "",
+                p4Content: emailData.p4Content ? emailData.p4Content : "",
                 closingLine: emailData.closingLine ? emailData.closingLine : "",
                 ctaLink: emailData.ctaLink ? emailData.ctaLink : "",
                 ctaText: emailData.ctaText ? emailData.ctaText : "",
