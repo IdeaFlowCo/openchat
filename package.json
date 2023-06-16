@@ -13,6 +13,7 @@
     "@ffmpeg/ffmpeg": "^0.11.6",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.17",
+    "@react-email/components": "^0.0.6",
     "@stripe/stripe-js": "1.11.0",
     "@supabase/supabase-js": "2.15.0",
     "@tailwindcss/forms": "^0.5.3",
@@ -33,21 +34,26 @@
     "react": "17.0.2",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "17.0.2",
+    "react-email": "1.9.3",
     "react-hook-form": "6.15.1",
     "react-hot-toast": "^2.4.0",
-    "react-query": "3.32.1",
+    "react-query": "^3.39.3",
+    "resend": "^0.15.2",
     "stripe": "8.132.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss": "3.0.23"
   },
   "scripts": {
+    "email": "email dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe-webhook"
   },
   "devDependencies": {
+    "@types/react": "^18.2.12",
     "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.3.0"
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "typescript": "^5.1.3"
   }
 }

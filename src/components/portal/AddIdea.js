@@ -33,6 +33,7 @@ function AddIdea({
     portalId,
     checkAuth = () => true,
     editMode = false,
+    onboardingMode = false,
     feedbackData = null,
     disableFixed = false,
 }) {
@@ -82,7 +83,9 @@ function AddIdea({
                   creator: auth.user.uid,
                   portal_id: portalId,
                   ...data,
-              });
+              },
+              // Don't send email in onboarding mode
+              onboardingMode ? false : true);
 
         query
             .then(() => {
@@ -102,7 +105,6 @@ function AddIdea({
 
     useEffect(() => {
         if (auth.user && failedSubmitNoAuth) {
-            console.log("helllllo");
             setFailedSubmitNoAuth(false);
             document
                 .getElementById("addIdeaForm")

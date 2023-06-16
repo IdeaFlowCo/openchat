@@ -161,7 +161,11 @@ export default function NewPortal() {
                                 What's a feature you're considering building?
                                 Click "Add an Idea" to add it!
                             </p>
-                            <AddIdea portalId={portalId} disableFixed={true} />
+                            <AddIdea
+                                portalId={portalId}
+                                disableFixed={true}
+                                onboardingMode={true}
+                            />
                             {/* Go to newly created portal button */}
                             <button
                                 type="button"

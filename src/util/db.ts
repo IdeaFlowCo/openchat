@@ -4,9 +4,9 @@ import {
     QueryClientProvider as QueryClientProviderBase,
 } from "react-query";
 import supabase from "./supabase";
-
+import { EmailData } from "types/emailTypes";
 // React Query client
-const client = new QueryClient();
+export const client = new QueryClient();
 
 /**** USERS ****/
 
@@ -145,11 +145,14 @@ export function useFeedback(id) {
 }
 
 // Fetch all feedback by portal
-export function useFeedbackByPortal(portalId, statusesFilterList, topicsFilterList) {
-    
+export function useFeedbackByPortal(
+    portalId,
+    statusesFilterList,
+    topicsFilterList
+) {
     return useQuery(
         ["feedback", { portalId }],
-        () =>{
+        () => {
             // Conditional Chaining
             let query = supabase
                 .from("feedback")
@@ -164,43 +167,94 @@ export function useFeedbackByPortal(portalId, statusesFilterList, topicsFilterLi
                     `
                 )
                 .eq("portal_id", portalId)
-                .order("created_at", { ascending: false })
+                .order("created_at", { ascending: false });
             if (statusesFilterList.length > 0) {
-                query = query.in("status", statusesFilterList)
+                query = query.in("status", statusesFilterList);
             }
             if (topicsFilterList.length > 0) {
-                query = query.overlaps("topics", topicsFilterList)
+                query = query.overlaps("topics", topicsFilterList);
             }
-            return query.then(handle)
-
+            return query.then(handle);
         },
-            // supabase
-            //     .from("feedback")
-            //     .select(
-            //         `*,
-            //         users (
-            //             "*"
-            //         ),
-            //         upvotes (
-            //             "*"
-            //         )
-            //         `
-            //     )
-            //     .eq("portal_id", portalId)
-            //     .order("created_at", { ascending: false })
-            //     .then(handle),
+        // supabase
+        //     .from("feedback")
+        //     .select(
+        //         `*,
+        //         users (
+        //             "*"
+        //         ),
+        //         upvotes (
+        //             "*"
+        //         )
+        //         `
+        //     )
+        //     .eq("portal_id", portalId)
+        //     .order("created_at", { ascending: false })
+        //     .then(handle),
         { enabled: !!portalId }
     );
 }
 
 // Create a new feedback
-export async function createFeedback(data) {
+export async function createFeedback(data, sendEmail = true) {
     const response = await supabase
         .from("feedback")
         .insert([data])
         .then(handle);
     // Invalidate and refetch queries that could have old data
     await client.invalidateQueries(["feedback"]);
+
+    // Fetch "/api/email" endpoint to send email
+    // The email should be from alanduong07@gmail.com
+    // and to the email of the portal admin
+    // with the subject "New Feedback Submitted"
+
+    if (!sendEmail) {
+        return response;
+    }
+
+    // Find the portal admin using data.portal_id
+    const portalAdmin = await supabase
+        .from("users")
+        .select()
+        .eq("portal_id", data.portal_id)
+        .single()
+        .then(handle);
+
+    // Send email
+    const emailData: EmailData = {
+        // Required
+        to: portalAdmin.email,
+        from: "Deepform <onboarding@resend.dev>",
+        subject: "Deepform: New Feedback Submitted!",
+        plainText: `Hi ${
+            portalAdmin.name.split(" ")[0]
+        }, a new feedback has been submitted to your portal!
+         Please login to your portal to view it.
+            Preview: ${data.description.slice(0, 100)}...
+          We're actively working on a weekly update email that will replace these individual emails.
+           Thanks for your patience!`,
+        previewText: `Deepform: New Feedback Submitted!`,
+        p1Content: `A new idea has been submitted to your feedback portal! Please click the link below to enter your portal and view it.`,
+
+        // Optional
+        userFirstName: portalAdmin.name,
+        p2Content: `Title: ${data.title}`,
+        p3Content: `Preview: ${data.description.slice(0, 100)}...`,
+        p4Content: `We're actively working on a weekly update email that will replace these individual emails. Thanks for your patience!`,
+        closingLine: `Happy building!`,
+        ctaLink: `https://deepform.ai/portal/${data.portal_id}`,
+        ctaText: `View Feedback`,
+    };
+
+    await fetch("/api/email", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailData),
+    });
+
     return response;
 }
 
@@ -272,7 +326,7 @@ export async function createUpvote(data) {
     // Invalidate and refetch queries that could have old data
     await Promise.all([
         client.invalidateQueries(["upvotes"]),
-        client.invalidateQueries(["singleFeedback"], { id: data.feedback_id }),
+        client.invalidateQueries(["singleFeedback", { id: data.feedback_id }]),
         client.invalidateQueries(["feedback"]),
     ]);
     return response;
@@ -304,7 +358,7 @@ export async function deleteUpvote(data) {
     await Promise.all([
         client.invalidateQueries(["upvote", { id: data.upvote_id }]),
         client.invalidateQueries(["upvotes"]),
-        client.invalidateQueries(["singleFeedback"], { id: data.feedback_id }),
+        client.invalidateQueries(["singleFeedback", { id: data.feedback_id }]),
         client.invalidateQueries(["feedback"]),
     ]);
     return response;
@@ -382,9 +436,12 @@ export async function createComment(data) {
     // Invalidate and refetch queries that could have old data
     await Promise.all([
         client.invalidateQueries(["comments"]),
-        client.invalidateQueries(["replies"], {
-            parentCommentId: data.parent_comment_id,
-        }),
+        client.invalidateQueries([
+            "replies",
+            {
+                parentCommentId: data.parent_comment_id,
+            },
+        ]),
     ]);
 
     return response;
@@ -416,10 +473,12 @@ export async function deleteComment(data) {
     await Promise.all([
         client.invalidateQueries(["comment", { id: data.comment_id }]),
         client.invalidateQueries(["comments"]),
-        client.invalidateQueries(["replies"], {
-            parentCommentId: data.parent_comment_id,
-        }),
-
+        client.invalidateQueries([
+            "replies",
+            {
+                parentCommentId: data.parent_comment_id,
+            },
+        ]),
     ]);
     return response;
 }
@@ -804,10 +863,10 @@ function handle(response) {
 }
 
 // React Query context provider that wraps our app
-export function QueryClientProvider(props) {
-    return (
-        <QueryClientProviderBase client={client}>
-            {props.children}
-        </QueryClientProviderBase>
-    );
-}
+// export function QueryClientProvider(props: any) {
+//     return (
+//         <QueryClientProviderBase client={client}>
+//             {props.children}
+//         </QueryClientProviderBase>
+//     );
+// }
