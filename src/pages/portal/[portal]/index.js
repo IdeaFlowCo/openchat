@@ -3,9 +3,10 @@ import Meta from "components/Meta";
 import { requireAuth } from "util/auth";
 import { useRouter } from "next/router";
 import { usePortal } from "util/db";
-import PortalLayout from "components/portal/PortalLayout";
-import PortalFeatureRequests from "components/portal/PortalFeatureRequests";
+import PortalLayout from "../../../components/portal/PortalLayout";
+import PortalFeatureRequests from "../../../components/portal/PortalFeatureRequests";
 import { useAuth } from "util/auth";
+import PageLoader from "../../../components/PageLoader"
 
 function PublicPortalPage(props) {
     const auth = useAuth();
@@ -28,6 +29,13 @@ function PublicPortalPage(props) {
     }
 
     let userIsAdmin = auth.user?.portal_id === portalData?.id;
+
+    if (portalData === undefined || portalData === null || !portalData) {
+        // Return loader
+        return (
+            <PageLoader />
+        );
+    }
     return (
         <>
             <Meta title={"Feedback Portal | Deepform"} />
