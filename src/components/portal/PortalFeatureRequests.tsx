@@ -14,6 +14,7 @@ import { useFeedbackByPortal } from "util/db";
 import { useAuth } from "util/auth";
 import AuthModal from "./AuthModal";
 import { useRouter } from "next/router";
+import AIFollowupPopup from "./AIFollowupPopup";
 
 const topics = [
     "New Feature Request ✨",
@@ -267,7 +268,7 @@ export default function PortalFeatureRequests({ portalData }) {
                 {/* </nav> */}
             </Transition>
             <main className="flex h-fit w-screen items-center justify-center py-6 px-4 sm:py-8 lg:ml-52 lg:py-10 xl:ml-72">
-            {/* <Transition
+                {/* <Transition
                 as="main"
                 appear={true}
                 show={true}
@@ -336,6 +337,7 @@ export default function PortalFeatureRequests({ portalData }) {
                                                 (status) => (
                                                     <Menu.Item
                                                         key={status.name}
+                                                        as={"div"}
                                                         onClick={() => {
                                                             setTimeout(() => {
                                                                 ref.current?.click();
@@ -401,6 +403,7 @@ export default function PortalFeatureRequests({ portalData }) {
                                                 topics?.map((topic) => (
                                                     <Menu.Item
                                                         key={topic}
+                                                        as={"div"}
                                                         onClick={() => {
                                                             setTimeout(() => {
                                                                 ref.current?.click();
@@ -504,11 +507,14 @@ export default function PortalFeatureRequests({ portalData }) {
                         ))}
                     </div>
                 </section>
-            {/* </Transition> */}
+                {/* </Transition> */}
             </main>
+
+            {/* MODALS  */}
             {openAuthModal && (
                 <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
             )}
+            {/* <AIFollowupPopup /> */}
         </>
     );
 }
