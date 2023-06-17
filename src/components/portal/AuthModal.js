@@ -107,7 +107,7 @@ export default function AuthModal({ open, setOpen }) {
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel className="container relative mx-auto max-w-sm transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-center shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                                <h1 className="mb-6 text-3xl font-medium font-satoshi tracking-tight">
+                                <h1 className="mb-6 font-satoshi text-3xl font-medium tracking-tight">
                                     {authType === "signup"
                                         ? "Sign up to continue!"
                                         : authType === "signin"
@@ -119,6 +119,26 @@ export default function AuthModal({ open, setOpen }) {
                                         : "Submit"}
                                 </h1>
                                 <form onSubmit={handleSubmit(onSubmit)}>
+                                    {["signup"].includes(authType) && (
+                                        <div className="mb-2">
+                                            <input
+                                                className="w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1"
+                                                name="name"
+                                                type="name"
+                                                placeholder="Full Name"
+                                                ref={register({
+                                                    required:
+                                                        "Please enter your full name",
+                                                })}
+                                            />
+
+                                            {errors.name && (
+                                                <p className="mt-1 text-left text-sm text-red-600">
+                                                    {errors.name.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                     {[
                                         "signup",
                                         "signin",
