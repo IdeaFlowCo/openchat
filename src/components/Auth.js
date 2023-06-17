@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import AuthForm from "components/AuthForm";
-import AuthSocial from "components/AuthSocial";
+import AuthForm from "./AuthForm";
+import AuthSocial from "./AuthSocial";
 
 function Auth({
     redirect = true,

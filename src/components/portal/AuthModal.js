@@ -107,7 +107,7 @@ export default function AuthModal({ open, setOpen }) {
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel className="container relative mx-auto max-w-sm transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-center shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                                <h1 className="mb-6 text-3xl font-medium">
+                                <h1 className="mb-6 text-3xl font-medium font-satoshi tracking-tight">
                                     {authType === "signup"
                                         ? "Sign up to continue!"
                                         : authType === "signin"
@@ -203,7 +203,7 @@ export default function AuthModal({ open, setOpen }) {
                                     )}
 
                                     <button
-                                        className="w-full rounded border-0 bg-indigo-500 py-2 px-4 text-white hover:bg-indigo-600 focus:outline-none"
+                                        className="w-full rounded border-0 bg-indigo-600 py-2 px-4 text-white hover:bg-indigo-500 focus:outline-none"
                                         type="submit"
                                         disabled={pending}
                                     >
