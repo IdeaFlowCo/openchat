@@ -4,6 +4,7 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
 import { useAuth } from "util/auth";
 import { toast } from "react-hot-toast";
+import { updateUser } from "util/db";
 export default function AuthModal({ open, setOpen }) {
     const auth = useAuth();
 
@@ -20,8 +21,13 @@ export default function AuthModal({ open, setOpen }) {
                 // props.onAuth(user);
             });
         },
-        signup: ({ email, pass }) => {
-            return auth.signup(email, pass).then((user) => {
+        signup: ({ name, email, pass }) => {
+            return auth.signup(email, pass).then(async (user) => {
+                console.log("user", user);
+                // Add display name
+                await updateUser(user.id, {
+                    name: name,
+                });
                 setPending(false);
                 setOpen(false);
                 // // Call auth complete handler
@@ -53,12 +59,13 @@ export default function AuthModal({ open, setOpen }) {
     };
 
     // Handle form submission
-    const onSubmit = ({ email, pass }) => {
+    const onSubmit = ({ name, email, pass }) => {
         // Show pending indicator
         setPending(true);
 
         // Call submit handler for auth type
         submitHandlersByType[authType]({
+            name,
             email,
             pass,
         }).catch((error) => {
