@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function AuthFooter(props) {
   return (
-    <div className="px-3 mt-6 text-sm">
+    <div className="px-3 mt-6 text-sm text-center">
       {props.type === "signup" && (
         <>
           {props.showAgreement && (
