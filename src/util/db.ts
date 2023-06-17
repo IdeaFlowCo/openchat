@@ -4,7 +4,8 @@ import {
     QueryClientProvider as QueryClientProviderBase,
 } from "react-query";
 import supabase from "./supabase";
-import { EmailData } from "types/emailTypes";
+import { GeneralEmailTemplateProps } from "types/emailTypes";
+import { getFirstName } from "./string";
 // React Query client
 export const client = new QueryClient();
 
@@ -39,6 +40,19 @@ export function getUser(uid) {
         .eq("id", uid)
         .single()
         .then(handle);
+}
+
+// Fetch all users
+export function useUsers() {
+    return useQuery(
+        ["users"],
+        () =>
+            supabase
+                .from("users")
+                .select(`*, customers ( * )`)
+                .then(handle),
+        { enabled: true }
+    );
 }
 
 // Update an existing user
@@ -221,14 +235,16 @@ export async function createFeedback(data, sendEmail = true) {
         .single()
         .then(handle);
 
+   let capitalizedFirstName = getFirstName(portalAdmin.name);
+
     // Send email
-    const emailData: EmailData = {
+    const generalEmailData: GeneralEmailTemplateProps = {
         // Required
         to: portalAdmin.email,
         from: "Deepform <alan@deepform.ai>",
         subject: "Deepform: New Feedback Submitted!",
         plainText: `Hi ${
-            portalAdmin.name.split(" ")[0]
+            capitalizedFirstName ? capitalizedFirstName + "," : "there,"
         }, a new feedback has been submitted to your portal!
          Please login to your portal to view it.
             Preview: ${data.description.slice(0, 100)}...
@@ -238,7 +254,7 @@ export async function createFeedback(data, sendEmail = true) {
         p1Content: `A new idea has been submitted to your feedback portal! Please click the link below to enter your portal and view it.`,
 
         // Optional
-        userFirstName: portalAdmin.name.split(" ")[0],
+        userFirstName: capitalizedFirstName,
         p2Content: `Title: ${data.title}`,
         p3Content: `Preview: ${data.description.slice(0, 100)}...`,
         p4Content: `We're actively working on a weekly update email that will replace these individual emails. Thanks for your patience!`,
@@ -252,7 +268,7 @@ export async function createFeedback(data, sendEmail = true) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(emailData),
+        body: JSON.stringify(generalEmailData),
     });
 
     return response;

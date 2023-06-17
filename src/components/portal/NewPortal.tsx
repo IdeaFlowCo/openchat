@@ -1,24 +1,31 @@
 import Logo from "components/atoms/Logo";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { createPortal, updateUser } from "util/db";
+import { createPortal, updateUser, useUsers } from "util/db";
 import AddIdea from "./AddIdea";
 import { useAuth } from "util/auth";
 import { useRouter } from "next/router";
 import { Transition } from "@headlessui/react";
+import { toast } from "react-hot-toast";
+import { SignUpEmailProps } from "types/emailTypes";
+import { getFirstName } from "util/string";
 
 export default function NewPortal() {
     const router = useRouter();
     const auth = useAuth();
     const { register, handleSubmit, watch, errors } = useForm();
+    const { data: usersData }: any = useUsers();
     const [loading, setLoading] = useState(false);
     const [portalId, setPortalId] = useState(null);
     const [step, setStep] = useState(1);
-
+    // console.log("users", usersData)
     // If the user already has a portal, redirect to it
     if (step === 1 && !loading && auth.user?.portal_id) {
         router.push(`/portal/${auth.user.portal_id}`);
     }
+
+    //TODO: If I ever add multiple portals, def. needs to be updated.
+    // And don't send the sign up email!!! Only on the first call.
     const onSubmit = (data) => {
         setLoading(true);
         createPortal({
@@ -67,9 +74,30 @@ export default function NewPortal() {
                 setPortalId(res[0].id);
                 setStep(2);
                 setLoading(false);
+                let capitalizedFirstName = getFirstName(auth.user?.name);
+                // // Send SignUp email
+                const emailData: SignUpEmailProps = {
+                    portalId: res[0].id,
+                    userFirstName: capitalizedFirstName,
+                    to: auth.user?.email,
+                };
+                fetch("/api/email/signup", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(emailData),
+                })
+                    .then((res) => res.json())
+                    .then((res) => {
+                        console.log("res", res);
+                    });
             })
             .catch((err) => {
                 console.log("err", err);
+                toast.error(
+                    "Error creating portal, please refresh or email alan@deepform.ai."
+                );
                 setLoading(false);
             });
     };

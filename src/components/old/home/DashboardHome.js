@@ -5,6 +5,7 @@ import { useAuth } from "util/auth";
 import { createPortal, updateUser, usePortal } from "util/db";
 import { PlusIcon } from "@heroicons/react/20/solid";
 
+//TODO: Delete this. Old component!!
 function DashboardHome({ host }) {
     const auth = useAuth();
     console.log("auth.user", auth.user);

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { EmailData } from "types/emailTypes";
+import { GeneralEmailTemplateProps } from "types/emailTypes";
 import { Resend } from "resend";
 import { GeneralEmailTemplate } from "components/emails/GeneralEmailTemplate";
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -9,7 +9,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    const emailData: EmailData = req.body;
+    const emailData: GeneralEmailTemplateProps = req.body;
     console.log("in email api");
     console.log(req.body);
     if (
@@ -33,19 +33,7 @@ export default async function handler(
             from: emailData.from,
             subject: emailData.subject,
             text: emailData.plainText,
-            react: GeneralEmailTemplate({
-                userFirstName: emailData.userFirstName
-                    ? emailData.userFirstName
-                    : "",
-                p1Content: emailData.p1Content,
-                p2Content: emailData.p2Content ? emailData.p2Content : "",
-                p3Content: emailData.p3Content ? emailData.p3Content : "",
-                p4Content: emailData.p4Content ? emailData.p4Content : "",
-                closingLine: emailData.closingLine ? emailData.closingLine : "",
-                ctaLink: emailData.ctaLink ? emailData.ctaLink : "",
-                ctaText: emailData.ctaText ? emailData.ctaText : "",
-                previewText: emailData.previewText,
-            }),
+            react: GeneralEmailTemplate(emailData),
         });
         res.status(200).json({
             message: "Email sent",
