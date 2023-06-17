@@ -7,7 +7,9 @@ import {
     PlusSmallIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { deleteFeedback } from "util/db";
+import { deleteFeedback, getUser } from "util/db";
+import { GeneralEmailTemplateProps } from "types/emailTypes";
+import { getFirstName } from "util/string";
 
 const classNames = (...classes) => {
     return classes.filter(Boolean).join(" ");
@@ -17,12 +19,70 @@ export default function ContentFeedbackAdminPanel({
     feedbackData,
     portalData,
 }) {
+    const [loading, setLoading] = useState(false);
     // console.log("feedbackData", feedbackData);
     const handleChangeStatus = (statusName) => {
+        setLoading(true);
+        // Update feedback status
         updateFeedback(feedbackData.id, {
             status: statusName,
         });
-        toast.success(`Status updated to "${statusName}"!`);
+        // Email the user who submitted the feedback that
+        // their feedback has been updated
+
+        // First get the user from feedbackData.creator
+        getUser(feedbackData.creator).then((user) => {
+            console.log("user", user);
+            // Send email to user
+            const { name, email } = user;
+            const capitalizedFirstName = getFirstName(name);
+            // Send email
+            const generalEmailData: GeneralEmailTemplateProps = {
+                // Required
+                to: email,
+                from: "Deepform <alan@deepform.ai>",
+                subject: `Deepform: Your idea's status has been updated!`,
+                plainText: `Hi ${
+                    capitalizedFirstName ? capitalizedFirstName + "," : "there,"
+                }, your idea's status has been updated to "${statusName}"!
+                Please login to the portal to view it. Idea Title: ${
+                    feedbackData.title
+                } Preview: ${feedbackData.description.slice(
+                    0,
+                    100
+                )}... Status change: ${feedbackData.status} -> ${statusName}`,
+                previewText: `Deepform: Your idea's status has been updated!`,
+                p1Content: `Your idea's status has been updated to "${statusName}"! Click the link below to view the portal. `,
+
+                // Optional
+                userFirstName: capitalizedFirstName,
+                p2Content: `Idea Title: ${feedbackData.title}`,
+                p3Content: `Preview: ${feedbackData.description.slice(
+                    0,
+                    100
+                )}...`,
+                p4Content: `Status change: ${feedbackData.status} -> ${statusName}`,
+                closingLine: capitalizedFirstName
+                    ? `Have an awesome day, ${capitalizedFirstName}!`
+                    : `Have an awesome day!`,
+                ctaLink: `https://deepform.ai/portal/${feedbackData.portal_id}`,
+                ctaText: `View Portal`,
+            };
+
+            // Send email
+            fetch("/api/email/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(generalEmailData),
+            });
+
+            setLoading(false);
+            toast.success(
+                `Status updated to "${statusName}"! Emailed ${capitalizedFirstName}.`
+            );
+        });
     };
 
     const handleDeleteFeedback = () => {
@@ -31,10 +91,11 @@ export default function ContentFeedbackAdminPanel({
             "Are you sure you want to delete this feedback?"
         );
         if (!confirmDelete) return;
-
+        setLoading(true);
         // Delete feedback
         deleteFeedback(feedbackData?.id);
         toast.success("Feedback deleted!");
+        setLoading(false);
     };
 
     return (
@@ -96,6 +157,11 @@ export default function ContentFeedbackAdminPanel({
                                                                 status.name
                                                             )
                                                         }
+                                                        disabled={
+                                                            status.name ===
+                                                                feedbackData.status ||
+                                                            loading
+                                                        }
                                                         className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                                     />
                                                     <label
@@ -120,6 +186,7 @@ export default function ContentFeedbackAdminPanel({
                             <button
                                 type="button"
                                 onClick={() => handleDeleteFeedback()}
+                                disabled={loading}
                                 className="rounded-md border border-gray-400 p-2 font-light text-gray-400 hover:bg-white"
                             >
                                 <TrashIcon className="h-4 w-4" />

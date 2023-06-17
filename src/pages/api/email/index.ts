@@ -10,8 +10,8 @@ export default async function handler(
     res: NextApiResponse
 ) {
     const emailData: GeneralEmailTemplateProps = req.body;
-    console.log("in email api");
-    console.log(req.body);
+    // console.log("in email api");
+    // console.log(req.body);
     if (
         !emailData.to ||
         !emailData.from ||
