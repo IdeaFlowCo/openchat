@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "util/auth";
 import { toast } from "react-hot-toast";
 import { updateUser } from "util/db";
-export default function AuthModal({ open, setOpen }) {
+export default function AuthModal({ open, setOpenAuthModal }) {
     const auth = useAuth();
 
     const [authType, setAuthType] = useState("signup");
@@ -16,7 +16,7 @@ export default function AuthModal({ open, setOpen }) {
         signin: ({ email, pass }) => {
             return auth.signin(email, pass).then((user) => {
                 setPending(false);
-                setOpen(false);
+                setOpenAuthModal(false);
                 // // Call auth complete handler
                 // props.onAuth(user);
             });
@@ -29,7 +29,7 @@ export default function AuthModal({ open, setOpen }) {
                     name: name,
                 });
                 setPending(false);
-                setOpen(false);
+                setOpenAuthModal(false);
                 // // Call auth complete handler
                 // props.onAuth(user);
             });
@@ -83,13 +83,20 @@ export default function AuthModal({ open, setOpen }) {
     useEffect(() => {
         return () => {
             setPending();
-            setOpen();
+            setOpenAuthModal();
         };
     }, []);
 
     return (
         <Transition.Root show={open} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={setOpen}>
+            <Dialog
+                as="div"
+                className="relative z-10"
+                onClick={(e) => {
+                    console.log("Exit AuthModal");
+                }}
+                onClose={setOpenAuthModal}
+            >
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -102,7 +109,7 @@ export default function AuthModal({ open, setOpen }) {
                     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
                 </Transition.Child>
 
-                <div className="fixed inset-0 z-10 overflow-y-auto">
+                <div className="fixed inset-0 overflow-y-auto">
                     <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                         <Transition.Child
                             as={Fragment}

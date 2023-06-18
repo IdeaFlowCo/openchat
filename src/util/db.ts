@@ -6,6 +6,7 @@ import {
 import supabase from "./supabase";
 import { GeneralEmailTemplateProps } from "types/emailTypes";
 import { getFirstName } from "./string";
+import { FeedbackType, FollowupMessageType, FollowupSubmissionType } from "types/supabaseDbTypes";
 // React Query client
 export const client = new QueryClient();
 
@@ -46,11 +47,7 @@ export function getUser(uid) {
 export function useUsers() {
     return useQuery(
         ["users"],
-        () =>
-            supabase
-                .from("users")
-                .select(`*, customers ( * )`)
-                .then(handle),
+        () => supabase.from("users").select(`*, customers ( * )`).then(handle),
         { enabled: true }
     );
 }
@@ -144,7 +141,7 @@ export async function deletePortal(id) {
 /**** FEEDBACK ****/
 
 // Fetch feedback data
-export function useFeedback(id) {
+export function useFeedback(id: number) {
     return useQuery(
         ["singleFeedback", { id }],
         () =>
@@ -160,9 +157,9 @@ export function useFeedback(id) {
 
 // Fetch all feedback by portal
 export function useFeedbackByPortal(
-    portalId,
-    statusesFilterList,
-    topicsFilterList
+    portalId: number,
+    statusesFilterList: string[],
+    topicsFilterList: string[]
 ) {
     return useQuery(
         ["feedback", { portalId }],
@@ -210,10 +207,12 @@ export function useFeedbackByPortal(
 }
 
 // Create a new feedback
-export async function createFeedback(data, sendEmail = true) {
+export async function createFeedback(data: FeedbackType, sendEmail: boolean = true): Promise<FeedbackType> {
     const response = await supabase
         .from("feedback")
         .insert([data])
+        .select()
+        .single()
         .then(handle);
     // Invalidate and refetch queries that could have old data
     await client.invalidateQueries(["feedback"]);
@@ -235,7 +234,7 @@ export async function createFeedback(data, sendEmail = true) {
         .single()
         .then(handle);
 
-   let capitalizedFirstName = getFirstName(portalAdmin.name);
+    let capitalizedFirstName: string = getFirstName(portalAdmin.name);
 
     // Send email
     const generalEmailData: GeneralEmailTemplateProps = {
@@ -275,11 +274,13 @@ export async function createFeedback(data, sendEmail = true) {
 }
 
 // Update an existing feedback
-export async function updateFeedback(id, data) {
+export async function updateFeedback(id: number, data: FeedbackType): Promise<FeedbackType> {
     const response = await supabase
         .from("feedback")
         .update(data)
         .eq("id", id)
+        .select()
+        .single()
         .then(handle);
     // Invalidate and refetch queries that could have old data
     await Promise.all([
@@ -290,7 +291,7 @@ export async function updateFeedback(id, data) {
 }
 
 // Delete an existing feedback
-export async function deleteFeedback(id) {
+export async function deleteFeedback(id: number) {
     const response = await supabase
         .from("feedback")
         .delete()
@@ -649,7 +650,81 @@ export async function deleteDeepform(id) {
     return response;
 }
 
-/**** SUBMISSIONS ****/
+/**** FOLLOWUPSUBMISSIONS  ****/
+
+// Fetch single followup submission
+export function useFollowupSubmission(id: number) {
+    return useQuery(
+        ["followupSubmission", { id }],
+        () =>
+            supabase
+                .from("followupSubmissions")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch all followup submissions by Feedback
+export function useFollowupSubmissionsByFeedback(feedbackId: number) {
+    return useQuery(
+        ["followupSubmissions", { feedbackId }],
+        () =>
+            supabase
+                .from("followupSubmissions")
+                .select()
+                .eq("feedback", feedbackId)
+                .order("created_at", { ascending: false })
+                .then(handle),
+        { enabled: !!feedbackId }
+    );
+}
+
+// Create a new followup submission
+export async function createFollowupSubmission(data: FollowupSubmissionType) {
+    const response = await supabase
+        .from("followupSubmissions")
+        .insert([data])
+        .select()
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await client.invalidateQueries(["followupSubmissions"]);
+    return response;
+}
+
+// Update a followup submission
+export async function updateFollowupSubmission(id: number, data: FollowupSubmissionType) {
+    const response = await supabase
+        .from("followupSubmissions")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["followupSubmission", { id }]),
+        client.invalidateQueries(["followupSubmissions"]),
+    ]);
+    return response;
+}
+
+// Delete a followup submission
+export async function deleteFollowupSubmission(id: number) {
+    const response = await supabase
+        .from("followupSubmissions")
+        .delete()
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["followupSubmission", { id }]),
+        client.invalidateQueries(["followupSubmissions"]),
+    ]);
+    return response;
+}
+
+/**** SUBMISSIONS (OLD DEEPFORM, DON'T USE) ****/
 /* Example query functions (modify to your needs) */
 
 // Fetch single submission data
@@ -724,7 +799,95 @@ export async function deleteSubmission(id) {
     return response;
 }
 
-/**** MESSAGES ****/
+/**** FOLLOWUPMESSAGES ****/
+
+// Fetch single followup message data
+export function useFollowupMessage(id: number) {
+    return useQuery(
+        ["followupMessage", { id }],
+        () =>
+            supabase
+                .from("followupMessages")
+                .select()
+                .eq("id", id)
+                .single()
+                .then(handle),
+        { enabled: !!id }
+    );
+}
+
+// Fetch all followup messages by followup submission
+export function useFollowupMessagesByFollowupSubmission(
+    followupSubmissionId: number
+) {
+    return useQuery(
+        ["followupMessages", { followupSubmissionId }],
+        () =>
+            supabase
+                .from("followupMessages")
+                .select()
+                .eq("followupSubmission", followupSubmissionId)
+                .order("created_at", { ascending: false })
+                .then(handle),
+        { enabled: !!followupSubmissionId }
+    );
+}
+
+// Create a new followup message
+export async function createFollowupMessage(data: FollowupMessageType) {
+    const response = await supabase
+        .from("followupMessages")
+        .insert([data])
+        .select()
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await client.invalidateQueries(["followupMessages"]);
+    return response;
+}
+
+// Create many new followup messages. Should be an array of objects.
+export async function createFollowupMessages(data: FollowupMessageType[]) {
+    const response = await supabase
+        .from("followupMessages")
+        .insert(data)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await client.invalidateQueries(["followupMessages"]);
+    return response;
+}
+
+// Update a followup message
+export async function updateFollowupMessage(id: number, data: FollowupMessageType) {
+    const response = await supabase
+        .from("followupMessages")
+        .update(data)
+        .eq("id", id)
+        .then(handle);
+
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["followupMessage", { id }]),
+        client.invalidateQueries(["followupMessages"]),
+    ]);
+    return response;
+}
+
+// Delete a followup message
+export async function deleteFollowupMessage(id: number) {
+    const response = await supabase
+        .from("followupMessages")
+        .delete()
+        .eq("id", id)
+        .then(handle);
+    // Invalidate and refetch queries that could have old data
+    await Promise.all([
+        client.invalidateQueries(["followupMessage", { id }]),
+        client.invalidateQueries(["followupMessages"]),
+    ]);
+    return response;
+}
+
+/**** MESSAGES (OLD, DON'T USE) ****/
 
 // Fetch single message data
 export function useMessage(id) {

@@ -7,7 +7,7 @@ import {
     AIChatMessage,
 } from "langchain/schema";
 import { createSubmission, createMessages } from "util/db";
-import injectIntoBasePrompt from "util/injectIntoBasePrompt";
+import injectIntoBasePrompt from "util/injectIntoPrompt";
 
 export default async function handler(req, res) {
     console.log("In API route /api/openai")

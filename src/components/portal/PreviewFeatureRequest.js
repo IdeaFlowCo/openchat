@@ -7,6 +7,7 @@ import {
     XMarkIcon,
     PencilSquareIcon,
     TrashIcon,
+    SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { PaperClipIcon } from "@heroicons/react/20/solid";
 import StatusBadge from "components/atoms/StatusBadge";
@@ -20,6 +21,7 @@ import {
     updateComment,
     updateFeedback,
     deleteFeedback,
+    useFollowupSubmissionsByFeedback,
 } from "util/db";
 import Comment from "./Comment";
 import { toast } from "react-hot-toast";
@@ -43,6 +45,10 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
     const { data: upvotesData, status: upvotesStatus } = useUpvotesByFeedback(
         singleFeedback.id
     );
+
+    const { data: followupSubmissionsData, status: followupSubmissionsStatus } =
+        useFollowupSubmissionsByFeedback(singleFeedback.id);
+
     // console.log("upvotesData", upvotesData);
 
     const { data: commentsData, status: commentsStatus } =
@@ -126,7 +132,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                         {singleFeedback.upvotes.length}
                     </h1>
                 </button>
-                <div className="flex flex-col w-full">
+                <div className="flex w-full flex-col">
                     <div className="flex items-center justify-start gap-4">
                         <button
                             onClick={(e) => handleClickVote(e)}
@@ -141,7 +147,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                             {singleFeedback.title}
                         </h1>
                     </div>
-                    <p className="mt-4 sm:mt-1 text-sm font-light text-gray-500 line-clamp-2">
+                    <p className="mt-4 text-sm font-light text-gray-500 line-clamp-2 sm:mt-1">
                         {singleFeedback.description}
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -153,7 +159,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                             <p className="text-[11px] font-light text-gray-600">
                                 {formatDateString(singleFeedback.created_at)}
                             </p>
-                            <div className="flex gap-2 flex-wrap">
+                            <div className="flex flex-wrap gap-2">
                                 {singleFeedback.topics?.map((topic, index) => (
                                     <Fragment key={index}>
                                         <p className="whitespace-nowrap text-[11px] font-light text-gray-600">
@@ -268,6 +274,38 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                     singleFeedback.description
                                                                 }
                                                             </p>
+                                                            {
+                                                                // If there are any followup submissions, show their summary here
+                                                                followupSubmissionsData?.length >
+                                                                    0 && (
+                                                                    <div className="mt-3 flex flex-col gap-2">
+                                                                        <div className="flex gap-2 items-center">
+                                                                            <SparklesIcon className="w-5 h-5" />
+                                                                        <h1 className="text-sm font-medium">
+                                                                            A.I. Followup Insights
+                                                                        </h1>
+                                                                        </div>
+                                                                        {followupSubmissionsData?.map(
+                                                                            (
+                                                                                followupSubmission
+                                                                            ) => (
+                                                                                <div
+                                                                                    key={
+                                                                                        followupSubmission.id
+                                                                                    }
+                                                                                    className="flex flex-col gap-1"
+                                                                                >
+                                                                                    <p className="text-sm font-light text-gray-500">
+                                                                                        {
+                                                                                            followupSubmission.summary
+                                                                                        }
+                                                                                    </p>
+                                                                                </div>
+                                                                            )
+                                                                        )}
+                                                                    </div>
+                                                                )
+                                                            }
                                                             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                                                                 <div className="flex flex-wrap items-center justify-start gap-2">
                                                                     <p className="text-[11px] font-medium text-gray-600">
@@ -285,7 +323,7 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                             singleFeedback.created_at
                                                                         )}
                                                                     </p>
-                                                                    <div className="flex gap-2 flex-wrap">
+                                                                    <div className="flex flex-wrap gap-2">
                                                                         {singleFeedback.topics.map(
                                                                             (
                                                                                 topic,

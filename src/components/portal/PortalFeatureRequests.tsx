@@ -14,7 +14,6 @@ import { useFeedbackByPortal } from "util/db";
 import { useAuth } from "util/auth";
 import AuthModal from "./AuthModal";
 import { useRouter } from "next/router";
-import AIFollowupPopup from "./AIFollowupPopup";
 
 const topics = [
     "New Feature Request ✨",
@@ -512,9 +511,8 @@ export default function PortalFeatureRequests({ portalData }) {
 
             {/* MODALS  */}
             {openAuthModal && (
-                <AuthModal open={openAuthModal} setOpen={setOpenAuthModal} />
+                <AuthModal open={openAuthModal} setOpenAuthModal={setOpenAuthModal} />
             )}
-            {/* <AIFollowupPopup /> */}
         </>
     );
 }
