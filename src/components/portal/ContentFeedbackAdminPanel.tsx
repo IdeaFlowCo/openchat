@@ -61,7 +61,9 @@ export default function ContentFeedbackAdminPanel({
                     0,
                     100
                 )}...`,
-                p4Content: `Status change: ${feedbackData.status} -> ${statusName}`,
+                p4Content: `Status change: ${
+                    feedbackData.status ? feedbackData.status : "None"
+                } -> ${statusName}`,
                 closingLine: capitalizedFirstName
                     ? `Have an awesome day, ${capitalizedFirstName}!`
                     : `Have an awesome day!`,
