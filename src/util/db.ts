@@ -274,7 +274,7 @@ export async function createFeedback(data: FeedbackType, sendEmail: boolean = tr
 }
 
 // Update an existing feedback
-export async function updateFeedback(id: number, data: FeedbackType): Promise<FeedbackType> {
+export async function updateFeedback(id: number, data: any): Promise<FeedbackType> {
     const response = await supabase
         .from("feedback")
         .update(data)
