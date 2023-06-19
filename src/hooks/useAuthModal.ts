@@ -5,8 +5,8 @@ import { useState } from "react";
 //  MAKE SURE TO ALWAYS NEST AUTH MODAL CLEARLY WITHIN
 // THE PARENT DIALOG PANEL TO AVOID WEIRD ISSUES WITH
 // NESTED OVERLAYS
-export default function useAuthModal(auth) {
-    const [showAuthModal, setShowAuthModal] = useState(false);
+export default function useAuthModal(auth: any) {
+    const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
     function checkAuth() {
         if (!auth.user) {
