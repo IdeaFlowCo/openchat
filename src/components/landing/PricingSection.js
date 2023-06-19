@@ -9,11 +9,11 @@ const tiers = [
         name: "Starter",
         id: "starter",
         href: "#",
-        priceMonthly: "$0",
-        description: "Start capturing feedback with our free plan.",
+        priceMonthly: "$19",
+        description: "Start capturing feedback with our starter plan.",
         features: [
-            "20 Active Ideas",
-            "500 Monthly A.I. Credits",
+            "100 Active Ideas",
+            "10 Trial A.I. Credits",
             // "Up to 1,000 subscribers",
             "Basic analytics",
             "48-hour support response time",
@@ -146,7 +146,7 @@ export default function PricingSection() {
                                     ))}
                                 </ul>
                             </div>
-                            {tier?.id === "starter" ? (
+                            {/* {tier?.id === "starter" ? (
                                 <Link
                                     href={
                                         auth.user
@@ -168,7 +168,7 @@ export default function PricingSection() {
                                             : "Sign up for free"}
                                     </a>
                                 </Link>
-                            ) : (
+                            ) : ( */}
                                 <Link
                                     href={
                                         auth.user
@@ -185,10 +185,10 @@ export default function PricingSection() {
                                             "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         )}
                                     >
-                                        Buy plan
+                                        Start 14 day free trial
                                     </a>
                                 </Link>
-                            )}
+                            {/* )} */}
                         </div>
                     ))}
                 </div>
