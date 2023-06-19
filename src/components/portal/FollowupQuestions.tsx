@@ -94,7 +94,7 @@ export default function FollowupQuestions({ feedbackId }) {
             .catch((err) => {
                 console.log("err", err);
                 setLoading(false);
-                alert("Error sending message. Please try again.");
+                alert("Error sending message. Sorry about that! ");
             });
     };
 

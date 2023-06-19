@@ -413,53 +413,40 @@ function AddIdea({
                                 )}
 
                                 {showFollowup && submittedFeedbackId && (
-                                    <Transition.Child
-                                        as={Fragment}
-                                        enter="transform transition ease-in-out duration-300 sm:duration-400"
-                                        enterFrom="translate-x-full"
-                                        enterTo="translate-x-0"
-                                        leave="transform transition ease-in-out duration-300 sm:duration-400"
-                                        leaveFrom="translate-x-0"
-                                        leaveTo="translate-x-full"
-                                    >
-                                        <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
-                                            <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 px-4 shadow-xl sm:px-6">
-                                                <div className="px-4 sm:px-6">
-                                                    <div className="flex items-start justify-between">
-                                                        <div />
-                                                        <div className="ml-3 flex h-7 items-center">
-                                                            <button
-                                                                type="button"
-                                                                className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                                                onClick={() =>
-                                                                    setOpen(
-                                                                        false
-                                                                    )
-                                                                }
-                                                            >
-                                                                <span className="sr-only">
-                                                                    Close panel
-                                                                </span>
-                                                                <XMarkIcon
-                                                                    className="h-6 w-6"
-                                                                    aria-hidden="true"
-                                                                />
-                                                            </button>
-                                                        </div>
+                                    // Don't transition here, it results in weird behavior with autoclosing modal
+                                    <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
+                                        <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 px-4 shadow-xl sm:px-6">
+                                            <div className="px-4 sm:px-6">
+                                                <div className="flex items-start justify-between">
+                                                    <div />
+                                                    <div className="ml-3 flex h-7 items-center">
+                                                        <button
+                                                            type="button"
+                                                            className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                            onClick={() =>
+                                                                setOpen(false)
+                                                            }
+                                                        >
+                                                            <span className="sr-only">
+                                                                Close panel
+                                                            </span>
+                                                            <XMarkIcon
+                                                                className="h-6 w-6"
+                                                                aria-hidden="true"
+                                                            />
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                {/* <div className="relative flex flex-1 flex-col gap-10 px-4 sm:px-10 b"> */}
-                                                {/* CONTENT OF SLIDEOVER */}
-                                                <FollowupQuestions
-                                                    feedbackId={
-                                                        submittedFeedbackId
-                                                    }
-                                                />
-                                                {/* END CONTENT OF SLIDEOVER */}
-                                                {/* </div> */}
                                             </div>
-                                        </Dialog.Panel>
-                                    </Transition.Child>
+                                            {/* <div className="relative flex flex-1 flex-col gap-10 px-4 sm:px-10 b"> */}
+                                            {/* CONTENT OF SLIDEOVER */}
+                                            <FollowupQuestions
+                                                feedbackId={submittedFeedbackId}
+                                            />
+                                            {/* END CONTENT OF SLIDEOVER */}
+                                            {/* </div> */}
+                                        </div>
+                                    </Dialog.Panel>
                                 )}
                             </div>
                         </div>
