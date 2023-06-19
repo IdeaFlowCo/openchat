@@ -96,7 +96,8 @@ export default function FollowupQuestions({ feedbackId }) {
             .catch((err) => {
                 console.log("err", err);
                 setLoading(false);
-                alert("Error sending message. Sorry about that! ");
+                //TODO: Fix
+                toast.error("Error sending message. Sorry about that! Your interview still should be saved though. A fix is in the works.");
             });
     };
 
