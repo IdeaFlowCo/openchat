@@ -15,7 +15,7 @@ export default function ChatInput({
     
 }) {
   return (
-    <div className="h-[20vh] w-full">
+    <div className="h-[20vh] w-full mt-4">
                 <div className="flex flex-col items-center justify-center gap-4">
                     <div className="relative flex w-full items-center  justify-center rounded-full bg-[#f4f7fb] p-2 shadow-sm">
                         <label htmlFor="chat" className="sr-only">
