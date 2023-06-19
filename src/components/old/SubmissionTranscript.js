@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useMessagesBySubmission } from "util/db";
-import ChatMessage from "./ChatMessage";
+import ChatMessage from "../atoms/ChatMessage";
 import { toast } from "react-hot-toast";
 
 function SubmissionTranscript({ deepformId, submissionId }) {
