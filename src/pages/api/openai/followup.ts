@@ -78,7 +78,7 @@ export default async function handler(req, res) {
                 who wants to deeply understand the human's feedback and the context behind it. 
                 Ideally, the summary should not be too long. A paragraph at most.
 
-                Example: "Clarifications: When the human said "I don't like the color", they were referring to 
+                Example: "Clarifications: When the person said "I don't like the color", they were referring to 
                 the color of the button on the home page. They were not referring to the color of the text on 
                 the home page. Also, when they mentioned that the button was distracting, they meant that it was 
                 too large and took up too much space on the page, blocking their important workflow around data 
