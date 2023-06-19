@@ -49,9 +49,9 @@ function FAQ() {
                 Have a different question and can’t find the answer you’re
                 looking for? Reach out to the founder, Alan,{" "}
                 <span className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    via live chat
+                    by emailing alan@deepform.ai
                 </span>{" "}
-                (bottom right corner) and he’ll get back to you as soon as he
+                and he’ll get back to you as soon as he
                 can.
             </p>
 
