@@ -54,11 +54,11 @@ function Replies({ commentId, repliesData, feedbackId, checkAuth }) {
                             className="block w-full resize-none border-0 bg-transparent p-3 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                             placeholder="Add your reply..."
                             onChange={(e) => setUsersReply(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleAddReply();
-                                }
-                            }}
+                            // onKeyDown={(e) => {
+                            //     if (e.key === "Enter") {
+                            //         handleAddReply();
+                            //     }
+                            // }}
                         />
 
                         {/* Spacer element to match the height of the toolbar */}

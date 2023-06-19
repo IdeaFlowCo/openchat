@@ -439,16 +439,16 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                                                                                 .value
                                                                         )
                                                                     }
-                                                                    onKeyDown={(
-                                                                        e
-                                                                    ) => {
-                                                                        if (
-                                                                            e.key ===
-                                                                            "Enter"
-                                                                        ) {
-                                                                            handleAddComment();
-                                                                        }
-                                                                    }}
+                                                                    // onKeyDown={(
+                                                                    //     e
+                                                                    // ) => {
+                                                                    //     if (
+                                                                    //         e.key ===
+                                                                    //         "Enter"
+                                                                    //     ) {
+                                                                    //         handleAddComment();
+                                                                    //     }
+                                                                    // }}
                                                                 />
 
                                                                 {/* Spacer element to match the height of the toolbar */}
