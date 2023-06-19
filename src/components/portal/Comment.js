@@ -131,7 +131,7 @@ function Comment({ comment, isReply = false, checkAuth }) {
                         )}
                     </div>
                     {
-                        auth.user.uid === comment.commenter &&
+                        auth?.user?.uid === comment.commenter &&
                         <div className="flex gap-2 self-end">
                         {/* <button
                             type="button"

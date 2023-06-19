@@ -85,8 +85,9 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
     };
 
     const handleAddComment = () => {
-        if (usersComment.length === 0) {
+        if (usersComment.trim().length === 0) {
             toast.error("Comment cannot be empty");
+            setUsersComment("");
             return;
         }
 

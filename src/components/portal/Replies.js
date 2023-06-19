@@ -2,17 +2,24 @@ import React, { useState } from "react";
 import { useCommentsByParentComment, createComment } from "util/db";
 import Comment from "./Comment";
 import { useAuth } from "util/auth";
+import { toast } from "react-hot-toast";
 
 function Replies({ commentId, repliesData, feedbackId, checkAuth }) {
     const auth = useAuth();
     const [usersReply, setUsersReply] = useState("");
     const [loading, setLoading] = useState(false);
     const handleAddReply = async () => {
-        setLoading(true);
+        if (usersReply.trim().length === 0) {
+            toast.error("Comment cannot be empty");
+            setUsersReply("");
+            return;
+        }
+
         // Check if user is logged in. If they aren't, show the AuthModal.
         const isLoggedIn = checkAuth();
         if (!isLoggedIn) return;    
         
+        setLoading(true);
         const reply = await createComment({
             feedback_id: feedbackId,
             body: usersReply,
@@ -33,7 +40,7 @@ function Replies({ commentId, repliesData, feedbackId, checkAuth }) {
             {repliesData?.map((reply) => (
                 <Comment key={reply.id} comment={reply} isReply={true} />
             ))}
-            <div id={`replyInput-${commentId}`} className="min-w-0 flex-1 ">
+            <div id={`replyInput-${commentId}`} className="min-w-0 flex-1 mt-2">
                 <form action="#" className="relative">
                     <div className="overflow-hidden rounded-lg border-[1px]">
                         <label htmlFor="comment" className="sr-only">
