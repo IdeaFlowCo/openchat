@@ -87,7 +87,9 @@ export default function FollowupQuestions({ feedbackId }) {
                 if (data.isEndOfInterview) {
                     setShowEndInterviewModal(false);
                     // Time out for 3 seconds, then redirect to Deepform home page
-                    toast.success("Redirecting...");
+                    toast.success("Redirecting...", {
+                        duration: 3000,
+                    });
                     setTimeout(() => {
                         window.location.href = `/portal/${feedbackData.portal_id}`;
                     }, 3000);
