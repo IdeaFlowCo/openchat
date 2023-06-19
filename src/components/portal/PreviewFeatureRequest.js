@@ -180,12 +180,12 @@ function PreviewFeatureRequest({ singleFeedback, portalData }) {
                         />
                     </div>
                 </div>
-                <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
+                {/* <div className="mb-1 flex flex-none items-center justify-center gap-2 self-center sm:self-end">
                     <ChatBubbleLeftIcon className="h-5 w-5 font-extralight text-gray-400" />
                     <p className="text-[11px] font-light text-gray-500">
-                        {/* {commentsData?.length} */}
+                        {commentsData?.length}
                     </p>
-                </div>
+                </div> */}
             </div>
             <Transition.Root show={open} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={setOpen}>

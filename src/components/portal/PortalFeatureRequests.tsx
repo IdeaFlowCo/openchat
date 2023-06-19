@@ -290,7 +290,7 @@ export default function PortalFeatureRequests({ portalData }) {
                             // checkAuth={checkAuth}
                         />
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between -mt-2">
                         <div />
                         <div>
                             <Menu
