@@ -109,17 +109,20 @@ function AddIdea({
         query
             .then((value) => {
                 console.log("value", value);
-                toast.success("Feedback submitted successfully!");
-
-                // Show followup questions if they are enabled
-                if (followupQuestions && value.id) {
-                    setSubmittedFeedbackId(value.id);
-                    setLoading(false);
-                    setShowFollowup(true);
+                if (editMode) {
+                    toast.success("Feedback updated successfully!");
                 } else {
-                    setLoading(false);
-                    setOpen(false);
+                    toast.success("Feedback submitted successfully!");
+                    // Show followup questions if they are enabled
+                    if (followupQuestions && value.id) {
+                        setSubmittedFeedbackId(value.id);
+                        setLoading(false);
+                        setShowFollowup(true);
+                    }
                 }
+
+                setLoading(false);
+                setOpen(false);
             })
             .catch((error) => {
                 console.log("error", error);
