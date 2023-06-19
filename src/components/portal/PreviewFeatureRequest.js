@@ -27,6 +27,8 @@ import Comment from "./Comment";
 import { toast } from "react-hot-toast";
 import FeedbackAdminPanel from "./FeedbackAdminPanel";
 import AddIdea from "./AddIdea";
+import AuthModal from "./AuthModal";
+import useAuthModal from "hooks/useAuthModal";
 
 export const formatDateString = (dateString) => {
     const date = new Date(dateString);
@@ -35,8 +37,10 @@ export const formatDateString = (dateString) => {
     return `${day} ${month}`;
 };
 
-function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
+// TODO: Handle the fact I removed checkAuth
+function PreviewFeatureRequest({ singleFeedback, portalData }) {
     const auth = useAuth();
+    const { showAuthModal, setShowAuthModal, checkAuth } = useAuthModal(auth);
     const [open, setOpen] = useState(false);
     const [usersComment, setUsersComment] = useState("");
     const [loading, setLoading] = useState(false);
@@ -279,11 +283,13 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                                                 followupSubmissionsData?.length >
                                                                     0 && (
                                                                     <div className="mt-3 flex flex-col gap-2">
-                                                                        <div className="flex gap-2 items-center">
-                                                                            <SparklesIcon className="w-5 h-5" />
-                                                                        <h1 className="text-sm font-medium">
-                                                                            A.I. Followup Insights
-                                                                        </h1>
+                                                                        <div className="flex items-center gap-2">
+                                                                            <SparklesIcon className="h-5 w-5" />
+                                                                            <h1 className="text-sm font-medium">
+                                                                                A.I.
+                                                                                Followup
+                                                                                Insights
+                                                                            </h1>
                                                                         </div>
                                                                         {followupSubmissionsData?.map(
                                                                             (
@@ -609,6 +615,17 @@ function PreviewFeatureRequest({ singleFeedback, portalData, checkAuth }) {
                                             </div>
                                             {/* END CONTENT OF SLIDEOVER */}
                                         </div>
+                                        {
+                                            // If user is not logged in, show auth modal
+                                            showAuthModal && (
+                                                <AuthModal
+                                                    setOpenAuthModal={
+                                                        setShowAuthModal
+                                                    }
+                                                    open={showAuthModal}
+                                                />
+                                            )
+                                        }
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>

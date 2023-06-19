@@ -5,7 +5,12 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "util/auth";
 import { toast } from "react-hot-toast";
 import { updateUser } from "util/db";
-export default function AuthModal({ open, setOpenAuthModal }) {
+
+interface AuthModalProps {
+    open: boolean;
+    setOpenAuthModal: (arg0: boolean) => void;
+}
+export default function AuthModal({ open, setOpenAuthModal }: AuthModalProps) {
     const auth = useAuth();
 
     const [authType, setAuthType] = useState("signup");
@@ -82,8 +87,8 @@ export default function AuthModal({ open, setOpenAuthModal }) {
     // To fix this: https://stackoverflow.com/questions/54954385/react-useeffect-causing-cant-perform-a-react-state-update-on-an-unmounted-comp
     useEffect(() => {
         return () => {
-            setPending();
-            setOpenAuthModal();
+            setPending(false);
+            setOpenAuthModal(false);
         };
     }, []);
 
@@ -92,9 +97,6 @@ export default function AuthModal({ open, setOpenAuthModal }) {
             <Dialog
                 as="div"
                 className="relative z-10"
-                onClick={(e) => {
-                    console.log("Exit AuthModal");
-                }}
                 onClose={setOpenAuthModal}
             >
                 <Transition.Child
@@ -106,7 +108,7 @@ export default function AuthModal({ open, setOpenAuthModal }) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"/>
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">

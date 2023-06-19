@@ -51,7 +51,6 @@ function classNames(...classes) {
 export default function PortalFeatureRequests({ portalData }) {
     const router = useRouter();
     const auth = useAuth();
-    const [openAuthModal, setOpenAuthModal] = useState(false);
     const [statusesFilterList, setStatusesFilterList] = useState([]);
     const [topicsFilterList, setTopicsFilterList] = useState([]);
     const [userIsAdmin, setUserIsAdmin] = useState(
@@ -68,16 +67,6 @@ export default function PortalFeatureRequests({ portalData }) {
         topicsFilterList
     );
     // console.log("feedback", feedback)
-
-    const checkAuth = () => {
-        // Check if user is logged in. If they aren't, show the AuthModal.
-        if (!auth.user) {
-            setOpenAuthModal(true);
-            return false;
-        }
-        setOpenAuthModal(false);
-        return true;
-    };
 
     useEffect(() => {
         if (auth.user?.portal_id === portalData?.id) {
@@ -298,7 +287,7 @@ export default function PortalFeatureRequests({ portalData }) {
                         </div>
                         <AddIdea
                             portalId={portalData?.id}
-                            checkAuth={checkAuth}
+                            // checkAuth={checkAuth}
                         />
                     </div>
                     <div className="flex items-center justify-between">
@@ -501,18 +490,12 @@ export default function PortalFeatureRequests({ portalData }) {
                                 key={singleFeedback.id}
                                 singleFeedback={singleFeedback}
                                 portalData={portalData}
-                                checkAuth={checkAuth}
                             />
                         ))}
                     </div>
                 </section>
                 {/* </Transition> */}
             </main>
-
-            {/* MODALS  */}
-            {openAuthModal && (
-                <AuthModal open={openAuthModal} setOpenAuthModal={setOpenAuthModal} />
-            )}
         </>
     );
 }

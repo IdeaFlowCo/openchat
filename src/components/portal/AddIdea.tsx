@@ -14,6 +14,8 @@ import Spinner from "components/atoms/Spinner";
 import AnswerDeepform from "../old/AnswerDeepform";
 import FollowupQuestions from "./FollowupQuestions";
 import { toast } from "react-hot-toast";
+import AuthModal from "./AuthModal";
+import useAuthModal from "hooks/useAuthModal";
 
 const classNames = (...classes) => {
     return classes.filter(Boolean).join(" ");
@@ -35,7 +37,7 @@ const topics = [
 
 function AddIdea({
     portalId,
-    checkAuth = () => true,
+    // checkAuth = () => true,
     editMode = false,
     onboardingMode = false,
     feedbackData = null,
@@ -43,6 +45,11 @@ function AddIdea({
     followupQuestions = true,
 }) {
     const auth = useAuth();
+
+    // Hook to show popup Auth Modal when user isn't logged in yet. Reusable.
+    const { showAuthModal, setShowAuthModal, checkAuth } = useAuthModal(auth);
+
+    // Local State
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [failedSubmitNoAuth, setFailedSubmitNoAuth] = useState(false);
@@ -136,7 +143,6 @@ function AddIdea({
         }
     }, [auth.user, failedSubmitNoAuth]);
 
-    //TODO: IN PROGRESS DEBUGGING WEIRD STACKED MODALS PROBLEM FOR AUTHMODAL + ADDIDEA
     return (
         <div>
             {editMode ? (
@@ -162,13 +168,10 @@ function AddIdea({
                 </button>
             )}
 
-
             <Transition.Root show={open} as={Fragment}>
                 <Dialog
                     as="div"
-                    className="relative z-10 bg-green-400"
-                    onClick={(e) => {
-                        console.log("Exit AddIdea")}}
+                    className="relative z-10 bg-green-400 "
                     onClose={() => {
                         setShowFollowup(false);
                         setOpen(false);
@@ -183,7 +186,7 @@ function AddIdea({
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity -z-10"/>
+                        <div className="fixed inset-0 -z-10 bg-gray-500 bg-opacity-75 transition-opacity " />
                     </Transition.Child>
 
                     <div className="fixed inset-0 overflow-hidden">
@@ -379,7 +382,11 @@ function AddIdea({
                                                                     }
                                                                 >
                                                                     {loading ? (
-                                                                        <Spinner small={true}/>
+                                                                        <Spinner
+                                                                            small={
+                                                                                true
+                                                                            }
+                                                                        />
                                                                     ) : (
                                                                         "Submit"
                                                                     )}
@@ -390,6 +397,17 @@ function AddIdea({
                                                 </div>
                                                 {/* END CONTENT OF SLIDEOVER */}
                                             </div>
+                                            {showAuthModal && (
+                                                // MAKE SURE TO ALWAYS NEST AUTH MODAL CLEARLY WITHIN
+                                                // THE PARENT DIALOG PANEL TO AVOID WEIRD ISSUES WITH
+                                                // NESTED OVERLAYS
+                                                <AuthModal
+                                                    open={showAuthModal}
+                                                    setOpenAuthModal={
+                                                        setShowAuthModal
+                                                    }
+                                                />
+                                            )}
                                         </Dialog.Panel>
                                     </Transition.Child>
                                 )}
