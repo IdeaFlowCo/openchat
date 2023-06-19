@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { useWhisper } from "@chengsokdara/use-whisper";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import EndInterviewModal from "../old/EndInterviewModal";
 import { FollowupPayloadType, MessageType } from "types/portalTypes";
 import { useAuth } from "util/auth";
@@ -161,7 +162,7 @@ export default function FollowupQuestions({ feedbackId }) {
             {/* <section className="flex flex-col justify-center items-center sm:mx-auto h-[80vh] b"> */}
             <div
                 id="chat"
-                className="flex h-[80vh] w-full items-start justify-center overflow-auto p-4 sm:pt-10"
+                className="flex h-[80vh] w-full items-start justify-center overflow-auto sm:pt-10"
             >
                 <div className="container flex max-w-3xl flex-col gap-3">
                     {messages.map((message, index) => (
@@ -176,7 +177,7 @@ export default function FollowupQuestions({ feedbackId }) {
 
             <div className="h-[20vh] w-full">
                 <div className="flex flex-col items-center justify-center gap-4">
-                    <div className="flex w-full items-center justify-center px-4">
+                    <div className="relative flex w-full items-center  justify-center rounded-full bg-[#f4f7fb] p-2 shadow-sm">
                         <label htmlFor="chat" className="sr-only">
                             Chat
                         </label>
@@ -203,7 +204,7 @@ export default function FollowupQuestions({ feedbackId }) {
                                 <button
                                     onClick={() => startRecording()}
                                     disabled={recording}
-                                    className="mr-4 rounded-full border bg-indigo-600 p-4 text-white hover:opacity-70 "
+                                    className="mr-4 rounded-full border bg-white p-3 text-white hover:opacity-70 "
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -211,7 +212,7 @@ export default function FollowupQuestions({ feedbackId }) {
                                         viewBox="0 0 24 24"
                                         strokeWidth={1.5}
                                         stroke="currentColor"
-                                        className="h-6 w-6"
+                                        className="h-6 w-6 text-indigo-600"
                                     >
                                         <path
                                             strokeLinecap="round"
@@ -227,7 +228,7 @@ export default function FollowupQuestions({ feedbackId }) {
                                         stopRecording();
                                     }}
                                     disabled={!recording}
-                                    className="mr-4 rounded-full border border-black/10 p-4"
+                                    className="mr-4 rounded-full border border-black/10 p-3 bg-indigo-600"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -235,7 +236,7 @@ export default function FollowupQuestions({ feedbackId }) {
                                         viewBox="0 0 24 24"
                                         strokeWidth={1.5}
                                         stroke="currentColor"
-                                        className="h-6 w-6"
+                                        className="h-6 w-6 text-white"
                                     >
                                         <path
                                             strokeLinecap="round"
@@ -250,9 +251,10 @@ export default function FollowupQuestions({ feedbackId }) {
                         <input
                             name="chat"
                             id="chat"
-                            className="block h-12 w-4/6 rounded-md border-0 p-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
+                            className="block h-12 grow rounded-md border-0 bg-transparent px-2 text-gray-900  placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
                             placeholder="Type your response..."
                             value={textInput}
+                            autoComplete="off"
                             onChange={(e) => setTextInput(e.target.value)}
                             onKeyDown={(e) => {
                                 if (e.key === "Enter") {
@@ -265,11 +267,14 @@ export default function FollowupQuestions({ feedbackId }) {
                             onClick={() => sendMessage(textInput)}
                             disabled={loading}
                             className={
-                                "ml-4 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                "ml-4 inline-flex items-center rounded-full border border-transparent bg-indigo-600 p-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             }
                         >
                             {!loading ? (
-                                "Send"
+                                <PaperAirplaneIcon
+                                    className="h-6 w-6"
+                                    aria-hidden="true"
+                                />
                             ) : (
                                 <>
                                     <svg

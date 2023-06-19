@@ -376,17 +376,19 @@ function AddIdea({
                                                                 </button>
                                                                 <button
                                                                     type="submit"
-                                                                    className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                                                                    className=" inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                                                                     disabled={
                                                                         loading
                                                                     }
                                                                 >
                                                                     {loading ? (
-                                                                        <Spinner
-                                                                            small={
-                                                                                true
-                                                                            }
-                                                                        />
+                                                                        <div className="mx-3">
+                                                                            <Spinner
+                                                                                small={
+                                                                                    true
+                                                                                }
+                                                                            />
+                                                                        </div>
                                                                     ) : (
                                                                         "Submit"
                                                                     )}
@@ -415,8 +417,8 @@ function AddIdea({
                                 {showFollowup && submittedFeedbackId && (
                                     // Don't transition here, it results in weird behavior with autoclosing modal
                                     <Dialog.Panel className="pointer-events-auto w-screen max-w-2xl">
-                                        <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 px-4 shadow-xl sm:px-6">
-                                            <div className="px-4 sm:px-6">
+                                        <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 px-4 shadow-xl">
+                                            <div className="mb-2">
                                                 <div className="flex items-start justify-between">
                                                     <div />
                                                     <div className="ml-3 flex h-7 items-center">

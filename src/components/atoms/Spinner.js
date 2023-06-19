@@ -6,12 +6,12 @@ function classNames(...classes) {
 
 function Spinner({ small = false }) {
     return (
-        <div role="status">
+        <div role="status" className="b flex justify-center">
             <svg
                 aria-hidden="true"
                 className={classNames(
                     small ? "h-5 w-5" : "h-8 w-8",
-                    " mr-2 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
+                    " animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
                 )}
                 viewBox="0 0 100 101"
                 fill="none"
