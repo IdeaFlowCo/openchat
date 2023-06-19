@@ -6,7 +6,7 @@ function classNames(...classes) {
 
 function Spinner({ small = false }) {
     return (
-        <div role="status" className="b flex justify-center">
+        <div role="status" className="flex justify-center">
             <svg
                 aria-hidden="true"
                 className={classNames(
