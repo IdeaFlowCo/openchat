@@ -299,7 +299,7 @@ export default function PortalLayout({
                             </Menu>
                         </div>
                     ) : (
-                        <div>
+                        <div className="whitespace-nowrap">
                             <Link
                                 href={`/auth/signin?next=/portal/${portalData?.id}`}
                             >
@@ -318,7 +318,7 @@ export default function PortalLayout({
                             >
                                 <button
                                     type="button"
-                                    className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    className="hidden relative sm:inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
                                     Sign Up
                                     {/* <span aria-hidden="true">
