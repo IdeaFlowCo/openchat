@@ -87,9 +87,10 @@ export default function FollowupQuestions({ feedbackId }) {
                 if (data.isEndOfInterview) {
                     setShowEndInterviewModal(false);
                     // Time out for 3 seconds, then redirect to Deepform home page
+                    toast.success("Redirecting...");
                     setTimeout(() => {
                         window.location.href = `/portal/${feedbackData.portal_id}`;
-                    }, 5000);
+                    }, 3000);
                 }
                 setLoading(false);
             })
