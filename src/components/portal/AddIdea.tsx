@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import StatusBadge from "components/atoms/StatusBadge";
 import { useForm } from "react-hook-form";
-import { createFeedback, updateFeedback } from "util/db";
+import { createFeedback, updateFeedback, createUpvote } from "util/db";
 import { useAuth } from "util/auth";
 import Spinner from "components/atoms/Spinner";
 import AnswerDeepform from "../old/AnswerDeepform";
@@ -110,19 +110,33 @@ function AddIdea({
             .then((value) => {
                 console.log("value", value);
                 if (editMode) {
+                    // Edit Idea Flow
                     toast.success("Feedback updated successfully!");
+                    setLoading(false);
+                    setOpen(false);
                 } else {
+                    // Created Idea Flow
                     toast.success("Feedback submitted successfully!");
+
+                    // Automatically upvote the feedback
+                    createUpvote({
+                        feedback_id: value.id,
+                        voter: auth.user.uid,
+                    });
+
                     // Show followup questions if they are enabled
                     if (followupQuestions && value.id) {
                         setSubmittedFeedbackId(value.id);
                         setLoading(false);
                         setShowFollowup(true);
+                    } else {
+                        // No followups just close modal.
+                        setLoading(false);
+                        setOpen(false);
                     }
                 }
 
-                setLoading(false);
-                setOpen(false);
+                
             })
             .catch((error) => {
                 console.log("error", error);
