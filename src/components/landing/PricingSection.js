@@ -76,7 +76,10 @@ export default function PricingSection() {
     useEffect(() => {
         if (fromRequirePlan) {
             toast.error(
-                "Hey there. You need to be on a paid plan to access that page. Try us out with a 14 day free trial!"
+                "Hey there. Please purchase a paid plan to continue. Try us out with a 14 day free trial!",
+                {
+                    duration: 7000,
+                }
             );
         }
     }, [fromRequirePlan]);
@@ -87,12 +90,12 @@ export default function PricingSection() {
                     <h2 className="text-base font-semibold leading-7 text-indigo-600">
                         Pricing
                     </h2>
-                    <p className="font-satoshi mt-2 text-5xl font-medium tracking-tight text-gray-900 sm:text-6xl">
-                       Cheaper than building the wrong features.
+                    <p className="mt-2 font-satoshi text-5xl font-medium tracking-tight text-gray-900 sm:text-6xl">
+                        Cheaper than building the wrong features.
                     </p>
                 </div>
                 <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-                    Capture, organize, and analyze product feedback with AI. {" "}
+                    Capture, organize, and analyze product feedback with AI.{" "}
                     <span className="text-indigo-600">
                         Money back guarantee if you aren't satisfied.
                     </span>
@@ -184,25 +187,25 @@ export default function PricingSection() {
                                     </a>
                                 </Link>
                             ) : ( */}
-                                <Link
-                                    href={
-                                        auth.user
-                                            ? `/purchase/${tier.id}`
-                                            : `/auth/signup?next=/purchase/${tier.id}`
-                                    }
+                            <Link
+                                href={
+                                    auth.user
+                                        ? `/purchase/${tier.id}`
+                                        : `/auth/signup?next=/purchase/${tier.id}`
+                                }
+                            >
+                                <a
+                                    aria-describedby={tier.id}
+                                    className={classNames(
+                                        tier.mostPopular
+                                            ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
+                                            : "text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300",
+                                        "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    )}
                                 >
-                                    <a
-                                        aria-describedby={tier.id}
-                                        className={classNames(
-                                            tier.mostPopular
-                                                ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
-                                                : "text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300",
-                                            "mt-8 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                        )}
-                                    >
-                                        Start 14 day free trial
-                                    </a>
-                                </Link>
+                                    Start 14 day free trial
+                                </a>
+                            </Link>
                             {/* )} */}
                         </div>
                     ))}

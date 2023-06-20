@@ -291,9 +291,15 @@ export const requireAuth = (Component, requirePlan = false) => {
                 router.replace("/auth/signin");
             }
 
-            if (requirePlan === true) {
-                if (auth.user && !auth.user.planIsActive) {
+            // Redirect if signed in but no plan
+            if (requirePlan === true && auth.user) {
+                if (!auth.user.planIsActive) {
                     router.replace("/pricing?fromRequirePlan=true");
+                } else {
+                    // Redirect if user has plan but no portal yet.
+                    if (!auth.user.portal_id) {
+                        router.replace("/portal/new");
+                    }
                 }
             }
         }, [auth]);

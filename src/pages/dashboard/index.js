@@ -23,9 +23,9 @@ function DashboardHomePage() {
     }
 
     // If the user doesn't have a portalId, redirect to /
-    if (auth.user && !auth.user.portal_id) {
-        router.push("/portal/new");
-    }
+    // if (auth.user && !auth.user.portal_id) {
+    //     router.push("/portal/new");
+    // }
 
     if (portalData === undefined || portalData === null || !portalData) {
         // Return loader
