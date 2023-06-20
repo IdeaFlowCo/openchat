@@ -6,7 +6,7 @@ let stripe;
 // Load the Stripe script
 loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, {
   // Pin to specific version of the Stripe API
-  apiVersion: "2020-08-27",
+  apiVersion: "2022-11-15",
 }).then((stripeInstance) => {
   // Set stripe so all functions below have it in scope
   stripe = stripeInstance;
