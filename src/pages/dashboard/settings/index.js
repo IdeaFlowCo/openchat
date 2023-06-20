@@ -1,7 +1,7 @@
 import React from "react";
 import Meta from "components/Meta";
 import DashboardHome from "components/old/home/DashboardHome";
-import requireAuth from "util/requireAuth";
+import { requireAuth } from "../../../util/auth";
 import { useRouter } from "next/router";
 import { usePortal } from "util/db";
 import PortalLayout from "components/portal/PortalLayout";
