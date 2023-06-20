@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
 import { SignUpEmailProps } from "types/emailTypes";
 const resend = new Resend(process.env.RESEND_API_KEY);
+import { emailBlacklist } from "util/emailBlacklist";
 
 // Basic API route that sends a general email
 export default async function handler(
@@ -15,6 +16,14 @@ export default async function handler(
     if (!emailData.portalId || !emailData.to) {
         res.status(400).json({
             error: "Missing required email data",
+        });
+        return;
+    }
+
+    // Check if the email is in the blacklist
+    if (emailBlacklist.includes(emailData.to)) {
+        res.status(400).json({
+            error: "Email is in the blacklist",
         });
         return;
     }

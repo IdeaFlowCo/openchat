@@ -3,6 +3,7 @@ import { GeneralEmailTemplateProps } from "types/emailTypes";
 import { Resend } from "resend";
 import { GeneralEmailTemplate } from "components/emails/GeneralEmailTemplate";
 const resend = new Resend(process.env.RESEND_API_KEY);
+import { emailBlacklist } from "util/emailBlacklist";
 
 // Basic API route that sends a general email
 export default async function handler(
@@ -26,6 +27,14 @@ export default async function handler(
         return;
     }
 
+    // Check if the email is in the blacklist
+    if (emailBlacklist.includes(emailData.to)) {
+        res.status(400).json({
+            error: "Email is in the blacklist",
+        });
+        return;
+    }
+    
     // Send the email
     try {
         await resend.emails.send({
