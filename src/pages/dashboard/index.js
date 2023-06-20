@@ -49,4 +49,4 @@ function DashboardHomePage() {
     );
 }
 
-export default requireAuth(DashboardHomePage);
+export default requireAuth(DashboardHomePage, true);

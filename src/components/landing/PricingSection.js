@@ -3,7 +3,9 @@ import Link from "next/link";
 import { useAuth } from "util/auth";
 import FAQ from "./FAQ";
 import TestimonialSection from "./TestimonialSection";
-
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 const tiers = [
     {
         name: "Starter",
@@ -65,6 +67,19 @@ function classNames(...classes) {
 
 export default function PricingSection() {
     const auth = useAuth();
+    const router = useRouter();
+
+    // Get query params
+    const { fromRequirePlan } = router.query;
+
+    // If fromRequirePlan, show toast that explains what just happened
+    useEffect(() => {
+        if (fromRequirePlan) {
+            toast.error(
+                "Hey there. You need to be on a paid plan to access that page. Try us out with a 14 day free trial!"
+            );
+        }
+    }, [fromRequirePlan]);
     return (
         <div className="bg-white py-12 sm:py-24">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">

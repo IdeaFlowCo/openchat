@@ -20,4 +20,4 @@ export const getServerSideProps = async (context) => ({
     props: { host: context.req.headers.host || null },
 });
 
-export default requireAuth(DashboardDeepformsPage);
+export default requireAuth(DashboardDeepformsPage, true);
