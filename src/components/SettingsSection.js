@@ -67,11 +67,11 @@ function SettingsSection(props) {
             Password
           </a>
         </Link>
-        <Link href="/settings/billing">
+        {/* <Link href="/settings/billing">
           <a className={"" + (section === "billing" ? " underline" : "")}>
             Billing
           </a>
-        </Link>
+        </Link> */}
       </div>
       <div className="container mx-auto mt-5 max-w-md">
         {formAlert && (
@@ -90,7 +90,7 @@ function SettingsSection(props) {
 
         {section === "password" && <SettingsPassword onStatus={handleStatus} />}
 
-        {section === "billing" && <SettingsBilling onStatus={handleStatus} />}
+        {/* {section === "billing" && <SettingsBilling onStatus={handleStatus} />} */}
       </div>
     </section>
   );
