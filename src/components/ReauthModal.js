@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import AuthSocial from "components/AuthSocial";
 import { useAuth } from "util/auth";
 
+// Warning: this is deprecated. I use AuthModal now. May still work though, and still is being used in Settings Page.
 function ReauthModal(props) {
   const auth = useAuth();
   const [pending, setPending] = useState(false);
