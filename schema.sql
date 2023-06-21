@@ -50,19 +50,19 @@ create trigger on_auth_user_updated
 
 /*** CUSTOMERS ***/
 
-create table public.customers (
-  -- UUID from public.users
-  "id" uuid references public.users not null primary key,
-  -- Stripe data
-  "stripeCustomerId" text,
-  "stripeSubscriptionId" text,
-  "stripePriceId" text,
-  "stripeSubscriptionStatus" text
-);
+-- create table public.customers (
+--   -- UUID from public.users
+--   "id" uuid references public.users not null primary key,
+--   -- Stripe data
+--   "stripeCustomerId" text,
+--   "stripeSubscriptionId" text,
+--   "stripePriceId" text,
+--   "stripeSubscriptionStatus" text
+-- );
 
--- Create security policies
-alter table public.customers enable row level security;
-create policy "Can view their own customer data" on customers for select using (auth.uid() = "id");
+-- -- Create security policies
+-- alter table public.customers enable row level security;
+-- create policy "Can view their own customer data" on customers for select using (auth.uid() = "id");
 
 /*** ITEMS ***/
 
