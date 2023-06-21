@@ -5,37 +5,38 @@ import Link from "next/link";
 import AbstractBg from "../atoms/AbstractBg";
 
 function ContactSection(props) {
-    const [pending, setPending] = useState(false);
-    const [formAlert, setFormAlert] = useState(null);
-    const { handleSubmit, register, errors, reset } = useForm();
+    // TODO: If you ever want to use this, add a the neccessary FORMSPREE keys to your .env
+    // const [pending, setPending] = useState(false);
+    // const [formAlert, setFormAlert] = useState(null);
+    // const { handleSubmit, register, errors, reset } = useForm();
 
-    const onSubmit = (data) => {
-        // Show pending indicator
-        setPending(true);
+    // const onSubmit = (data) => {
+    //     // Show pending indicator
+    //     setPending(true);
 
-        contact
-            .submit(data)
-            .then(() => {
-                // Clear form
-                reset();
-                // Show success alert message
-                setFormAlert({
-                    type: "success",
-                    message: "Your message has been sent!",
-                });
-            })
-            .catch((error) => {
-                // Show error alert message
-                setFormAlert({
-                    type: "error",
-                    message: error.message,
-                });
-            })
-            .finally(() => {
-                // Hide pending indicator
-                setPending(false);
-            });
-    };
+    //     contact
+    //         .submit(data)
+    //         .then(() => {
+    //             // Clear form
+    //             reset();
+    //             // Show success alert message
+    //             setFormAlert({
+    //                 type: "success",
+    //                 message: "Your message has been sent!",
+    //             });
+    //         })
+    //         .catch((error) => {
+    //             // Show error alert message
+    //             setFormAlert({
+    //                 type: "error",
+    //                 message: error.message,
+    //             });
+    //         })
+    //         .finally(() => {
+    //             // Hide pending indicator
+    //             setPending(false);
+    //         });
+    // };
 
     return (
         <section className="bg-white py-12 px-4">
@@ -56,7 +57,7 @@ function ContactSection(props) {
                     </div>
                 </div>
 
-                {formAlert && (
+                {/* {formAlert && (
                     <div
                         className={
                             "mb-4" +
@@ -113,7 +114,7 @@ function ContactSection(props) {
                     >
                         {pending ? "..." : "Send message"}
                     </button>
-                </form>
+                </form> */}
             </div>
         </section>
     );
