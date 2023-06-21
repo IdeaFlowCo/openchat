@@ -3,7 +3,7 @@ import React from "react";
 function LegalPrivacy(props) {
     return (
         <div className="prose prose-a:text-indigo-600 max-w-none">
-            <h1 className="font-satoshi font-medium tracking-tight">
+            {/* <h1 className="font-satoshi font-medium tracking-tight">
                 Privacy Policy
             </h1>
             <p>
@@ -93,7 +93,7 @@ function LegalPrivacy(props) {
                 questions, or if you would like to make a complaint, please
                 contact us by e-mail at alanduong07@gmail.com or through our
                 live chat located at the bottom right of the screen.
-            </p>
+            </p> */}
         </div>
     );
 }

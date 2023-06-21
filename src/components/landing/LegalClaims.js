@@ -3,7 +3,7 @@ import React from "react";
 function LegalClaims(props) {
     return (
         <div className="prose prose-a:text-indigo-600 max-w-none">
-            <h1 className="font-satoshi font-medium tracking-tight">
+            {/* <h1 className="font-satoshi font-medium tracking-tight">
                 Claims / Dispute Resolution
             </h1>
             <p>
@@ -42,7 +42,7 @@ function LegalClaims(props) {
             <p>
                 We value your trust and satisfaction, and we will always strive
                 to resolve any disputes in a fair and timely manner.
-            </p>
+            </p> */}
         </div>
     );
 }

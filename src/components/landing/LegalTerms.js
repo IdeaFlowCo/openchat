@@ -3,7 +3,7 @@ import React from "react";
 function LegalTerms(props) {
     return (
         <div className="prose prose-a:text-indigo-600 max-w-none">
-            <h1 className="font-satoshi font-medium tracking-tight">
+            {/* <h1 className="font-satoshi font-medium tracking-tight">
                 Terms of Service
             </h1>
             <p>
@@ -72,7 +72,7 @@ function LegalTerms(props) {
             <p>
                 If you have any questions about these Terms, please contact us
                 at alan@deepform.ai.
-            </p>
+            </p> */}
         </div>
     );
 }
