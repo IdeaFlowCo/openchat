@@ -6,7 +6,11 @@ import {
 import supabase from "./supabase";
 import { GeneralEmailTemplateProps } from "types/emailTypes";
 import { getFirstName } from "./string";
-import { FeedbackType, FollowupMessageType, FollowupSubmissionType } from "types/supabaseDbTypes";
+import {
+    FeedbackType,
+    FollowupMessageType,
+    FollowupSubmissionType,
+} from "types/supabaseDbTypes";
 // React Query client
 export const client = new QueryClient();
 
@@ -23,7 +27,8 @@ export function useUser(uid) {
         () =>
             supabase
                 .from("users")
-                .select(`*, customers ( * )`)
+                // .select(`*, customers ( * )`)
+                .select(`*`)
                 .eq("id", uid)
                 .single()
                 .then(handle),
@@ -35,19 +40,27 @@ export function useUser(uid) {
 // Fetch user data (non-hook)
 // Useful if you need to fetch data from outside of a component
 export function getUser(uid) {
-    return supabase
-        .from("users")
-        .select(`*, customers ( * )`)
-        .eq("id", uid)
-        .single()
-        .then(handle);
+    return (
+        supabase
+            .from("users")
+            // .select(`*, customers ( * )`)
+            .select(`*`)
+            .eq("id", uid)
+            .single()
+            .then(handle)
+    );
 }
 
 // Fetch all users
 export function useUsers() {
     return useQuery(
         ["users"],
-        () => supabase.from("users").select(`*, customers ( * )`).then(handle),
+        () =>
+            supabase
+                .from("users")
+                // .select(`*, customers ( * )`)
+                .select(`*`)
+                .then(handle),
         { enabled: true }
     );
 }
@@ -64,6 +77,59 @@ export async function updateUser(uid, data) {
     return response;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// WARNING: This is OLD DEEPFORM.AI CODE. REFERENCE IF YOU NEED TO, BUT IT WON'T GENERALLY BE USED
 /**** PORTALS ****/
 
 // Fetch portal data
@@ -207,7 +273,10 @@ export function useFeedbackByPortal(
 }
 
 // Create a new feedback
-export async function createFeedback(data: FeedbackType, sendEmail: boolean = true): Promise<FeedbackType> {
+export async function createFeedback(
+    data: FeedbackType,
+    sendEmail: boolean = true
+): Promise<FeedbackType> {
     const response = await supabase
         .from("feedback")
         .insert([data])
@@ -274,7 +343,10 @@ export async function createFeedback(data: FeedbackType, sendEmail: boolean = tr
 }
 
 // Update an existing feedback
-export async function updateFeedback(id: number, data: any): Promise<FeedbackType> {
+export async function updateFeedback(
+    id: number,
+    data: any
+): Promise<FeedbackType> {
     const response = await supabase
         .from("feedback")
         .update(data)
@@ -695,7 +767,10 @@ export async function createFollowupSubmission(data: FollowupSubmissionType) {
 }
 
 // Update a followup submission
-export async function updateFollowupSubmission(id: number, data: FollowupSubmissionType) {
+export async function updateFollowupSubmission(
+    id: number,
+    data: FollowupSubmissionType
+) {
     const response = await supabase
         .from("followupSubmissions")
         .update(data)
@@ -857,7 +932,10 @@ export async function createFollowupMessages(data: FollowupMessageType[]) {
 }
 
 // Update a followup message
-export async function updateFollowupMessage(id: number, data: FollowupMessageType) {
+export async function updateFollowupMessage(
+    id: number,
+    data: FollowupMessageType
+) {
     const response = await supabase
         .from("followupMessages")
         .update(data)

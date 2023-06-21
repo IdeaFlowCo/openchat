@@ -7,42 +7,46 @@ function getUser(uid) {
   return supabase.from("users").select("*").eq("id", uid).single().then(handle);
 }
 
-// Get customer by uid
-function getCustomer(uid) {
-  return supabase
-    .from("customers")
-    .select()
-    .eq("id", uid)
-    .maybeSingle()
-    .then(handle);
-}
+// WARNING: If you use this, make sure to bring back other Stripe dependencies and ofc 
+// add the neccessary columns to the supabase. Contact alanduong07@gmail.com if you need help.
 
-// Get customer by Stripe customer ID
-function getCustomerByStripeCid(id) {
-  return supabase
-    .from("customers")
-    .select()
-    .eq("stripeCustomerId", id)
-    .single()
-    .then(handle);
-}
+// Get customer by uid
+// function getCustomer(uid) {
+//   return supabase
+//     .from("customers")
+//     .select()
+//     .eq("id", uid)
+//     .maybeSingle()
+//     .then(handle);
+// }
+
+
+// // Get customer by Stripe customer ID
+// function getCustomerByStripeCid(id) {
+//   return supabase
+//     .from("customers")
+//     .select()
+//     .eq("stripeCustomerId", id)
+//     .single()
+//     .then(handle);
+// }
 
 // Create a new customer
-function createCustomer(id, data) {
-  return supabase
-    .from("customers")
-    .insert([{ id, ...data }])
-    .then(handle);
-}
+// function createCustomer(id, data) {
+//   return supabase
+//     .from("customers")
+//     .insert([{ id, ...data }])
+//     .then(handle);
+// }
 
 // Update customer by Stripe customer ID
-function updateCustomerByStripeCid(id, data) {
-  return supabase
-    .from("customers")
-    .update(data)
-    .eq("stripeCustomerId", id)
-    .then(handle);
-}
+// function updateCustomerByStripeCid(id, data) {
+//   return supabase
+//     .from("customers")
+//     .update(data)
+//     .eq("stripeCustomerId", id)
+//     .then(handle);
+// }
 
 /**** HELPERS ****/
 
@@ -55,8 +59,8 @@ function handle(response) {
 module.exports = {
   getUser,
 
-  getCustomer,
-  getCustomerByStripeCid,
-  createCustomer,
-  updateCustomerByStripeCid,
+  // getCustomer,
+  // getCustomerByStripeCid,
+  // createCustomer,
+  // updateCustomerByStripeCid,
 };

@@ -4,7 +4,7 @@ Install dependencies
 ```
 npm install
 ```
-Update your `.env` file with values for each environment variable
+Update your `.env` file with values for each environment variable. Reference .example.env if needed, but may not be updated.
 ```
 API_KEY=
 etc ...

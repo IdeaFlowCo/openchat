@@ -10,14 +10,18 @@ import supabase from "./supabase";
 import { useUser, updateUser } from "./db";
 import router from "next/router";
 import PageLoader from "./../components/PageLoader";
-import { getFriendlyPlanId } from "./prices";
-import analytics from "./analytics";
+// import { getFriendlyPlanId } from "./prices";
+// import analytics from "./analytics";
 
 // Whether to merge extra user data from database into `auth.user`
-const MERGE_DB_USER = true;
+// June 21, 2023: Changed from true to false since no plans to use
+// Stripe payments for this project for the time being.
+const MERGE_DB_USER = false;
 
 // Whether to connect analytics session to `user.uid`
-const ANALYTICS_IDENTIFY = true;
+// June 21, 2023: Changed from true to false since no plans to use
+// Mixpanel analytics for this project for the time being.
+const ANALYTICS_IDENTIFY = false;
 
 // Create a `useAuth` hook and `AuthProvider` that enables
 // any component to subscribe to auth and re-render when it changes.
@@ -280,6 +284,8 @@ function useIdentifyUser(user, { enabled }) {
 }
 
 // A Higher Order Component for requiring authentication
+// June 21, 2023: Note that requirePlan is usable only if you configure all of the other things that
+// have to do with Stripe. Contact alanduong07@gmail.com if you need help.
 export const requireAuth = (Component, requirePlan = false) => {
     return function RequireAuthHOC(props) {
         // Get authenticated user
@@ -296,10 +302,9 @@ export const requireAuth = (Component, requirePlan = false) => {
                 if (!auth.user.planIsActive) {
                     router.replace("/pricing?fromRequirePlan=true");
                 } else {
-                    // Redirect if user has plan but no portal yet.
-                    if (!auth.user.portal_id) {
-                        router.replace("/portal/new");
-                    }
+                    // Empty, could be a good place to redirect to anywhere you'd want 
+                    // the user to go if they are authenticated and have a plan, but not
+                    // something else (say, they haven't onboarded yet.)
                 }
             }
         }, [auth]);

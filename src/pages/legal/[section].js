@@ -20,6 +20,7 @@ export const getStaticPaths = () => ({
   paths: [
     { params: { section: "terms-of-service" } },
     { params: { section: "privacy-policy" } },
+    { params: { section: "claims" } },
   ],
   fallback: true,
 });
