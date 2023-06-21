@@ -1,11 +1,11 @@
-import { apiRequestExternal } from "./util.js";
+// import { apiRequestExternal } from "./util.js";
 
-const endpoint = `https://formspree.io/${process.env.NEXT_PUBLIC_FORMSPREE_CONTACT_ID}`;
+// const endpoint = `https://formspree.io/${process.env.NEXT_PUBLIC_FORMSPREE_CONTACT_ID}`;
 
-function submit(data) {
-  return apiRequestExternal(endpoint, "POST", data);
-}
+// function submit(data) {
+//   return apiRequestExternal(endpoint, "POST", data);
+// }
 
-const contact = { submit };
+// const contact = { submit };
 
-export default contact;
+// export default contact;

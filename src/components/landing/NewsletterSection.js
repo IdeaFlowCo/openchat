@@ -3,17 +3,17 @@ import { useForm } from "react-hook-form";
 import newsletter from "util/newsletter";
 
 function NewsletterSection(props) {
-  const [subscribed, setSubscribed] = useState(false);
-  const { handleSubmit, register, errors } = useForm();
+  // const [subscribed, setSubscribed] = useState(false);
+  // const { handleSubmit, register, errors } = useForm();
 
-  const onSubmit = ({ email }) => {
-    setSubscribed(true);
-    // Parent component can optionally
-    // find out when subscribed.
-    props.onSubscribed && props.onSubscribed();
-    // Subscribe them
-    newsletter.subscribe({ email });
-  };
+  // const onSubmit = ({ email }) => {
+  //   setSubscribed(true);
+  //   // Parent component can optionally
+  //   // find out when subscribed.
+  //   props.onSubscribed && props.onSubscribed();
+  //   // Subscribe them
+  //   newsletter.subscribe({ email });
+  // };
 
   return (
     <section className="py-12 px-4 bg-transparent">
@@ -22,7 +22,7 @@ function NewsletterSection(props) {
           Stay up to date with Deepform!
         </h1>
 
-        {subscribed === false && (
+        {/* {subscribed === false && (
           <form onSubmit={handleSubmit(onSubmit)}>
             {errors.email && (
               <p className="text-sm text-left text-red-600 mb-1">
@@ -52,7 +52,7 @@ function NewsletterSection(props) {
 
         {subscribed === true && (
           <div className="text-center">You are now subscribed!</div>
-        )}
+        )} */}
       </div>
     </section>
   );
