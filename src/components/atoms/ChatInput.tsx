@@ -11,7 +11,6 @@ export default function ChatInput({
     setTextInput,
     loading,
     setLoading,
-    setShowEndInterviewModal,
 }) {
     return (
         <div className="mt-4 h-[20vh] w-full">
@@ -147,16 +146,6 @@ export default function ChatInput({
                             Powered by{" "}
                             <span className="font-bold">Deepform</span>
                         </a> */}
-                    <button
-                        type="submit"
-                        onClick={() => {
-                            setShowEndInterviewModal(true);
-                            sendMessage("Sorry, I have to go!");
-                        }}
-                        className="nline-flex ml-4 items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        End Interview
-                    </button>
                 </div>
             </div>
         </div>

@@ -14,4 +14,9 @@ export interface FollowupPayloadType {
     userId: number;
 }
 
+export interface BasicCompletionType {
+    messages: MessageType[];
+    userId: number;
+}
+
 
