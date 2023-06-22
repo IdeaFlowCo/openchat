@@ -31,11 +31,11 @@ function IndexPage({ host }) {
                             className="mx-auto max-w-2xl text-center"
                         >
                             <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
-                                The chat app where disparate ideas connect
+                                Talk to GPT like a friend.
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Openchat is a chat app that surfaces ideas from
-                                across the world in your conversations.
+                                TalkToGPT is a chat app that makes talking to
+                                GPT like talking to a friend.
                             </p>
                             <CTAButtons centered={true} demoMode={true} />
                         </Transition>

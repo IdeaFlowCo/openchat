@@ -46,12 +46,11 @@ function ContactSection(props) {
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl text-center">
                             <h1 className="font-satoshi text-4xl font-medium tracking-tight text-gray-900 sm:text-6xl">
-                                About Openchat
+                                About TalkToGPT
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Brought to you by Ideaflow, Openchat is a chat
-                                app that surfaces ideas from across the world in
-                                your conversations.
+                                Brought to you by Ideaflow, TalkToGPT is the easiest way to 
+                                talk to GPT like you would a friend.
                             </p>
                         </div>
                     </div>

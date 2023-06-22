@@ -4,7 +4,7 @@ function Logo() {
     return (
         <Link href="/">
             <button className="font-satoshi text-3xl font-bold text-gray-900">
-                Openchat
+                TalkToGPT
             </button>
         </Link>
     );
