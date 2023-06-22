@@ -9,18 +9,15 @@ import {
 } from "langchain/schema";
 import { BasicCompletionType } from "types/portalTypes";
 import axios, { AxiosRequestConfig } from "axios";
-const ELEVEN_API_KEY = process.env.ELEVEN_LABS_API_KEY
-const VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
+import fs from "fs";
+import path from "path";
+
+const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+
 export default async function handler(req, res) {
     console.log("In API route /api/openai/basic");
-    const {
-        messages,
-        userId,
-    }: BasicCompletionType = req.body;
-    if (
-        !messages ||
-        !userId
-    ) {
+    const { messages, userId }: BasicCompletionType = req.body;
+    if (!messages || !userId) {
         res.status(400).json({
             error: "Missing messages, userId.",
         });
@@ -57,17 +54,17 @@ export default async function handler(req, res) {
     //         ...formattedMessages,
     //         response,
     //         new SystemChatMessage(
-    //             `You are asked to summarize the key insights from the interview, keeping in mind that 
-    //             the goal was to ask followup questions about the product feedback this human just submitted. 
+    //             `You are asked to summarize the key insights from the interview, keeping in mind that
+    //             the goal was to ask followup questions about the product feedback this human just submitted.
 
-    //             Make sure to include all relevant clarifying information that would be useful to a product manager 
-    //             who wants to deeply understand the human's feedback and the context behind it. 
+    //             Make sure to include all relevant clarifying information that would be useful to a product manager
+    //             who wants to deeply understand the human's feedback and the context behind it.
     //             Ideally, the summary should not be too long. A paragraph at most.
 
-    //             Example: "Clarifications: When the person said "I don't like the color", they were referring to 
-    //             the color of the button on the home page. They were not referring to the color of the text on 
-    //             the home page. Also, when they mentioned that the button was distracting, they meant that it was 
-    //             too large and took up too much space on the page, blocking their important workflow around data 
+    //             Example: "Clarifications: When the person said "I don't like the color", they were referring to
+    //             the color of the button on the home page. They were not referring to the color of the text on
+    //             the home page. Also, when they mentioned that the button was distracting, they meant that it was
+    //             too large and took up too much space on the page, blocking their important workflow around data
     //             analysis for their business."
     //             `
     //         ),
@@ -120,38 +117,58 @@ export default async function handler(req, res) {
 
     console.log("new response", modifiedResponse);
 
-
     // Call Eleven Labs to convert modifiedResponse.text to audio and attach in modifiedResponse
     // Set options for the API request.
-  const options: AxiosRequestConfig = {
-    method: 'POST',
-    url: `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
-    headers: {
-      accept: 'audio/mpeg', // Set the expected response type to audio/mpeg.
-      'content-type': 'application/json', // Set the content type to application/json.
-      'xi-api-key': `${ELEVEN_API_KEY}`, // Set the API key in the headers.
-    },
-    data: {
-      text: modifiedResponse.text, // Pass in the inputText as the text to be converted to speech.
-    },
-    responseType: 'arraybuffer', // Set the responseType to arraybuffer to receive binary data as response.
-  };
+    try {
+        const response = await fetch(
+            `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+            {
+                method: "POST",
+                headers: {
+                    accept: "audio/mpeg",
+                    "Content-Type": "application/json",
+                    "xi-api-key": process.env.ELEVEN_LABS_API_KEY,
+                },
+                body: JSON.stringify({
+                    text: modifiedResponse.text,
+                    voice_settings: {
+                        stability: 0,
+                        similarity_boost: 0,
+                    },
+                }),
+            }
+        );
 
-  // Send the API request using Axios and wait for the response.
-  const speechDetails = await axios.request(options);
+        if (!response.ok) {
+            throw new Error("Something went wrong");
+        }
 
-  // Return the binary audio data received from API response.
-    // modifiedResponse.audio = speechDetails.data;
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const file = `ephemeral`;
 
+        fs.writeFile(
+            path.join("public", "audio", `${file}.mp3`),
+            buffer,
+            () => {
+                console.log("File written successfully");
+            }
+        );
 
-    let finalResponse: {
-        response: any;
-        audio: any;
-    } = {
-        response: modifiedResponse,
-        audio: speechDetails.data,
-    };
-    res.status(200).json(finalResponse);
+        let finalResponse: {
+            response: any;
+            file: any;
+        } = {
+            response: modifiedResponse,
+            file: `${file}.mp3`,
+        };
+        res.status(200).json(finalResponse);
+    } catch (error) {
+        console.log("error", error);
+        res.status(500).json({
+            error: error.message,
+        });
+    }
 }
 
 // export default async (req, res) => {

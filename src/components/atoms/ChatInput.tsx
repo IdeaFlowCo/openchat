@@ -13,7 +13,7 @@ export default function ChatInput({
     setLoading,
 }) {
     return (
-        <div className="mt-4 h-[20vh] w-full">
+        <div className="mt-4 h-[18vh] w-full max-w-4xl mx-auto p-4">
             <div className="flex flex-col items-center justify-center gap-4">
                 <div className="relative flex w-full items-center  justify-center rounded-full bg-[#f4f7fb] p-2 shadow-sm">
                     <label htmlFor="chat" className="sr-only">
@@ -137,7 +137,7 @@ export default function ChatInput({
                         )}
                     </button>
                 </div>
-                <div>
+                {/* <div> */}
                     {/* <a
                             href="/"
                             target="_blank"
@@ -146,7 +146,7 @@ export default function ChatInput({
                             Powered by{" "}
                             <span className="font-bold">Deepform</span>
                         </a> */}
-                </div>
+                {/* </div> */}
             </div>
         </div>
     );

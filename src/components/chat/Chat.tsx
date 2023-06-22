@@ -9,23 +9,27 @@ import { BasicCompletionType, MessageType } from "types/portalTypes";
 import { useAuth } from "util/auth";
 import PageLoader from "components/PageLoader";
 import ChatInput from "components/atoms/ChatInput";
-import {usePrevious} from "../../util/util"
-export default function Chat({ }) {
-    const auth = useAuth();
+import { usePrevious } from "../../util/util";
+import { getFirstName } from "util/string";
 
+export default function Chat({}) {
+    const auth = useAuth();
     const [messages, setMessages] = useState<MessageType[]>([
         {
-            message: `Hi ${auth.user.name}, I'm Orion, an A.I. user researcher. Nice to meet you!`,
+            message: `Hi ${getFirstName(
+                auth.user.name
+            )}, I'm Orion, an A.I. user researcher. Nice to meet you!`,
             sender: "AI",
         },
     ]);
 
     const [textInput, setTextInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [audioURL, setAudioURL] = useState<string | undefined>(undefined);
-    
+    const [audio, setAudio] = useState(null);
+
     const sendMessage = async (message) => {
         setLoading(true);
+        setAudio(null)
 
         // Error Handling
         if (!message) {
@@ -64,22 +68,16 @@ export default function Chat({ }) {
         })
             .then((res) => res.json())
             .then((data) => {
-                // {
-                //     response: modifiedResponse,
-                //     audio: speechDetails.data,
-                // };
+                console.log("data", data);
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     { message: data.response.text, sender: "AI" },
                 ]);
-                console.log("data.audio", data.audio);
-                // Create a new Blob object from the audio data with MIME type 'audio/mpeg'
-                const blob = new Blob([data], { type: 'audio/mpeg' });
-                // Create a URL for the blob object
-                const url = URL.createObjectURL(blob);
-                // Set the audio URL state variable to the newly created URL
-                setAudioURL(url);
-                console.log("url", url);
+                console.log("data", data);
+                
+                setAudio(data.file);
+                refreshAudio();
+                // setAudioURL(url);
                 setLoading(false);
             })
             .catch((err) => {
@@ -139,17 +137,19 @@ export default function Chat({ }) {
         },
     });
 
+    // Trigger this function when you know the file has been updated
+    const refreshAudio = () => {
+        setAudio(`/ephemeral.mp3?${new Date().getTime()}`);
+    };
+
     // UseEffect that listens and console.logs the speaking state
     useEffect(() => {
         console.log("transcript", transcript);
-        
+
         if (transcript?.text) {
             sendMessage(transcript.text);
         }
-    
-        
-    }, [transcript ]);
-
+    }, [transcript]);
 
     // UseEffect that scrolls down to the bottom of the chat
     // whenever a new message is sent
@@ -161,11 +161,11 @@ export default function Chat({ }) {
     }, [messages]);
 
     return (
-        <div className="p-4">
+        <>
             {/* <section className="flex flex-col justify-center items-center sm:mx-auto h-[80vh] b"> */}
             <div
                 id="chat"
-                className="flex h-[80vh] w-full items-start justify-center overflow-auto sm:pt-10"
+                className="p-4 flex h-[80vh] w-full items-start justify-center overflow-auto sm:pt-10"
             >
                 <div className="container flex max-w-3xl flex-col gap-3">
                     {messages.map((message, index) => (
@@ -176,14 +176,8 @@ export default function Chat({ }) {
                         />
                     ))}
                 </div>
+                {audio && <audio className="hidden" autoPlay controls src={`audio/${audio}`} />}
             </div>
-            <div>
-      {audioURL && (
-        <audio autoPlay controls>
-          <source src={audioURL} type="audio/mpeg" />
-        </audio>
-      )}
-    </div>
 
             <ChatInput
                 recording={recording}
@@ -196,7 +190,7 @@ export default function Chat({ }) {
                 loading={loading}
                 setLoading={setLoading}
             />
-        </div>
+        </>
         // </section>
     );
 }
