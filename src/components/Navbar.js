@@ -142,7 +142,7 @@ export default function Navbar() {
                 <div className="fixed inset-0 z-50" />
                 <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div className="flex items-center justify-between">
-                        <span className="sr-only">Deepform</span>
+                        <span className="sr-only">Openchat</span>
                         {/* <img
                                     className="h-8 w-auto"
                                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -167,7 +167,7 @@ export default function Navbar() {
                                     </button>
                                 </Link>
 
-                                <a
+                                {/* <a
                                     href="https://deepform.ai/portal/10"
                                     target="_blank"
                                     className="-mx-3 flex items-center justify-start gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
@@ -190,23 +190,22 @@ export default function Navbar() {
                                             clipRule="evenodd"
                                         />
                                     </svg>
-                                </a>
+                                </a> */}
 
                                 {/* {(!auth.user || !auth.user.stripeSubscriptionId) && ( */}
-                                <Link href="/pricing">
+                                {/* <Link href="/pricing">
                                     <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                                         Pricing
                                     </button>
-                                </Link>
+                                </Link> */}
                                 {/* )} */}
-
+                                <Link href="/chat">
+                                    <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                                        Chat
+                                    </button>
+                                </Link>
                                 {auth.user && (
                                     <>
-                                        <Link href="/dashboard">
-                                            <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                                                Dashboard
-                                            </button>
-                                        </Link>
                                         <Link href="/settings/general">
                                             <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                                                 Settings

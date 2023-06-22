@@ -26,22 +26,22 @@ const navigation = {
         // { name: "Insights", href: "#" },
     ],
     support: [
-        { name: "Pricing", href: "/pricing" },
+        // { name: "Pricing", href: "/pricing" },
         // { name: "Documentation", href: "#" },
         // { name: "Guides", href: "#" },
         // { name: "API Status", href: "#" },
     ],
     company: [
-        { name: "About", href: "/about" },
+        // { name: "About", href: "/about" },
         // { name: "Blog", href: "#" },
         // { name: "Jobs", href: "#" },
         // { name: "Press", href: "#" },
         // { name: "Partners", href: "#" },
     ],
     legal: [
-        { name: "Claim", href: "/legal/claims" },
-        { name: "Privacy", href: "/legal/privacy-policy" },
-        { name: "Terms", href: "/legal/terms-of-service" },
+        // { name: "Claim", href: "/legal/claims" },
+        // { name: "Privacy", href: "/legal/privacy-policy" },
+        // { name: "Terms", href: "/legal/terms-of-service" },
     ],
     social: [
         {
@@ -110,17 +110,17 @@ const navigation = {
 
 export default function Footer() {
     const router = useRouter();
-    const [subscribed, setSubscribed] = useState(false);
-    const { handleSubmit, register, errors } = useForm();
+    // const [subscribed, setSubscribed] = useState(false);
+    // const { handleSubmit, register, errors } = useForm();
 
-    const onSubmit = ({ email }) => {
-        setSubscribed(true);
-        // Parent component can optionally
-        // find out when subscribed.
-        props.onSubscribed && props.onSubscribed();
-        // Subscribe them
-        newsletter.subscribe({ email });
-    };
+    // const onSubmit = ({ email }) => {
+    //     setSubscribed(true);
+    //     // Parent component can optionally
+    //     // find out when subscribed.
+    //     props.onSubscribed && props.onSubscribed();
+    //     // Subscribe them
+    //     newsletter.subscribe({ email });
+    // };
 
     if (
         router.pathname.startsWith("/form") ||
@@ -146,8 +146,7 @@ export default function Footer() {
                         /> */}
                         <Logo />
                         <p className="text-sm leading-6 text-gray-600 max-w-[300px]">
-                            Building a new paradigm for customer empathy 
-                            through generative AI.
+                            Connecting ideas and people across the world.
                         </p>
                         {/* <div className="flex space-x-6">
                             {navigation.social.map((item) => (
@@ -182,7 +181,7 @@ export default function Footer() {
                                             </a>
                                         </li>
                                     ))}
-                                    <a
+                                    {/* <a
                                         href="/portal/10"
                                         target="_blank"
                                         className="flex justify-start items-center gap-2 text-sm leading-6 text-gray-600 hover:text-gray-900"
@@ -205,7 +204,7 @@ export default function Footer() {
                                                 clipRule="evenodd"
                                             />
                                         </svg>
-                                    </a>
+                                    </a> */}
                                 </ul>
                             </div>
                             <div className="mt-10 md:mt-0">
@@ -265,9 +264,9 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24 lg:flex lg:items-center lg:justify-between">
-                    <div>
+                    {/* <div>
                         <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                            Stay updated with Deepform
+                            Stay updated with Openchat
                         </h3>
                         <p className="mt-2 text-sm leading-6 text-gray-600">
                             The latest news, articles, and resources, sent to
@@ -306,7 +305,7 @@ export default function Footer() {
                         <div className="text-center text-sm font-semibold leading-6 text-gray-900">
                             You are subscribed!
                         </div>
-                    )}
+                    )} */}
                 </div>
                 <div className="mt-8 border-t border-gray-900/10 pt-8 md:flex md:items-center md:justify-between">
                     <div className="flex space-x-6 md:order-2">
@@ -325,7 +324,7 @@ export default function Footer() {
                         ))} */}
                     </div>
                     <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-                        &copy; 2023 Deepform. All rights reserved.
+                        &copy; 2023 Openchat. All rights reserved.
                     </p>
                 </div>
             </div>

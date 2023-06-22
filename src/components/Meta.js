@@ -9,9 +9,9 @@ function Meta(props) {
     // Meta values that are the same across all pages
     const globalMeta = {
         // Site name
-        siteName: "Deepform",
+        siteName: "Openchat",
         // Your production domain (example: https://myapp.com)
-        domain: "https://deepform.ai",
+        domain: "https://openchat.vercel.app",
         // Your Twitter handle (example: @divjoy)
         twitterHandle: "",
     };

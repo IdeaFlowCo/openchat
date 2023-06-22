@@ -19,7 +19,7 @@ function NewsletterSection(props) {
     <section className="py-12 px-4 bg-transparent">
       <div className="container mx-auto max-w-lg">
         <h1 className="mb-6 text-3xl font-medium text-center">
-          Stay up to date with Deepform!
+          Stay up to date with Openchat!
         </h1>
 
         {/* {subscribed === false && (
