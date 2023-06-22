@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-function CTAButtons({ centered = false, demoMode = false }) {
+function CTAButtons({ centered = false }) {
     return (
         <div
             className={
@@ -14,22 +14,11 @@ function CTAButtons({ centered = false, demoMode = false }) {
                     Get started for free
                 </button>
             </Link>
-            {!demoMode && (
-                <Link href="/about">
-                    <button className="pl-5 text-sm font-semibold leading-6 text-gray-900">
-                        Contact Us <span aria-hidden="true">→</span>
-                    </button>
-                </Link>
-            )}
-            {
-                demoMode && (
-                    <Link href="/portal/10">
-                        <button className="text-sm font-semibold leading-6 text-gray-900">
-                            See our portal <span aria-hidden="true">→</span>
-                        </button>
-                    </Link>
-                )
-            }
+            <Link href="/about">
+                <button className="pl-5 text-sm font-semibold leading-6 text-gray-900">
+                    Contact Us <span aria-hidden="true">→</span>
+                </button>
+            </Link>
         </div>
     );
 }

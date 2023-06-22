@@ -126,7 +126,8 @@ export default function Footer() {
         router.pathname.startsWith("/form") ||
         router.pathname.startsWith("/dashboard") ||
         router.pathname.startsWith("/portal") ||
-        router.pathname.startsWith("/auth")
+        router.pathname.startsWith("/auth") ||
+        router.pathname.startsWith("/chat")
     ) {
         return null;
     }

@@ -28,13 +28,12 @@ function CallToAction() {
                     </svg>
                     <div className="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
                         <h2 className="font-satoshi text-4xl font-medium tracking-tight text-white sm:text-4xl">
-                            100x your customer empathy with Deepform today.
+                            Enhance your intellectual conversations today.
                             {/* <br />
                             Start using Deepform today. */}
                         </h2>
                         <p className="mt-6 text-lg leading-8 text-gray-300">
-                            Capture, organize, and analyze product feedback in
-                            one place, powered by generative A.I.
+                            The chat app where disparate ideas connect.
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
                             <Link href="/pricing">
@@ -50,13 +49,13 @@ function CallToAction() {
                         </div>
                     </div>
                     <div className="relative mt-16 h-80 lg:mt-8">
-                        <img
+                        {/* <img
                             className="absolute left-0 top-0 w-[57rem] max-w-none rounded-md bg-white/5 ring-1 ring-white/10"
                             src={DeepformFeedbackPortal.src}
                             alt="App screenshot"
                             width={1824}
                             height={1080}
-                        />
+                        /> */}
                     </div>
                 </div>
             </div>

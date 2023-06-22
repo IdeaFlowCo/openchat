@@ -17,7 +17,7 @@
 //   // Create a checkout session
 //   const session = await apiRequest("stripe-create-checkout-session", "POST", {
 //     priceId: getStripePriceId(planId),
-//     successUrl: `${window.location.origin}/dashboard?paid=true`,
+//     successUrl: `${window.location.origin}/chat?paid=true`,
 //     cancelUrl: `${window.location.origin}/pricing`,
 //     subscriptionData: {
 //       trial_period_days: 0,

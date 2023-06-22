@@ -28,20 +28,21 @@ export default function Navbar() {
         router.pathname.startsWith("/form") ||
         router.pathname.startsWith("/dashboard") ||
         router.pathname.startsWith("/portal") ||
-        router.pathname.startsWith("/auth")
+        router.pathname.startsWith("/auth") ||
+        router.pathname.startsWith("/chat")
     ) {
         return null;
     }
 
     return (
         // <div className="bg-transparent">
-        <header className="z-50 relative">
+        <header className="relative z-50">
             <nav
                 className="flex items-center justify-between p-6 lg:px-20"
                 aria-label="Global"
             >
                 <div className="flex lg:flex-1">
-                    <span className="sr-only">Deepform</span>
+                    <span className="sr-only">Openchat</span>
                     {/* <img
                                 className="h-8 w-auto"
                                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -83,20 +84,19 @@ export default function Navbar() {
                     </a> */}
 
                     {/* {(!auth.user || !auth.user.stripeSubscriptionId) && ( */}
-                    <Link href="/pricing">
+                    {/* <Link href="/pricing">
                         <button className="text-sm font-semibold leading-6 text-gray-900">
                             Pricing
                         </button>
-                    </Link>
+                    </Link> */}
                     {/* )} */}
-
+                    <Link href="/chat">
+                        <button className="text-sm font-semibold leading-6 text-gray-900">
+                            Chat
+                        </button>
+                    </Link>
                     {auth.user && (
                         <>
-                            <Link href="/dashboard">
-                                <button className="text-sm font-semibold leading-6 text-gray-900">
-                                    Dashboard
-                                </button>
-                            </Link>
                             <Link href="/settings/general">
                                 <button className="text-sm font-semibold leading-6 text-gray-900">
                                     Settings
@@ -170,14 +170,14 @@ export default function Navbar() {
                                 <a
                                     href="https://deepform.ai/portal/10"
                                     target="_blank"
-                                    className="-mx-3 flex justify-start gap-2 items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                                    className="-mx-3 flex items-center justify-start gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                 >
                                     See our portal
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 20 20"
                                         fill="currentColor"
-                                        className="w-4 h-4 mt-[0.5px]"
+                                        className="mt-[0.5px] h-4 w-4"
                                     >
                                         <path
                                             fillRule="evenodd"

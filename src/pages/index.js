@@ -31,12 +31,11 @@ function IndexPage({ host }) {
                             className="mx-auto max-w-2xl text-center"
                         >
                             <h1 className="font-satoshi text-5xl font-medium tracking-tight text-gray-900 md:text-6xl">
-                                The customer feedback portal from the future.
+                                The chat app where disparate ideas connect
                             </h1>
                             <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Use A.I. to capture, organize, and analyze
-                                product feedback and build delightful products
-                                that your customers love.
+                                Openchat is a chat app that surfaces ideas from
+                                across the world in your conversations.
                             </p>
                             <CTAButtons centered={true} demoMode={true} />
                         </Transition>
@@ -46,13 +45,13 @@ function IndexPage({ host }) {
                                 See our own portal live ⬇
                             </p> */}
                             <div className=" mx-auto h-fit max-w-7xl px-0 lg:px-8">
-                                <img
+                                {/* <img
                                     src={DeepformFeedbackPortal.src}
                                     alt="App screenshot"
                                     className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10"
                                     width={2432}
                                     height={1442}
-                                />
+                                /> */}
 
                                 {/* <iframe
                                     src={`https://${host}/portal/10`}
@@ -81,13 +80,11 @@ function IndexPage({ host }) {
                                 />
                             </div>
                         </div> */}
+                        <h1 className="-mb-40 mt-20 text-center font-satoshi text-3xl font-medium tracking-tight text-gray-900 md:text-6xl">
+                            Coming soon!
+                        </h1>
                     </div>
                 </div>
-                <a href={`/portal/10`} target="_blank">
-                    <p className="mt-4 text-center font-satoshi text-gray-700 hover:text-indigo-600">
-                        Link to Portal
-                    </p>
-                </a>
                 {/* <div
                     className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
                     aria-hidden="true"
@@ -100,9 +97,10 @@ function IndexPage({ host }) {
                         }}
                     />
                 </div> */}
-                <FeatureSection />
+                {/* <FeatureSection />
                 <TestimonialSection />
-                <FAQ />
+                <FAQ /> */}
+
                 <CallToAction />
                 {/* <NewsletterSection /> */}
             </div>

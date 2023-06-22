@@ -90,7 +90,7 @@ function useAuthProvider() {
                 .signInWithOAuth({
                     provider: name,
                     options: {
-                        redirectTo: `${window.location.origin}/dashboard`,
+                        redirectTo: `${window.location.origin}/chat`,
                     },
                 })
                 .then(handleError)
@@ -108,7 +108,7 @@ function useAuthProvider() {
             .signInWithOtp({
                 email,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/dashboard`,
+                    emailRedirectTo: `${window.location.origin}/chat`,
                 },
             })
             .then(handleError);
@@ -299,13 +299,13 @@ export const requireAuth = (Component, requirePlan = false) => {
 
             // Redirect if signed in but no plan
             if (requirePlan === true && auth.user) {
-                if (!auth.user.planIsActive) {
-                    router.replace("/pricing?fromRequirePlan=true");
-                } else {
-                    // Empty, could be a good place to redirect to anywhere you'd want 
-                    // the user to go if they are authenticated and have a plan, but not
-                    // something else (say, they haven't onboarded yet.)
-                }
+                // if (!auth.user.planIsActive) {
+                //     router.replace("/pricing?fromRequirePlan=true");
+                // } else {
+                //     // Empty, could be a good place to redirect to anywhere you'd want 
+                //     // the user to go if they are authenticated and have a plan, but not
+                //     // something else (say, they haven't onboarded yet.)
+                // }
             }
         }, [auth]);
 
