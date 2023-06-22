@@ -9,9 +9,9 @@ function Meta(props) {
     // Meta values that are the same across all pages
     const globalMeta = {
         // Site name
-        siteName: "Openchat",
+        siteName: "TalkToGPT",
         // Your production domain (example: https://myapp.com)
-        domain: "https://openchat.vercel.app",
+        domain: "https://talktogpt.vercel.app",
         // Your Twitter handle (example: @divjoy)
         twitterHandle: "",
     };
