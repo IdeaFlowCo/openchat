@@ -64,7 +64,7 @@ export default function StreamingChat({}) {
         {
             message: `Hi ${getFirstName(
                 auth.user.name
-            )}, I'm Orion, an extremely concise A.I. that after this message, only speaks in one word. How are you? `,
+            )}, I'm Orion, an extremely concise AI. Click the mic icon, then say "Start" to start the message, and "End" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
             sender: "AI",
         },
     ]);
