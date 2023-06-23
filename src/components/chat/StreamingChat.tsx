@@ -46,7 +46,7 @@ const textToSpeech = async (inputText) => {
   };
 
 
-export default function Chat({}) {
+export default function StreamingChat({}) {
     // Auth
     const auth = useAuth();
 
@@ -80,6 +80,7 @@ export default function Chat({}) {
     // State that checks if the user has clicked on the website yet
     // Needed because if they haven't clicked yet, the audio won't play
     // (just a quirk about web audio)
+    // TODO: 
     const [clickedButton, setClickedButton] = useState(false);
 
     // Audio Ref for the audio element
@@ -338,10 +339,10 @@ export default function Chat({}) {
     useEffect(() => {
         if (!clickedButton) {
             return;
-        } else if (audioRef.current) {
+        } else {
             audioRef.current.load();
         }
-    }, [clickedButton, audioRef]);
+    }, [clickedButton]);
 
     // UseEffect that scrolls down to the bottom of the chat
     // whenever a new message is sent
