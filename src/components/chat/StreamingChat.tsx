@@ -9,42 +9,41 @@ import { BasicCompletionType, MessageType } from "types/portalTypes";
 import { useAuth } from "util/auth";
 import PageLoader from "components/PageLoader";
 import ChatInput from "components/atoms/ChatInput";
-import { usePrevious } from "../../util/util";
 import { getFirstName } from "util/string";
 import axios, { AxiosRequestConfig } from "axios";
+import { usePrevious } from "react-use";
 
 // Define a helper function called textToSpeech that takes in a string called inputText as its argument.
 // Used in the below function, handleAudioFetch.
 const textToSpeech = async (inputText) => {
-    // Set the API key for ElevenLabs API. 
+    // Set the API key for ElevenLabs API.
     // Do not use directly. Use environment variables.
     const API_KEY = process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY;
     // Set the ID of the voice to be used.
-    const VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
-  
+    const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+
     // Set options for the API request.
     const options: AxiosRequestConfig = {
-      method: 'POST',
-      url: `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
-      headers: {
-        accept: 'audio/mpeg', // Set the expected response type to audio/mpeg.
-        'content-type': 'application/json', // Set the content type to application/json.
-        'xi-api-key': `${API_KEY}`, // Set the API key in the headers.
-      },
-      data: {
-        text: inputText, // Pass in the inputText as the text to be converted to speech.
-      },
-      responseType: 'arraybuffer', // Set the responseType to arraybuffer to receive binary data as response.
+        method: "POST",
+        url: `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+        headers: {
+            accept: "audio/mpeg", // Set the expected response type to audio/mpeg.
+            "content-type": "application/json", // Set the content type to application/json.
+            "xi-api-key": `${API_KEY}`, // Set the API key in the headers.
+        },
+        data: {
+            text: inputText, // Pass in the inputText as the text to be converted to speech.
+        },
+        responseType: "arraybuffer", // Set the responseType to arraybuffer to receive binary data as response.
     };
-  
+
     // Send the API request using Axios and wait for the response.
     const speechDetails = await axios.request(options);
-  
+
     // Return the binary audio data received from the API response.
     console.log("speechDetails.data", speechDetails.data);
     return speechDetails.data;
-  };
-
+};
 
 export default function StreamingChat({}) {
     // Auth
@@ -53,10 +52,10 @@ export default function StreamingChat({}) {
     // State that records messages and will be sent to /api/openai/basic
     const [messages, setMessages] = useState<MessageType[]>([
         // {
-        //     message: `You are an extremely concise A.I. chatbot. Also, if 
+        //     message: `You are an extremely concise A.I. chatbot. Also, if
         //     I ever say the special keyword 'Interrupt' anywhere, you should
         //     treat that as the start of my message and ignore everything that came before it.
-        //     Example: 
+        //     Example:
         //     Human: I like the color red. Interrupt. What's my favorite color?
         //     AI: I don't know your favorite color.
         //     `,
@@ -65,9 +64,7 @@ export default function StreamingChat({}) {
         {
             message: `Hi ${getFirstName(
                 auth.user.name
-            )}, I'm Orion, an extremely concise A.I. that also listens for "Interrupt" as a 
-            special keyword that indicates I should ignore and forget everything that comes before
-            "Interrupt". How are you? `,
+            )}, I'm Orion, an extremely concise A.I. that after this message, only speaks in one word. How are you? `,
             sender: "AI",
         },
     ]);
@@ -80,7 +77,7 @@ export default function StreamingChat({}) {
     // State that checks if the user has clicked on the website yet
     // Needed because if they haven't clicked yet, the audio won't play
     // (just a quirk about web audio)
-    // TODO: 
+    // TODO:
     const [clickedButton, setClickedButton] = useState(false);
 
     // Audio Ref for the audio element
@@ -89,24 +86,23 @@ export default function StreamingChat({}) {
     // const [audio, setAudio] = useState(null);
 
     // Define a state variable to hold the audio URL
-  const [audioURL, setAudioURL] = useState(null);
+    const [audioURL, setAudioURL] = useState(null);
 
-  // Define a function to fetch the audio data and set the URL state variable
-  const handleAudioFetch = async (textToTransform: string) => {
-    // Call the textToSpeech function to generate the audio data for the text "Hello welcome"
-    const data = await textToSpeech(textToTransform)
-    console.log("data", data)
-    // Create a new Blob object from the audio data with MIME type 'audio/mpeg'
-    const blob = new Blob([data], { type: 'audio/mpeg' });
-    console.log("blob", blob)
-    // Create a URL for the blob object
-    const url = URL.createObjectURL(blob);
-    console.log("url", url)
-    
-    // Set the audio URL state variable to the newly created URL
-    setAudioURL(url);
-  };
+    // Define a function to fetch the audio data and set the URL state variable
+    const handleAudioFetch = async (textToTransform: string) => {
+        // Call the textToSpeech function to generate the audio data for the text "Hello welcome"
+        const data = await textToSpeech(textToTransform);
+        console.log("data", data);
+        // Create a new Blob object from the audio data with MIME type 'audio/mpeg'
+        const blob = new Blob([data], { type: "audio/mpeg" });
+        console.log("blob", blob);
+        // Create a URL for the blob object
+        const url = URL.createObjectURL(blob);
+        console.log("url", url);
 
+        // Set the audio URL state variable to the newly created URL
+        setAudioURL(url);
+    };
 
     // Function that sends a text message to the API route /api/openai/basic,
     // hopefully getting the A.I. text response + audio file back
@@ -281,13 +277,15 @@ export default function StreamingChat({}) {
         // onTranscribe,
         removeSilence: true,
         timeSlice: 1_000, // 1 second
-        // streaming: true,
+        streaming: true,
         nonStop: true,
-        stopTimeout: 3000,
+        stopTimeout: 50000,
         whisperConfig: {
             language: "en",
         },
     });
+
+    const previousTranscript = usePrevious(transcript);
 
     // Trigger this function when you know the file has been updated
     // const refreshAudio = () => {
@@ -295,51 +293,81 @@ export default function StreamingChat({}) {
     // };
 
     // UseEffect that listens to transcript state changes
-    // and sends the text to the same sendMessage function
+    // and sends the text to the same sendMessage function when it detects
+    // the special keyword "Interrupt"
     useEffect(() => {
-        if (!clickedButton) {
-            return;
-        }
-        if (transcript?.text) {
-            sendMessage(transcript.text);
-        } else {
-            // No transcript found, start recording.
-            console.log("No transcript");
-            startRecording();
-        }
-    }, [transcript]);
-
-    // UseEffect that listens to the speaking state
-    useEffect(() => {
-        if (!clickedButton) {
-            return;
-        }
-
         (async () => {
-            console.log("speaking", speaking);
-
-            if (speaking && audioRef.current) {
-                // When the user starts talking, stop the A.I. from talking
-                audioRef.current.pause();
+            // Ideal: we only send the message after interrupt detected, and only once.
+            if (!clickedButton) {
+                return;
+            }
+            if (!transcript || !transcript.text) {
+                return;
             }
 
-            // If they aren't speaking, start recording just in case they do.
-            if (speaking === false) {
-                console.log("restarting recording");
+            let sameTranscript = transcript.text === previousTranscript?.text;
 
-                try {
-                    await startRecording();
-                } catch (error) {
-                    console.log("Caught error!!!1");
-                }
+            if (loading) {
+                return;
+            }
+            console.log("transcript", transcript);
+            let startKeyword = "Start";
+            let endKeyword = "End";
+            // Listen to any interrupt keyword and "send message"
+            if (
+                !sameTranscript &&
+                transcript.text.includes(startKeyword) &&
+                transcript.text.includes(endKeyword) &&
+                !loading
+            ) {
+                // Splice the transcript to remove everything before the Start keyword and after the End keyword
+                let newTranscript = transcript.text
+                    .split(startKeyword)[1]
+                    .split(endKeyword)[0];
+                console.log("Heard Start, sending this: ", newTranscript);
+                await stopRecording();
+                await sendMessage(newTranscript);
+            } else {
+                //OLD
+                // No transcript found, start recording.
+                // console.log("No transcript");
+                // startRecording();
             }
         })();
-    }, [speaking]);
+    }, [transcript, previousTranscript, loading, clickedButton]);
 
+    // UseEffect that listens to the speaking state
+    // useEffect(() => {
+    //     if (!clickedButton) {
+    //         return;
+    //     }
+
+    //     (async () => {
+    //         console.log("speaking", speaking);
+
+    //         if (speaking && audioRef.current) {
+    //             // When the user starts talking, stop the A.I. from talking
+    //             audioRef.current.pause();
+    //         }
+
+    //         // If they aren't speaking, start recording just in case they do.
+    //         if (speaking === false) {
+    //             console.log("restarting recording");
+
+    //             try {
+    //                 await startRecording();
+    //             } catch (error) {
+    //                 console.log("Caught error!!!1");
+    //             }
+    //         }
+    //     })();
+    // }, [speaking]);
+
+    // TODO: This doesn't work to fix the mobile autoplay problems :(
     useEffect(() => {
         if (!clickedButton) {
             return;
-        } else {
+        } else if (audioRef.current) {
             audioRef.current.load();
         }
     }, [clickedButton]);
