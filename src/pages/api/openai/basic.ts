@@ -140,6 +140,7 @@ export default async function handler(req, res) {
         );
 
         if (!response.ok) {
+            console.log("RIP")
             throw new Error("Something went wrong");
         }
 

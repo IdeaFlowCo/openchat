@@ -1,5 +1,6 @@
 import { PaperAirplaneIcon } from "@heroicons/react/20/solid";
 import React from "react";
+import { toast } from "react-hot-toast";
 
 export default function ChatInput({
     recording,
@@ -11,9 +12,33 @@ export default function ChatInput({
     setTextInput,
     loading,
     setLoading,
+    setClickedButton,
 }) {
+    const handleStartRecording = async () => {
+        console.log("Start recording!")
+        setClickedButton(true);
+        try {
+            let response = await startRecording();
+            console.log("Response: ", response);
+        } catch (error) {
+            console.log("Caught error!!!1");
+        }
+    };
+
+    const handleStopRecording = async () => {
+        console.log("Stop recording!")
+        setLoading(true);
+        try {
+            let response = await stopRecording();
+            console.log("Response: ", response);
+        } catch (error) {
+            console.log("Caught error!!!");
+            toast.error("Error stopping recording");
+        }
+    };
+
     return (
-        <div className="mt-4 h-[18vh] w-full max-w-4xl mx-auto p-4">
+        <div className="mx-auto mt-4 h-[18vh] w-full max-w-4xl p-4">
             <div className="flex flex-col items-center justify-center gap-4">
                 <div className="relative flex w-full items-center  justify-center rounded-full bg-[#f4f7fb] p-2 shadow-sm">
                     <label htmlFor="chat" className="sr-only">
@@ -40,7 +65,9 @@ export default function ChatInput({
                         </div>
                         {!recording ? (
                             <button
-                                onClick={() => startRecording()}
+                                onClick={async () =>
+                                    await handleStartRecording()
+                                }
                                 disabled={recording}
                                 className="mr-4 rounded-full border bg-white p-3 text-white hover:opacity-70 "
                             >
@@ -61,10 +88,9 @@ export default function ChatInput({
                             </button>
                         ) : (
                             <button
-                                onClick={() => {
-                                    setLoading(true);
-                                    stopRecording();
-                                }}
+                                onClick={async () =>
+                                    await handleStopRecording()
+                                }
                                 disabled={!recording}
                                 className="mr-4 rounded-full border border-black/10 bg-indigo-600 p-3"
                             >
@@ -138,7 +164,7 @@ export default function ChatInput({
                     </button>
                 </div>
                 {/* <div> */}
-                    {/* <a
+                {/* <a
                             href="/"
                             target="_blank"
                             className="mt-2 rounded-2xl border border-black/20 py-2 px-4"
