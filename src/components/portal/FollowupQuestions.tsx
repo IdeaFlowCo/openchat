@@ -180,7 +180,7 @@ export default function FollowupQuestions({ feedbackId }) {
                 </div>
             </div>
 
-            <ChatInput
+            {/* <ChatInput
                 recording={recording}
                 startRecording={startRecording}
                 pauseRecording={pauseRecording}
@@ -190,8 +190,7 @@ export default function FollowupQuestions({ feedbackId }) {
                 setTextInput={setTextInput}
                 loading={loading}
                 setLoading={setLoading}
-                setShowEndInterviewModal={setShowEndInterviewModal}
-            />
+            /> */}
 
             <EndInterviewModal open={showEndInterviewModal} />
         </>
