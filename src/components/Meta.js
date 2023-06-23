@@ -19,9 +19,9 @@ function Meta(props) {
     // Default meta values for current page (override with props)
     const defaultPageMeta = {
         // Page title
-        title: "Deepform - The customer feedback portal from the future.",
+        title: "TalkToGPT: Talk to GPT like a friend.",
         // Page description
-        description: `Use A.I. to capture, organize, and analyze product feedback and build delightful products that your customers love.`,
+        description: `TalkToGPT is a chat app that makes talking to GPT like talking to a friend. Brought to you by Ideaflow.`,
         // Social share image (create this file in /public/images/)
         image: "/images/social.png",
         // Page type (see https://ogp.me/#types)
