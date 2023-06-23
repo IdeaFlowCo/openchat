@@ -335,6 +335,14 @@ export default function Chat({}) {
         })();
     }, [speaking]);
 
+    useEffect(() => {
+        if (!clickedButton) {
+            return;
+        } else {
+            audioRef.current.load();
+        }
+    }, [clickedButton]);
+
     // UseEffect that scrolls down to the bottom of the chat
     // whenever a new message is sent
     useEffect(() => {
