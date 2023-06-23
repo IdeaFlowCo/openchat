@@ -64,7 +64,7 @@ export default function StreamingChat({}) {
         {
             message: `Hi ${getFirstName(
                 auth.user.name
-            )}, I'm Orion, an extremely concise AI. Click the mic icon, then say "Start" to start the message, and "End" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
+            )}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "Start" to start the message, and "End" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
             sender: "AI",
         },
     ]);
@@ -324,6 +324,11 @@ export default function StreamingChat({}) {
                 let newTranscript = transcript.text
                     .split(startKeyword)[1]
                     .split(endKeyword)[0];
+
+                    // Remove period at the beginning
+                    if (newTranscript[0] === ".") {
+                        newTranscript = newTranscript.slice(1);
+                    }
                 console.log("Heard Start, sending this: ", newTranscript);
                 await stopRecording();
                 await sendMessage(newTranscript);
