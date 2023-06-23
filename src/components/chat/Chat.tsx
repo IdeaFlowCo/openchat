@@ -11,6 +11,40 @@ import PageLoader from "components/PageLoader";
 import ChatInput from "components/atoms/ChatInput";
 import { usePrevious } from "../../util/util";
 import { getFirstName } from "util/string";
+import axios, { AxiosRequestConfig } from "axios";
+
+// Define a helper function called textToSpeech that takes in a string called inputText as its argument.
+// Used in the below function, handleAudioFetch.
+const textToSpeech = async (inputText) => {
+    // Set the API key for ElevenLabs API. 
+    // Do not use directly. Use environment variables.
+    const API_KEY = process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY;
+    // Set the ID of the voice to be used.
+    const VOICE_ID = '21m00Tcm4TlvDq8ikWAM';
+  
+    // Set options for the API request.
+    const options: AxiosRequestConfig = {
+      method: 'POST',
+      url: `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+      headers: {
+        accept: 'audio/mpeg', // Set the expected response type to audio/mpeg.
+        'content-type': 'application/json', // Set the content type to application/json.
+        'xi-api-key': `${API_KEY}`, // Set the API key in the headers.
+      },
+      data: {
+        text: inputText, // Pass in the inputText as the text to be converted to speech.
+      },
+      responseType: 'arraybuffer', // Set the responseType to arraybuffer to receive binary data as response.
+    };
+  
+    // Send the API request using Axios and wait for the response.
+    const speechDetails = await axios.request(options);
+  
+    // Return the binary audio data received from the API response.
+    console.log("speechDetails.data", speechDetails.data);
+    return speechDetails.data;
+  };
+
 
 export default function Chat({}) {
     // Auth
@@ -43,10 +77,6 @@ export default function Chat({}) {
 
     // Loading State
     const [loading, setLoading] = useState(false);
-
-    // Audio that contains mp3 file returned from ElevenLabs
-    const [audio, setAudio] = useState(null);
-
     // State that checks if the user has clicked on the website yet
     // Needed because if they haven't clicked yet, the audio won't play
     // (just a quirk about web audio)
@@ -54,6 +84,28 @@ export default function Chat({}) {
 
     // Audio Ref for the audio element
     const audioRef = useRef(null);
+    // // Audio that contains mp3 file returned from ElevenLabs
+    // const [audio, setAudio] = useState(null);
+
+    // Define a state variable to hold the audio URL
+  const [audioURL, setAudioURL] = useState(null);
+
+  // Define a function to fetch the audio data and set the URL state variable
+  const handleAudioFetch = async (textToTransform: string) => {
+    // Call the textToSpeech function to generate the audio data for the text "Hello welcome"
+    const data = await textToSpeech(textToTransform)
+    console.log("data", data)
+    // Create a new Blob object from the audio data with MIME type 'audio/mpeg'
+    const blob = new Blob([data], { type: 'audio/mpeg' });
+    console.log("blob", blob)
+    // Create a URL for the blob object
+    const url = URL.createObjectURL(blob);
+    console.log("url", url)
+    
+    // Set the audio URL state variable to the newly created URL
+    setAudioURL(url);
+  };
+
 
     // Function that sends a text message to the API route /api/openai/basic,
     // hopefully getting the A.I. text response + audio file back
@@ -62,7 +114,7 @@ export default function Chat({}) {
         setLoading(true);
         setTextInput("");
         // Reset audio for new messages
-        setAudio(null);
+        setAudioURL(null);
 
         // Error Handling
         if (!message) {
@@ -119,11 +171,14 @@ export default function Chat({}) {
                 ]);
                 console.log("responseJSON", responseJSON);
 
-                // Set the AI audio
-                setAudio(responseJSON.file);
+                // Use handleAudioFetch to get and set the audioURL
+                await handleAudioFetch(responseJSON.response.text);
 
-                // Hack to force the client to reread the audio file
-                refreshAudio();
+                // // Set the AI audio
+                // setAudio(responseJSON.file);
+
+                // // Hack to force the client to reread the audio file
+                // refreshAudio();
 
                 // Play the audio (because it could be paused)
                 if (audioRef.current) {
@@ -234,9 +289,9 @@ export default function Chat({}) {
     });
 
     // Trigger this function when you know the file has been updated
-    const refreshAudio = () => {
-        setAudio(`/ephemeral.mp3?${new Date().getTime()}`);
-    };
+    // const refreshAudio = () => {
+    //     setAudio(`/ephemeral.mp3?${new Date().getTime()}`);
+    // };
 
     // UseEffect that listens to transcript state changes
     // and sends the text to the same sendMessage function
@@ -319,13 +374,13 @@ export default function Chat({}) {
                 setClickedButton={setClickedButton}
             />
             <div className="-mt-8 flex items-center justify-center pb-10">
-                {audio && (
+                {audioURL && (
                     <audio
                         className=""
                         ref={audioRef}
                         autoPlay
                         controls
-                        src={`audio/${audio}`}
+                        src={audioURL}
                     />
                 )}
                 {/* <button onClick={() => {

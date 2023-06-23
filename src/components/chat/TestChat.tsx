@@ -37,9 +37,9 @@ export default function TestChat() {
   const [audioURL, setAudioURL] = useState(null);
 
   // Define a function to fetch the audio data and set the URL state variable
-  const handleAudioFetch = async () => {
+  const handleAudioFetch = async (textToTransform = "Hello!") => {
     // Call the textToSpeech function to generate the audio data for the text "Hello welcome"
-    const data = await textToSpeech("Hello, welcome!")
+    const data = await textToSpeech(textToTransform)
     console.log("data", data)
     // Create a new Blob object from the audio data with MIME type 'audio/mpeg'
     const blob = new Blob([data], { type: 'audio/mpeg' });

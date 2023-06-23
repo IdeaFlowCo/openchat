@@ -117,59 +117,59 @@ export default async function handler(req, res) {
 
     console.log("new response", modifiedResponse);
 
-    // Call Eleven Labs to convert modifiedResponse.text to audio and attach in modifiedResponse
-    // Set options for the API request.
-    try {
-        const response = await fetch(
-            `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
-            {
-                method: "POST",
-                headers: {
-                    accept: "audio/mpeg",
-                    "Content-Type": "application/json",
-                    "xi-api-key": process.env.ELEVEN_LABS_API_KEY,
-                },
-                body: JSON.stringify({
-                    text: modifiedResponse.text,
-                    voice_settings: {
-                        stability: 0,
-                        similarity_boost: 0,
-                    },
-                }),
-            }
-        );
+    // // Call Eleven Labs to convert modifiedResponse.text to audio and attach in modifiedResponse
+    // // Set options for the API request.
+    // try {
+    //     const response = await fetch(
+    //         `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+    //         {
+    //             method: "POST",
+    //             headers: {
+    //                 accept: "audio/mpeg",
+    //                 "Content-Type": "application/json",
+    //                 "xi-api-key": process.env.ELEVEN_LABS_API_KEY,
+    //             },
+    //             body: JSON.stringify({
+    //                 text: modifiedResponse.text,
+    //                 voice_settings: {
+    //                     stability: 0,
+    //                     similarity_boost: 0,
+    //                 },
+    //             }),
+    //         }
+    //     );
 
-        if (!response.ok) {
-            console.log("RIP")
-            throw new Error("Something went wrong");
-        }
+    //     if (!response.ok) {
+    //         console.log("RIP")
+    //         throw new Error("Something went wrong");
+    //     }
 
-        const arrayBuffer = await response.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const file = `ephemeral`;
+    //     const arrayBuffer = await response.arrayBuffer();
+    //     const buffer = Buffer.from(arrayBuffer);
+    //     const file = `ephemeral`;
 
-        fs.writeFile(
-            path.join("public", "audio", `${file}.mp3`),
-            buffer,
-            () => {
-                console.log("File written successfully");
-            }
-        );
+    //     fs.writeFile(
+    //         path.join("public", "audio", `${file}.mp3`),
+    //         buffer,
+    //         () => {
+    //             console.log("File written successfully");
+    //         }
+    //     );
 
         let finalResponse: {
             response: any;
-            file: any;
+            // file: any;
         } = {
             response: modifiedResponse,
-            file: `${file}.mp3`,
+            // file: `${file}.mp3`,
         };
         res.status(200).json(finalResponse);
-    } catch (error) {
-        console.log("error", error);
-        res.status(500).json({
-            error: error.message,
-        });
-    }
+    // } catch (error) {
+    //     console.log("error", error);
+    //     res.status(500).json({
+    //         error: error.message,
+    //     });
+    // }
 }
 
 // export default async (req, res) => {
