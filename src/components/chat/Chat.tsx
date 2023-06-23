@@ -18,10 +18,22 @@ export default function Chat({}) {
 
     // State that records messages and will be sent to /api/openai/basic
     const [messages, setMessages] = useState<MessageType[]>([
+        // {
+        //     message: `You are an extremely concise A.I. chatbot. Also, if 
+        //     I ever say the special keyword 'Interrupt' anywhere, you should
+        //     treat that as the start of my message and ignore everything that came before it.
+        //     Example: 
+        //     Human: I like the color red. Interrupt. What's my favorite color?
+        //     AI: I don't know your favorite color.
+        //     `,
+        //     sender: "human",
+        // },
         {
             message: `Hi ${getFirstName(
                 auth.user.name
-            )}, I'm Orion, an A.I. that after this message, will only answer with one slightly long sentence. Nice to meet you!`,
+            )}, I'm Orion, an extremely concise A.I. that also listens for "Interrupt" as a 
+            special keyword that indicates I should ignore and forget everything that comes before
+            "Interrupt". How are you? `,
             sender: "AI",
         },
     ]);
@@ -211,7 +223,7 @@ export default function Chat({}) {
     } = useWhisper({
         apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
         // onTranscribe,
-        // removeSilence: true,
+        removeSilence: true,
         timeSlice: 1_000, // 1 second
         // streaming: true,
         nonStop: true,
