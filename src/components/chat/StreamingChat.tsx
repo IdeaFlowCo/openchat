@@ -13,38 +13,6 @@ import { getFirstName } from "util/string";
 import axios, { AxiosRequestConfig } from "axios";
 import { usePrevious } from "react-use";
 
-// Define a helper function called textToSpeech that takes in a string called inputText as its argument.
-// Used in the below function, handleAudioFetch.
-const textToSpeech = async (inputText) => {
-    // Set the API key for ElevenLabs API.
-    // Do not use directly. Use environment variables.
-    const API_KEY = process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY;
-    // Set the ID of the voice to be used.
-    const VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
-
-    // Set options for the API request.
-    const options: AxiosRequestConfig = {
-        method: "POST",
-        url: `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
-        headers: {
-            accept: "audio/mpeg", // Set the expected response type to audio/mpeg.
-            "content-type": "application/json", // Set the content type to application/json.
-            "xi-api-key": `${API_KEY}`, // Set the API key in the headers.
-        },
-        data: {
-            text: inputText, // Pass in the inputText as the text to be converted to speech.
-        },
-        responseType: "arraybuffer", // Set the responseType to arraybuffer to receive binary data as response.
-    };
-
-    // Send the API request using Axios and wait for the response.
-    const speechDetails = await axios.request(options);
-
-    // Return the binary audio data received from the API response.
-    console.log("speechDetails.data", speechDetails.data);
-    return speechDetails.data;
-};
-
 export default function StreamingChat({}) {
     // Auth
     const auth = useAuth();
@@ -69,6 +37,10 @@ export default function StreamingChat({}) {
         },
     ]);
 
+    const [lastSubmittedQueryEndIdx, setLastSubmittedQueryEndIdx] = useState(0); // TODO: could be let vs. state var
+
+    const [recentTranscript, setRecentTranscript] = useState("");
+
     // State that records the text input from the user
     const [textInput, setTextInput] = useState("");
 
@@ -80,29 +52,8 @@ export default function StreamingChat({}) {
     // TODO:
     const [clickedButton, setClickedButton] = useState(false);
 
-    // Audio Ref for the audio element
-    const audioRef = useRef(null);
-    // // Audio that contains mp3 file returned from ElevenLabs
-    // const [audio, setAudio] = useState(null);
-
     // Define a state variable to hold the audio URL
     const [audioURL, setAudioURL] = useState(null);
-
-    // Define a function to fetch the audio data and set the URL state variable
-    const handleAudioFetch = async (textToTransform: string) => {
-        // Call the textToSpeech function to generate the audio data for the text "Hello welcome"
-        const data = await textToSpeech(textToTransform);
-        console.log("data", data);
-        // Create a new Blob object from the audio data with MIME type 'audio/mpeg'
-        const blob = new Blob([data], { type: "audio/mpeg" });
-        console.log("blob", blob);
-        // Create a URL for the blob object
-        const url = URL.createObjectURL(blob);
-        console.log("url", url);
-
-        // Set the audio URL state variable to the newly created URL
-        setAudioURL(url);
-    };
 
     // Function that sends a text message to the API route /api/openai/basic,
     // hopefully getting the A.I. text response + audio file back
@@ -169,18 +120,12 @@ export default function StreamingChat({}) {
                 console.log("responseJSON", responseJSON);
 
                 // Use handleAudioFetch to get and set the audioURL
-                await handleAudioFetch(responseJSON.response.text);
-
-                // // Set the AI audio
-                // setAudio(responseJSON.file);
-
-                // // Hack to force the client to reread the audio file
-                // refreshAudio();
-
-                // Play the audio (because it could be paused)
-                if (audioRef.current) {
-                    audioRef.current.play();
-                }
+                var speech = new SpeechSynthesisUtterance();
+                speech.text = responseJSON.response.text;
+                window.speechSynthesis.speak(speech);
+                speechSynthesis.getVoices().forEach(function (voice) {
+                    // console.log(voice.name, voice.default ? voice.default : "");
+                });
 
                 // Open up the mic again
                 await startRecording();
@@ -195,46 +140,6 @@ export default function StreamingChat({}) {
             toast.error("Error sending message. Sorry about that!");
         }
     };
-
-    // await fetch("/api/openai/basic", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    //     body: data ? JSON.stringify(data) : undefined,
-    // })
-    //     .then((res) => res.json())
-    //     .then((data) => {
-    //         if (data.error) {
-    //             toast.error(data.error);
-    //             setLoading(false);
-    //             return;
-    //         }
-    //         console.log("data", data);
-    //         setMessages((prevMessages) => [
-    //             ...prevMessages,
-    //             { message: data.response.text, sender: "AI" },
-    //         ]);
-    //         console.log("data", data);
-
-    //         setAudio(data.file);
-    //         refreshAudio();
-    //         if (audioRef.current) {
-    //             audioRef.current.play();
-    //         }
-
-    //         startRecording();
-
-    //         // setAudioURL(url);
-    //         setLoading(false);
-    //     })
-    //     .catch((err) => {
-    //         console.log("err", err);
-    //         setLoading(false);
-    //         //TODO: Fix
-    //         toast.error("Error sending message. Sorry about that!");
-    //     });
-    // };
 
     // Whisper
     // const onTranscribe = async (blob) => {
@@ -275,11 +180,11 @@ export default function StreamingChat({}) {
     } = useWhisper({
         apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
         // onTranscribe,
-        removeSilence: true,
+        removeSilence: false,
         timeSlice: 1_000, // 1 second
         streaming: true,
         nonStop: true,
-        stopTimeout: 50000,
+        // stopTimeout: 50000,
         whisperConfig: {
             language: "en",
         },
@@ -304,6 +209,11 @@ export default function StreamingChat({}) {
             if (!transcript || !transcript.text) {
                 return;
             }
+            if (speaking) {
+                //NOT CURRENT
+                // When the user starts talking, stop the A.I. from talking 
+                // window.speechSynthesis.cancel();
+            }
 
             let sameTranscript = transcript.text === previousTranscript?.text;
 
@@ -311,69 +221,74 @@ export default function StreamingChat({}) {
                 return;
             }
             console.log("transcript", transcript);
-            let startKeyword = "Start";
-            let endKeyword = "End";
-            // Listen to any interrupt keyword and "send message"
-            if (
-                !sameTranscript &&
-                transcript.text.includes(startKeyword) &&
-                transcript.text.includes(endKeyword) &&
-                !loading
-            ) {
-                // Splice the transcript to remove everything before the Start keyword and after the End keyword
-                let newTranscript = transcript.text
-                    .split(startKeyword)[1]
-                    .split(endKeyword)[0];
 
-                    // Remove period at the beginning
-                    if (newTranscript[0] === ".") {
-                        newTranscript = newTranscript.slice(1);
+            const START_KEYWORDS = ["Alexa"];
+            // let startKeywords = ["Hey Orion","Hey, Orion", "hey Orion", "hey, Orion", ];
+            const END_KEYWORD = "Done";
+            // let interruptKeyword = "interrupt";
+
+            if (!sameTranscript) {
+
+                // let lastStartIdx = Math.max( ...startKeywords.map( (keyword)=> transcript.text.lastIndexOf(keyword) ));
+
+                //try each startKeyword from startKeywords
+                //populate lastStartIdx and lastStartKeywordOptionIdx
+                let lastStartIdx=-1
+                let lastStartKeyword=null
+                for(let i=0;i< START_KEYWORDS.length;i++) {
+                    
+                    let currLastStartIdx=transcript.text.lastIndexOf(START_KEYWORDS[i])
+
+                    if(currLastStartIdx>lastStartIdx) {
+                        lastStartIdx=currLastStartIdx
+                        lastStartKeyword=START_KEYWORDS[i]
                     }
-                console.log("Heard Start, sending this: ", newTranscript);
-                await stopRecording();
-                await sendMessage(newTranscript);
-            } else {
-                //OLD
-                // No transcript found, start recording.
-                // console.log("No transcript");
-                // startRecording();
+                }
+
+                if(lastStartKeyword) {
+                    setRecentTranscript(transcript.text.substring(lastStartIdx))
+                }
+                
+
+
+                let lastEndIdx = transcript.text.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase()); //toLowerCase for case insensitive 
+
+                // if ai is speaking and you say start (OR interrupt keyword #TODO), should cancel
+                if (
+                    lastStartIdx>=0 && //if start keyword has been said at least once
+                    lastEndIdx >=0 &&
+                    lastStartIdx > lastEndIdx) {
+
+                    // if(speaking) mean if USER is speaking
+                    window.speechSynthesis.cancel();
+                    alert("bruhh")
+                }
+
+                if (
+                    lastStartIdx>=0 && 
+                    lastEndIdx > lastStartIdx &&
+                    lastEndIdx > lastSubmittedQueryEndIdx
+                ) {
+                    // alert("ah!");
+                    // debugger
+                    //submit new query
+                    let newTranscript = transcript.text.substring(lastStartIdx+lastStartKeyword.length, lastEndIdx);
+                    if(newTranscript.startsWith(".") || newTranscript.startsWith(",")){
+                        newTranscript = newTranscript.substring(1);
+                    }
+                    console.log("Heard Start, sending this: ", newTranscript);
+                    // await stopRecording();
+                    await sendMessage(newTranscript);
+                    setLastSubmittedQueryEndIdx(lastEndIdx);
+                }
             }
         })();
-    }, [transcript, previousTranscript, loading, clickedButton]);
-
-    // UseEffect that listens to the speaking state
-    // useEffect(() => {
-    //     if (!clickedButton) {
-    //         return;
-    //     }
-
-    //     (async () => {
-    //         console.log("speaking", speaking);
-
-    //         if (speaking && audioRef.current) {
-    //             // When the user starts talking, stop the A.I. from talking
-    //             audioRef.current.pause();
-    //         }
-
-    //         // If they aren't speaking, start recording just in case they do.
-    //         if (speaking === false) {
-    //             console.log("restarting recording");
-
-    //             try {
-    //                 await startRecording();
-    //             } catch (error) {
-    //                 console.log("Caught error!!!1");
-    //             }
-    //         }
-    //     })();
-    // }, [speaking]);
+    }, [transcript, loading, clickedButton]);
 
     // TODO: This doesn't work to fix the mobile autoplay problems :(
     useEffect(() => {
         if (!clickedButton) {
             return;
-        } else if (audioRef.current) {
-            audioRef.current.load();
         }
     }, [clickedButton]);
 
@@ -416,24 +331,8 @@ export default function StreamingChat({}) {
                 setClickedButton={setClickedButton}
             />
             <div className="-mt-8 flex items-center justify-center pb-10">
-                {audioURL && (
-                    <audio
-                        className=""
-                        ref={audioRef}
-                        autoPlay
-                        controls
-                        src={audioURL}
-                    />
-                )}
-                {/* <button onClick={() => {
-                    if (audioRef.current) {
-                        audioRef.current.pause();
-                    }
-                }}
-                    className="ml-4 rounded-full border bg-white p-3 text-white hover:opacity-70 "
-                /> */}
+                {recentTranscript}
             </div>
         </>
-        // </section>
     );
 }

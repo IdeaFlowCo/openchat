@@ -29,8 +29,9 @@ export default function ChatInput({
         console.log("Stop recording!")
         setLoading(true);
         try {
-            let response = await stopRecording();
-            console.log("Response: ", response);
+            // let response = await stopRecording();
+            // console.log("Response: ", response);
+            alert("handleStopRecording shouldn't be called");
         } catch (error) {
             console.log("Caught error!!!");
             toast.error("Error stopping recording");
@@ -88,9 +89,10 @@ export default function ChatInput({
                             </button>
                         ) : (
                             <button
-                                onClick={async () =>
-                                    await handleStopRecording()
-                                }
+                                // onClick={async () => {
+                                //     // await handleStopRecording() #TODO
+                                //     }
+                                // }
                                 disabled={!recording}
                                 className="mr-4 rounded-full border border-black/10 bg-indigo-600 p-3"
                             >
