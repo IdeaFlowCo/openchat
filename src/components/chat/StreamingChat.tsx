@@ -14,10 +14,16 @@ import axios, { AxiosRequestConfig } from "axios";
 import { usePrevious } from "react-use";
 
 export default function StreamingChat({}) {
+    //NEVER define non constant variables here this in modern react functional components use useRef
+    // let testVar=0;
 
+    // let lastSubmittedMessageCount=0
+    // let currReceivedMessageCount=0
+    
+    const testVar =useRef(0);
 
-    let lastSubmittedMessageCount=0
-    let currReceivedMessageCount=0
+    const lastSubmittedMessageCount=useRef(0);
+    const currReceivedMessageCount=useRef(0);
 
     
     // Auth
@@ -86,7 +92,7 @@ export default function StreamingChat({}) {
         // To be able to show the human their new message immediately.
         setMessages((prevMessages) => [
             ...prevMessages,
-            { message: " "+lastSubmittedMessageCount + " " + message, sender: "human" },
+            { message: " "+lastSubmittedMessageCount.current + ": " + message, sender: "human" },
         ]);
 
         // Create data object to send to API route /api/openai/basic
@@ -119,10 +125,10 @@ export default function StreamingChat({}) {
                 console.log("responseJSON", responseJSON);
 
                 // Show the AI message to the human immediately
-                currReceivedMessageCount++
+                currReceivedMessageCount.current++
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { message: " " + currReceivedMessageCount + " " +responseJSON.response.text, sender: "AI" },
+                    { message: " " + currReceivedMessageCount.current + ": " +responseJSON.response.text, sender: "AI" },
                 ]);
 
 
@@ -237,8 +243,8 @@ export default function StreamingChat({}) {
 
 
 
-    let lastEndIdx=-1
-    let lastStartIdx=-1
+    const lastEndIdx= useRef(-1)
+    const lastStartIdx= useRef(-1)
     
     //constructor
     // useEffect( () => {
@@ -249,9 +255,23 @@ export default function StreamingChat({}) {
 
     // },[])
 
+    const somevariable=useRef(0)
+    const somestate=useState("dasf")
+
+    useEffect( ()=> {
+
+        
+    },
+    [somevariable.current, somestate]
+    )
+
+    //listens to transcript.text, loading, clickedButton
     useEffect(() => {
 
         (async () => {
+            console.log("TEST_VAR",testVar)
+            testVar.current++
+
             // alert(transcript.text)
 
             // Ideal: we only send the message after interrupt detected, and only once.
@@ -294,55 +314,56 @@ export default function StreamingChat({}) {
 
             if (!sameTranscript && currReceivedMessageCount>=lastSubmittedMessageCount) {
 
-                // let lastStartIdx = Math.max( ...startKeywords.map( (keyword)=> transcript.text.lastIndexOf(keyword) ));
+                // let lastStartIdx.current = Math.max( ...startKeywords.map( (keyword)=> transcript.text.lastIndexOf(keyword) ));
 
-                //try each startKeyword from startKeywords
-                //populate lastStartIdx and lastStartKeywordOptionIdx
+                //try each startKeyword from startKeywords to find rightmost startkeyword
+                //populate lastStartIdx.current and lastStartKeyword OptionIdx
                 
                 let lastStartKeyword=null
                 for(let i=0;i< START_KEYWORDS.length;i++) {
                     
                     let currLastStartIdx=transcript.text.lastIndexOf(START_KEYWORDS[i])
 
-                    if(currLastStartIdx>lastStartIdx) {
-                        lastStartIdx = Math.max(lastStartIdx, currLastStartIdx) //ratchet forward in case previous transcript wobbles
-
-                        lastStartKeyword=START_KEYWORDS[i]
+                    if(currLastStartIdx>lastStartIdx.current) {
+                        lastStartIdx.current = currLastStartIdx  //implicitly ratchets forward in case previous transcript wobbles
                     }
+
+                    lastStartKeyword=START_KEYWORDS[i]
+
                 }
 
 
                 if(lastStartKeyword) {
-                    setRecentTranscript(transcript.text.substring(lastStartIdx))
+                    setRecentTranscript(transcript.text.substring(lastStartIdx.current))
                 }
                 
 
 
                 //ratchet forward in case previous transcript wobbles
-                lastEndIdx = Math.max( lastEndIdx, transcript.text.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase()) ); //toLowerCase for case insensitive 
+                lastEndIdx.current = Math.max( lastEndIdx.current, transcript.text.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase()) ); //toLowerCase for case insensitive 
 
                 // INTERRUPT – if ai is speaking and you say start (OR INTERRUPT_KEYWORD #TODO), should cancel
                 if (
-                    lastStartIdx>=0 && //if start keyword has been said at least once, and start keyword is said again
-                    lastEndIdx >=0 &&
-                    lastStartIdx > lastEndIdx) {
+                    lastStartIdx.current>=0 && //if start keyword has been said at least once, and start keyword is said again
+                    lastEndIdx.current >=0 &&
+                    lastStartIdx.current > lastEndIdx.current) {
 
                     // if(speaking) mean if USER is speaking
                     window.speechSynthesis.cancel();
 
-                    alert("Interrupt " + lastStartKeyword + " " + lastStartIdx)
+                    alert("Interrupt " + lastStartKeyword + " " + lastStartIdx.current)
                 }
 
                 //END_KEYWORD recognized ("Done")
                 if (
-                    lastStartIdx>=0 && 
-                    lastEndIdx > lastStartIdx &&
-                    lastEndIdx > lastSubmittedQueryEndIdx
+                    lastStartIdx.current >= 0 && 
+                    lastEndIdx.current > lastStartIdx.current &&
+                    lastEndIdx.current > lastSubmittedQueryEndIdx
                 ) {
                     // alert("ah!");
                     // debugger
                     //submit new query
-                    let newTranscript = transcript.text.substring(lastStartIdx+lastStartKeyword.length, lastEndIdx);
+                    let newTranscript = transcript.text.substring(lastStartIdx.current+lastStartKeyword.length, lastEndIdx.current);
                     if(newTranscript.startsWith(".") || newTranscript.startsWith(",")){
                         newTranscript = newTranscript.substring(1);
                     }
@@ -362,13 +383,13 @@ export default function StreamingChat({}) {
                     */
                     
                     //query OpenAI GPT API
-                    lastSubmittedMessageCount++
+                    lastSubmittedMessageCount.current++
                     //
                     // currReceivedMessageCount
                     await sendMessage(newTranscript);
                     
 
-                    setLastSubmittedQueryEndIdx(lastEndIdx);
+                    setLastSubmittedQueryEndIdx(lastEndIdx.current);
                 }
             }
         })();
