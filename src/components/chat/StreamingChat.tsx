@@ -14,6 +14,12 @@ import axios, { AxiosRequestConfig } from "axios";
 import { usePrevious } from "react-use";
 
 export default function StreamingChat({}) {
+
+
+    let lastSubmittedMessageCount=0
+    let currReceivedMessageCount=0
+
+    
     // Auth
     const auth = useAuth();
 
@@ -80,7 +86,7 @@ export default function StreamingChat({}) {
         // To be able to show the human their new message immediately.
         setMessages((prevMessages) => [
             ...prevMessages,
-            { message: message, sender: "human" },
+            { message: " "+lastSubmittedMessageCount + " " + message, sender: "human" },
         ]);
 
         // Create data object to send to API route /api/openai/basic
@@ -113,10 +119,13 @@ export default function StreamingChat({}) {
                 console.log("responseJSON", responseJSON);
 
                 // Show the AI message to the human immediately
+                currReceivedMessageCount++
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { message: responseJSON.response.text, sender: "AI" },
+                    { message: " " + currReceivedMessageCount + " " +responseJSON.response.text, sender: "AI" },
                 ]);
+
+
                 console.log("responseJSON", responseJSON);
 
                 // Use handleAudioFetch to get and set the audioURL
@@ -169,26 +178,51 @@ export default function StreamingChat({}) {
     //     }
     // };
 
+    
+
     const {
         recording,
         speaking,
         transcribing,
-        transcript,
+        transcript, //{blob: binary, text: ""}
         pauseRecording,
         startRecording,
         stopRecording,
     } = useWhisper({
         apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
         // onTranscribe,
-        removeSilence: false,
-        timeSlice: 1_000, // 1 second
-        streaming: true,
-        nonStop: true,
-        // stopTimeout: 50000,
+        removeSilence: false, //different library from hark. Uses ffmeg
+        timeSlice: 1000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
+        streaming: true, //currently makes a request to server every 1 second
+        nonStop: false, // Means: how long before it will auto-respond to you. should be called autoStop. if you want speech detection or not to stop audio. true means using hark; uses hark because web speech api not compatible w all browser 
+        // stopTimeout: 5000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
         whisperConfig: {
             language: "en",
         },
     });
+
+    // const {
+    //     recording,
+    //     speaking,
+    //     transcribing,
+    //     transcript,
+    //     pauseRecording,
+    //     startRecording,
+    //     stopRecording,
+    // } = useWhisper({
+    //     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
+    //     // onTranscribe,
+    //     removeSilence: true, //different library from hark. Uses ffmeg
+    //     // timeSlice: 15000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
+    //     streaming: false, //currently makes a request to server every 1 second
+    //     nonStop: false, // Means: how long before it will auto-respond to you. should be called autoStop. if you want speech detection or not to stop audio. true means using hark; uses hark because web speech api not compatible w all browser 
+    //     // stopTimeout: 5000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
+    //     whisperConfig: {
+    //         language: "en",
+    //     },
+    // });
+
+
 
     const previousTranscript = usePrevious(transcript);
 
@@ -200,8 +234,26 @@ export default function StreamingChat({}) {
     // UseEffect that listens to transcript state changes
     // and sends the text to the same sendMessage function when it detects
     // the special keyword "Interrupt"
+
+
+
+    let lastEndIdx=-1
+    let lastStartIdx=-1
+    
+    //constructor
+    // useEffect( () => {
+    //     setTimeout(() => {
+    //         transcript.text="oogie"
+    //         console.log("oggie")
+    //     }, 15000);
+
+    // },[])
+
     useEffect(() => {
+
         (async () => {
+            // alert(transcript.text)
+
             // Ideal: we only send the message after interrupt detected, and only once.
             if (!clickedButton) {
                 return;
@@ -222,28 +274,43 @@ export default function StreamingChat({}) {
             }
             console.log("transcript", transcript);
 
-            const START_KEYWORDS = ["Alexa"];
+            const START_KEYWORDS = ["Alexa"]; //wakeword 
             // let startKeywords = ["Hey Orion","Hey, Orion", "hey Orion", "hey, Orion", ];
-            const END_KEYWORD = "Done";
-            // let interruptKeyword = "interrupt";
 
-            if (!sameTranscript) {
+            //design possibility – require wakeword e.g. Alexa Done, or Alexa Interrupt. 
+            const END_KEYWORD = "Done";
+
+            //For now the START keywords are the only interrupt word
+            // let INTERRUPT_KEYWORD = "interrupt"; //handle interrupts in same way as wakeword. Saying wakeword should also stop playing output
+
+            //Future possibilities for saying wakeword in middle of AI talking back include Alexa turn up the volume, or replay that
+            //duck or, better, pause the output once wakeword is heard
+            //Way to sleep it again, nevermind, I have nothing to say
+
+            //?Auto reply without Done keyword -- timeout option. For MVP require done keyword. If we do do this, then support Alexa listen indefinitely 
+
+
+
+
+            if (!sameTranscript && currReceivedMessageCount>=lastSubmittedMessageCount) {
 
                 // let lastStartIdx = Math.max( ...startKeywords.map( (keyword)=> transcript.text.lastIndexOf(keyword) ));
 
                 //try each startKeyword from startKeywords
                 //populate lastStartIdx and lastStartKeywordOptionIdx
-                let lastStartIdx=-1
+                
                 let lastStartKeyword=null
                 for(let i=0;i< START_KEYWORDS.length;i++) {
                     
                     let currLastStartIdx=transcript.text.lastIndexOf(START_KEYWORDS[i])
 
                     if(currLastStartIdx>lastStartIdx) {
-                        lastStartIdx=currLastStartIdx
+                        lastStartIdx = Math.max(lastStartIdx, currLastStartIdx) //ratchet forward in case previous transcript wobbles
+
                         lastStartKeyword=START_KEYWORDS[i]
                     }
                 }
+
 
                 if(lastStartKeyword) {
                     setRecentTranscript(transcript.text.substring(lastStartIdx))
@@ -251,19 +318,22 @@ export default function StreamingChat({}) {
                 
 
 
-                let lastEndIdx = transcript.text.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase()); //toLowerCase for case insensitive 
+                //ratchet forward in case previous transcript wobbles
+                lastEndIdx = Math.max( lastEndIdx, transcript.text.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase()) ); //toLowerCase for case insensitive 
 
-                // if ai is speaking and you say start (OR interrupt keyword #TODO), should cancel
+                // INTERRUPT – if ai is speaking and you say start (OR INTERRUPT_KEYWORD #TODO), should cancel
                 if (
-                    lastStartIdx>=0 && //if start keyword has been said at least once
+                    lastStartIdx>=0 && //if start keyword has been said at least once, and start keyword is said again
                     lastEndIdx >=0 &&
                     lastStartIdx > lastEndIdx) {
 
                     // if(speaking) mean if USER is speaking
                     window.speechSynthesis.cancel();
-                    alert("bruhh")
+
+                    alert("Interrupt " + lastStartKeyword + " " + lastStartIdx)
                 }
 
+                //END_KEYWORD recognized ("Done")
                 if (
                     lastStartIdx>=0 && 
                     lastEndIdx > lastStartIdx &&
@@ -277,13 +347,34 @@ export default function StreamingChat({}) {
                         newTranscript = newTranscript.substring(1);
                     }
                     console.log("Heard Start, sending this: ", newTranscript);
-                    // await stopRecording();
+                
+
+                    
+                    await stopRecording();
+                    await startRecording();
+
+                    /*
+                        stopRecording().then(() => {
+                            return startRecording();
+                        }).catch((error) => {
+                            console.error('An error occurred:', error);
+                        });
+                    */
+                    
+                    //query OpenAI GPT API
+                    lastSubmittedMessageCount++
+                    //
+                    // currReceivedMessageCount
                     await sendMessage(newTranscript);
+                    
+
                     setLastSubmittedQueryEndIdx(lastEndIdx);
                 }
             }
         })();
-    }, [transcript, loading, clickedButton]);
+    }, [transcript.text, loading, clickedButton]); //transcript.text
+
+
 
     // TODO: This doesn't work to fix the mobile autoplay problems :(
     useEffect(() => {
