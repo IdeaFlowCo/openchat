@@ -3,6 +3,7 @@ import React from "react";
 import { toast } from "react-hot-toast";
 
 export default function ChatInput({
+    listening,
     recording,
     startRecording,
     pauseRecording,
@@ -27,11 +28,11 @@ export default function ChatInput({
 
     const handleStopRecording = async () => {
         console.log("Stop recording!")
-        setLoading(true);
+        // setLoading(true);
         try {
-            // let response = await stopRecording();
-            // console.log("Response: ", response);
-            alert("handleStopRecording shouldn't be called");
+            let response = await stopRecording();
+            console.log("Response: ", response);
+            // alert("handleStopRecording shouldn't be called");
         } catch (error) {
             console.log("Caught error!!!");
             toast.error("Error stopping recording");
@@ -87,12 +88,32 @@ export default function ChatInput({
                                     />
                                 </svg>
                             </button>
+                        ) : listening ? (
+                            <button
+                                disabled
+                                className="mr-4 rounded-full border border-black/10 bg-rose-600 p-3"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="h-6 w-6 text-white"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
                         ) : (
                             <button
-                                // onClick={async () => {
-                                //     // await handleStopRecording() #TODO
-                                //     }
-                                // }
+                                onClick={async () => {
+                                    await handleStopRecording()
+                                    }
+                                }
                                 disabled={!recording}
                                 className="mr-4 rounded-full border border-black/10 bg-indigo-600 p-3"
                             >

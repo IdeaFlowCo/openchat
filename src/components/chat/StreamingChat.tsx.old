@@ -13,9 +13,6 @@ import { getFirstName } from "util/string";
 import axios, { AxiosRequestConfig } from "axios";
 import { usePrevious } from "react-use";
 
-const START_KEYWORDS = ["Test"];
-const END_KEYWORD = "Over";
-
 export default function StreamingChat({}) {
     //NEVER define non constant variables here this in modern react functional components use useRef
     // let testVar=0;
@@ -187,6 +184,29 @@ export default function StreamingChat({}) {
     //     }
     // };
 
+    
+
+    const {
+        recording,
+        speaking,
+        transcribing,
+        transcript, //{blob: binary, text: ""}
+        pauseRecording,
+        startRecording,
+        stopRecording,
+    } = useWhisper({
+        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
+        // onTranscribe,
+        removeSilence: false, //different library from hark. Uses ffmeg
+        timeSlice: 1000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
+        streaming: true, //currently makes a request to server every 1 second
+        nonStop: false, // Means: how long before it will auto-respond to you. should be called autoStop. if you want speech detection or not to stop audio. true means using hark; uses hark because web speech api not compatible w all browser 
+        // stopTimeout: 5000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
+        whisperConfig: {
+            language: "en",
+        },
+    });
+
     // const {
     //     recording,
     //     speaking,
@@ -210,7 +230,7 @@ export default function StreamingChat({}) {
 
 
 
-    // const previousTranscript = usePrevious(transcript);
+    const previousTranscript = usePrevious(transcript);
 
     // Trigger this function when you know the file has been updated
     // const refreshAudio = () => {
@@ -245,66 +265,135 @@ export default function StreamingChat({}) {
     [somevariable.current, somestate]
     )
 
-    const {
-        recording,
-        speaking,
-        transcribing,
-        transcript, //{blob: binary, text: ""}
-        pauseRecording,
-        startRecording,
-        stopRecording,
-    } = useWhisper({
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
-        // onTranscribe,
-        removeSilence: true, //different library from hark. Uses ffmeg
-        // timeSlice: 1_000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
-        streaming: true, //currently makes a request to server every 1 second
-        nonStop: true, // Means: how long before it will auto-respond to you. should be called autoStop. if you want speech detection or not to stop audio. true means using hark; uses hark because web speech api not compatible w all browser 
-        stopTimeout: 30_000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
-        whisperConfig: {
-            language: "en",
-        },
-    });
-    console.log({ transcript: transcript.text })
-
-    const detectedText = useRef<string>()
-
-    const [listening, setListening] = useState<boolean>(false)
-
-    // Ra's implementation
+    //listens to transcript.text, loading, clickedButton
     useEffect(() => {
+
         (async () => {
-            if (!clickedButton || !transcript.text) {
+            console.log("TEST_VAR",testVar)
+            testVar.current++
+
+            // alert(transcript.text)
+
+            // Ideal: we only send the message after interrupt detected, and only once.
+            if (!clickedButton) {
                 return;
             }
+            if (!transcript || !transcript.text) {
+                return;
+            }
+            if (speaking) {
+                //NOT CURRENT
+                // When the user starts talking, stop the A.I. from talking 
+                // window.speechSynthesis.cancel();
+            }
+
+            let sameTranscript = transcript.text === previousTranscript?.text;
+
             if (loading) {
                 return;
             }
-            for (const keyword of START_KEYWORDS) {
-                const startIndex = transcript.text.toLocaleLowerCase().lastIndexOf(keyword.toLocaleLowerCase())
-                if (startIndex !== -1) {
-                    console.log("START_KEYWORD DETECTED!")
-                    if (window.speechSynthesis.speaking) {
-                        window.speechSynthesis.cancel();
+            console.log("transcript", transcript);
+
+            const START_KEYWORDS = ["Alexa"]; //wakeword 
+            // let startKeywords = ["Hey Orion","Hey, Orion", "hey Orion", "hey, Orion", ];
+
+            //design possibility – require wakeword e.g. Alexa Done, or Alexa Interrupt. 
+            const END_KEYWORD = "Done";
+
+            //For now the START keywords are the only interrupt word
+            // let INTERRUPT_KEYWORD = "interrupt"; //handle interrupts in same way as wakeword. Saying wakeword should also stop playing output
+
+            //Future possibilities for saying wakeword in middle of AI talking back include Alexa turn up the volume, or replay that
+            //duck or, better, pause the output once wakeword is heard
+            //Way to sleep it again, nevermind, I have nothing to say
+
+            //?Auto reply without Done keyword -- timeout option. For MVP require done keyword. If we do do this, then support Alexa listen indefinitely 
+
+
+
+
+            if (!sameTranscript && currReceivedMessageCount>=lastSubmittedMessageCount) {
+
+                // let lastStartIdx.current = Math.max( ...startKeywords.map( (keyword)=> transcript.text.lastIndexOf(keyword) ));
+
+                //try each startKeyword from startKeywords to find rightmost startkeyword
+                //populate lastStartIdx.current and lastStartKeyword OptionIdx
+                
+                let lastStartKeyword=null
+                for(let i=0;i< START_KEYWORDS.length;i++) {
+                    
+                    let currLastStartIdx=transcript.text.lastIndexOf(START_KEYWORDS[i])
+
+                    if(currLastStartIdx>lastStartIdx.current) {
+                        lastStartIdx.current = currLastStartIdx  //implicitly ratchets forward in case previous transcript wobbles
                     }
-                    setListening(true)
-                    let streamingText = transcript.text.substring(startIndex)
-                    setRecentTranscript(streamingText)
-                    console.log({ streamingText })
-                    if (transcript.text.toLocaleLowerCase().includes(END_KEYWORD.toLocaleLowerCase())) {
-                        console.log("END_KEYWORD DETECTED!")
-                        await stopRecording()
-                        let message = transcript.text.substring(startIndex + keyword.length)
-                        if (message.startsWith('.') || message.startsWith(',')) {
-                            message = message.substring(1)
-                        }
-                        detectedText.current = message
-                        await sendMessage(message)
+
+                    lastStartKeyword=START_KEYWORDS[i]
+
+                }
+
+
+                if(lastStartKeyword) {
+                    setRecentTranscript(transcript.text.substring(lastStartIdx.current))
+                }
+                
+
+
+                //ratchet forward in case previous transcript wobbles
+                lastEndIdx.current = Math.max( lastEndIdx.current, transcript.text.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase()) ); //toLowerCase for case insensitive 
+
+                // INTERRUPT – if ai is speaking and you say start (OR INTERRUPT_KEYWORD #TODO), should cancel
+                if (
+                    lastStartIdx.current>=0 && //if start keyword has been said at least once, and start keyword is said again
+                    lastEndIdx.current >=0 &&
+                    lastStartIdx.current > lastEndIdx.current) {
+
+                    // if(speaking) mean if USER is speaking
+                    window.speechSynthesis.cancel();
+
+                    alert("Interrupt " + lastStartKeyword + " " + lastStartIdx.current)
+                }
+
+                //END_KEYWORD recognized ("Done")
+                if (
+                    lastStartIdx.current >= 0 && 
+                    lastEndIdx.current > lastStartIdx.current &&
+                    lastEndIdx.current > lastSubmittedQueryEndIdx
+                ) {
+                    // alert("ah!");
+                    // debugger
+                    //submit new query
+                    let newTranscript = transcript.text.substring(lastStartIdx.current+lastStartKeyword.length, lastEndIdx.current);
+                    if(newTranscript.startsWith(".") || newTranscript.startsWith(",")){
+                        newTranscript = newTranscript.substring(1);
                     }
+                    console.log("Heard Start, sending this: ", newTranscript);
+                
+
+                    
+                    await stopRecording();
+                    await startRecording();
+
+                    /*
+                        stopRecording().then(() => {
+                            return startRecording();
+                        }).catch((error) => {
+                            console.error('An error occurred:', error);
+                        });
+                    */
+                    
+                    //query OpenAI GPT API
+                    lastSubmittedMessageCount.current++
+                    //
+                    // currReceivedMessageCount
+                    await sendMessage(newTranscript);
+                    
+
+                    setLastSubmittedQueryEndIdx(lastEndIdx.current);
                 }
             }
         })();
-    }, [transcript.text, loading, clickedButton]);
+    }, [transcript.text, loading, clickedButton]); //transcript.text
 
 
 
@@ -342,7 +431,6 @@ export default function StreamingChat({}) {
                 </div>
             </div>
             <ChatInput
-                listening={listening}
                 recording={recording}
                 startRecording={startRecording}
                 pauseRecording={pauseRecording}
