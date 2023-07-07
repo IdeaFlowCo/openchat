@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import React, { Fragment, useState, useEffect, useRef, useCallback } from "react";
 import ChatMessage from "../atoms/ChatMessage";
 import { toast } from "react-hot-toast";
 import { useWhisper } from "@chengsokdara/use-whisper";
@@ -73,7 +73,7 @@ export default function StreamingChat({}) {
     // Function that sends a text message to the API route /api/openai/basic,
     // hopefully getting the A.I. text response + audio file back
     // and saving it to the appropriate states
-    const sendMessage = async (message) => {
+    const sendMessage = async (message: string) => {
         setLoading(true);
         setTextInput("");
         // Reset audio for new messages
@@ -91,12 +91,12 @@ export default function StreamingChat({}) {
             setLoading(false);
             return;
         }
-
         // To be able to show the human their new message immediately.
         setMessages((prevMessages) => [
             ...prevMessages,
             { message: " "+lastSubmittedMessageCount.current + ": " + message, sender: "human" },
         ]);
+        lastSubmittedMessageCount.current++
 
         // Create data object to send to API route /api/openai/basic
         const data: BasicCompletionType = {
@@ -128,11 +128,11 @@ export default function StreamingChat({}) {
                 console.log("responseJSON", responseJSON);
 
                 // Show the AI message to the human immediately
-                currReceivedMessageCount.current++
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     { message: " " + currReceivedMessageCount.current + ": " +responseJSON.response.text, sender: "AI" },
                 ]);
+                currReceivedMessageCount.current++
 
 
                 console.log("responseJSON", responseJSON);
@@ -146,11 +146,10 @@ export default function StreamingChat({}) {
                 });
                 // Open up the mic again
                 await startRecording();
+                detected.current = false
 
                 // setAudioURL(url); old
                 setLoading(false);
-
-                setDetected(false)
             }
         } catch (error) {
             console.log("err", error);
@@ -257,29 +256,38 @@ export default function StreamingChat({}) {
     } = useWhisper({
         apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, // YOUR_OPEN_AI_TOKEN
         // onTranscribe,
-        removeSilence: true, //different library from hark. Uses ffmeg
-        // timeSlice: 1_000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
+        // removeSilence: true, //different library from hark. Uses ffmeg
+        timeSlice: 1_000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
         streaming: true, //currently makes a request to server every 1 second
         nonStop: true, // Means: how long before it will auto-respond to you. should be called autoStop. if you want speech detection or not to stop audio. true means using hark; uses hark because web speech api not compatible w all browser 
-        stopTimeout: 30_000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
+        stopTimeout: 60_000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
         whisperConfig: {
             language: "en",
         },
     });
-    console.log({ transcript: transcript.text })
+    // console.log({ transcript: transcript.text })
 
-    const detectedText = useRef<string>()
+    const detectedText = useRef<string | undefined>(undefined)
 
-    const [detected, setDetected] = useState<boolean>(false)
+    // const [detected, setDetected] = useState<boolean>(false)
+    const detected = useRef<boolean>(false)
     const [listening, setListening] = useState<boolean>(false)
+    const sending = useRef<boolean>(false)
 
     // Ra's implementation
     useEffect(() => {
         (async () => {
-            if (detected || loading) {
+            console.log({ transcript: transcript.text, sending: sending.current, detected: detected.current })
+            if (sending.current) {
                 return;
             }
-            if (!clickedButton || !transcript.text) {
+            if (detected.current) {
+                return;
+            }
+            if (!clickedButton) {
+                return;
+            }
+            if (!transcript.text) {
                 return;
             }
             /**
@@ -297,7 +305,8 @@ export default function StreamingChat({}) {
                         window.speechSynthesis.cancel();
                     }
                     // cut out any prior text before keyword
-                    let streamingText = transcript.text.substring(startIndex)
+                    let streamingText = transcript.text.slice()
+                    streamingText = streamingText.substring(startIndex)
                     // display streaming text on the screen
                     setRecentTranscript(streamingText)
                     console.log({ streamingText })
@@ -306,26 +315,33 @@ export default function StreamingChat({}) {
                     if (endIndex !== -1) {
                         console.log("END_KEYWORD DETECTED!")
                         // set detected state to true, to avoid sending multiple messages
-                        setDetected(true)
-                        // stop recording to reset transcript.text
-                        await stopRecording()
+                        detected.current = true
                         // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
-                        let message = transcript.text.substring(startIndex + keyword.length, endIndex)
+                        let message = transcript.text.slice()
+                        message = message.substring(startIndex + keyword.length, endIndex)
                         // if there are "." or "," or "?" also cut it out
                         if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
-                            message = message.substring(1)
+                            message = message.substring(2)
                         }
+                        console.log("IMPORTANT:", { detectedText: detectedText.current, message, recording })
                         // only send if message is different from previous detected message
-                        if (detectedText.current !== message) {
+                        // if (detectedText.current !== message && recording) {
+                        //     detectedText.current = message
+                        //     // stop recording to reset transcript.text
+                        //     await stopRecording()
+                        //     await sendMessage(message)
+                        // }
+                        if (!sending.current) {
+                            await stopRecording()
+                            sending.current = true
                             await sendMessage(message)
+                            sending.current = false
                         }
-                        // save message as reference for checking later
-                        detectedText.current = message
                     }
                 }
             }
         })();
-    }, [detected, transcript.text, loading, clickedButton]);
+    }, [transcript.text, clickedButton]);
 
 
 
