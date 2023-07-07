@@ -23,10 +23,10 @@ export default function StreamingChat({}) {
     // let lastSubmittedMessageCount=0
     // let currReceivedMessageCount=0
     
-    const testVar =useRef(0);
+    const testVar =useRef(0);  //#obs?
 
-    const lastSubmittedMessageCount=useRef(0);
-    const currReceivedMessageCount=useRef(0);
+    const lastSubmittedMessageCount=useRef(0);  //#testing
+    const currReceivedMessageCount=useRef(0);  //#testing
 
     
     // Auth
@@ -47,7 +47,7 @@ export default function StreamingChat({}) {
         {
             message: `Hi ${getFirstName(
                 auth.user.name
-            )}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "Start" to start the message, and "End" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
+            )}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
             sender: "AI",
         },
     ]);
@@ -61,6 +61,7 @@ export default function StreamingChat({}) {
 
     // Loading State
     const [loading, setLoading] = useState(false);
+
     // State that checks if the user has clicked on the website yet
     // Needed because if they haven't clicked yet, the audio won't play
     // (just a quirk about web audio)
@@ -68,7 +69,7 @@ export default function StreamingChat({}) {
     const [clickedButton, setClickedButton] = useState(false);
 
     // Define a state variable to hold the audio URL
-    const [audioURL, setAudioURL] = useState(null);
+    const [audioURL, setAudioURL] = useState(null); //#old  
 
     // Function that sends a text message to the API route /api/openai/basic,
     // hopefully getting the A.I. text response + audio file back
@@ -77,7 +78,7 @@ export default function StreamingChat({}) {
         setLoading(true);
         setTextInput("");
         // Reset audio for new messages
-        setAudioURL(null);
+        setAudioURL(null); //#old?
 
         // Error Handling
         if (!message) {
@@ -104,7 +105,7 @@ export default function StreamingChat({}) {
             userId: auth.user.id,
         };
 
-        console.log("data", data);
+        console.log("sendMessage data", data);
 
         try {
             // Send data to API route /api/openai/basic
@@ -140,10 +141,13 @@ export default function StreamingChat({}) {
                 // Use handleAudioFetch to get and set the audioURL
                 var speech = new SpeechSynthesisUtterance();
                 speech.text = responseJSON.response.text;
-                window.speechSynthesis.speak(speech);
-                speechSynthesis.getVoices().forEach(function (voice) {
-                    // console.log(voice.name, voice.default ? voice.default : "");
-                });
+                window.speechSynthesis.speak(speech); //#question does this block ui?
+
+                // #testing log voices
+                // speechSynthesis.getVoices().forEach(function (voice) {
+                //     // console.log(voice.name, voice.default ? voice.default : "");
+                // });
+
                 // Open up the mic again
                 await startRecording();
                 detected.current = false
@@ -223,8 +227,8 @@ export default function StreamingChat({}) {
 
 
 
-    const lastEndIdx= useRef(-1)
-    const lastStartIdx= useRef(-1)
+    const lastEndIdx= useRef(-1) //#old
+    const lastStartIdx= useRef(-1)  //#old
     
     //constructor
     // useEffect( () => {
@@ -234,16 +238,6 @@ export default function StreamingChat({}) {
     //     }, 15000);
 
     // },[])
-
-    const somevariable=useRef(0)
-    const somestate=useState("dasf")
-
-    useEffect( ()=> {
-
-        
-    },
-    [somevariable.current, somestate]
-    )
 
     const {
         recording,
@@ -260,7 +254,7 @@ export default function StreamingChat({}) {
         timeSlice: 1_000 , // optional if i don't have streaming. 1 second - for streaming  old value 1_000
         streaming: true, //currently makes a request to server every 1 second
         nonStop: true, // Means: how long before it will auto-respond to you. should be called autoStop. if you want speech detection or not to stop audio. true means using hark; uses hark because web speech api not compatible w all browser 
-        stopTimeout: 60_000, //default 5 second. Only used if nonStop is true. //0 is same removing parameter? 
+        stopTimeout: 60_000, //default 5 second. Only used if nonStop (autoStop) is true. //0 is same removing parameter? 
         whisperConfig: {
             language: "en",
         },
@@ -270,12 +264,14 @@ export default function StreamingChat({}) {
     const detectedText = useRef<string | undefined>(undefined)
 
     // const [detected, setDetected] = useState<boolean>(false)
-    const detected = useRef<boolean>(false)
+    const detected = useRef<boolean>(false) //#todo move this above SendMessage for clarity?
     const [listening, setListening] = useState<boolean>(false)
     const sending = useRef<boolean>(false)
 
     // Ra's implementation
-    useEffect(() => {
+
+    // deps: [transcript.text, clickedButton]);
+    useEffect(() => { 
         (async () => {
             console.log({ transcript: transcript.text, sending: sending.current, detected: detected.current })
             if (sending.current) {
@@ -318,7 +314,7 @@ export default function StreamingChat({}) {
                         detected.current = true
                         // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
                         let message = transcript.text.slice()
-                        message = message.substring(startIndex + keyword.length, endIndex)
+                        message = message.substring(startIndex + keyword.length, endIndex) //#question if end < start it will take the whole utterance and may not work #issue?
                         // if there are "." or "," or "?" also cut it out
                         if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
                             message = message.substring(2)
@@ -331,7 +327,7 @@ export default function StreamingChat({}) {
                         //     await stopRecording()
                         //     await sendMessage(message)
                         // }
-                        if (!sending.current) {
+                        if (!sending.current) { //#question why needed? to prevent duplicates? how relates to loading?
                             await stopRecording()
                             sending.current = true
                             await sendMessage(message)
@@ -345,7 +341,7 @@ export default function StreamingChat({}) {
 
 
 
-    // TODO: This doesn't work to fix the mobile autoplay problems :(
+    // TODO: This doesn't work to fix the mobile autoplay problems :( //#old? only w async speech api
     useEffect(() => {
         if (!clickedButton) {
             return;
