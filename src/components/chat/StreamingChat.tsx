@@ -14,7 +14,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { usePrevious } from "react-use";
 
 const START_KEYWORDS = ["Test"];
-const END_KEYWORD = "Over";
+const END_KEYWORD = "Stop";
 
 export default function StreamingChat({}) {
     //NEVER define non constant variables here this in modern react functional components use useRef
@@ -144,12 +144,13 @@ export default function StreamingChat({}) {
                 speechSynthesis.getVoices().forEach(function (voice) {
                     // console.log(voice.name, voice.default ? voice.default : "");
                 });
-
                 // Open up the mic again
                 await startRecording();
 
                 // setAudioURL(url); old
                 setLoading(false);
+
+                setDetected(false)
             }
         } catch (error) {
             console.log("err", error);
@@ -269,42 +270,62 @@ export default function StreamingChat({}) {
 
     const detectedText = useRef<string>()
 
+    const [detected, setDetected] = useState<boolean>(false)
     const [listening, setListening] = useState<boolean>(false)
 
     // Ra's implementation
     useEffect(() => {
         (async () => {
+            if (detected || loading) {
+                return;
+            }
             if (!clickedButton || !transcript.text) {
                 return;
             }
-            if (loading) {
-                return;
-            }
+            /**
+             * loop through START_KEYWORDS to find matching text in transcript.text
+             */
             for (const keyword of START_KEYWORDS) {
+                // check there is matching START_KEYWORD in transcript.text 
                 const startIndex = transcript.text.toLocaleLowerCase().lastIndexOf(keyword.toLocaleLowerCase())
                 if (startIndex !== -1) {
                     console.log("START_KEYWORD DETECTED!")
+                    // start listening mode since keyword was detected
+                    setListening(true)
+                    // cancel any speaking speech synthesis
                     if (window.speechSynthesis.speaking) {
                         window.speechSynthesis.cancel();
                     }
-                    setListening(true)
+                    // cut out any prior text before keyword
                     let streamingText = transcript.text.substring(startIndex)
+                    // display streaming text on the screen
                     setRecentTranscript(streamingText)
                     console.log({ streamingText })
-                    if (transcript.text.toLocaleLowerCase().includes(END_KEYWORD.toLocaleLowerCase())) {
+                    // check if there is matching END_KEYWORD in transcript.text
+                    const endIndex = transcript.text.toLocaleLowerCase().indexOf(END_KEYWORD.toLocaleLowerCase())
+                    if (endIndex !== -1) {
                         console.log("END_KEYWORD DETECTED!")
+                        // set detected state to true, to avoid sending multiple messages
+                        setDetected(true)
+                        // stop recording to reset transcript.text
                         await stopRecording()
-                        let message = transcript.text.substring(startIndex + keyword.length)
-                        if (message.startsWith('.') || message.startsWith(',')) {
+                        // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
+                        let message = transcript.text.substring(startIndex + keyword.length, endIndex)
+                        // if there are "." or "," or "?" also cut it out
+                        if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
                             message = message.substring(1)
                         }
+                        // only send if message is different from previous detected message
+                        if (detectedText.current !== message) {
+                            await sendMessage(message)
+                        }
+                        // save message as reference for checking later
                         detectedText.current = message
-                        await sendMessage(message)
                     }
                 }
             }
         })();
-    }, [transcript.text, loading, clickedButton]);
+    }, [detected, transcript.text, loading, clickedButton]);
 
 
 
