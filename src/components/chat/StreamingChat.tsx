@@ -93,6 +93,7 @@ export default function StreamingChat({}) {
             return;
         }
         // To be able to show the human their new message immediately.
+        // TODO: rm counts
         setMessages((prevMessages) => [
             ...prevMessages,
             { message: " "+lastSubmittedMessageCount.current + ": " + message, sender: "human" },
@@ -141,7 +142,7 @@ export default function StreamingChat({}) {
                 // Use handleAudioFetch to get and set the audioURL
                 var speech = new SpeechSynthesisUtterance();
                 speech.text = responseJSON.response.text;
-                window.speechSynthesis.speak(speech); //#question does this block ui?
+                window.speechSynthesis.speak(speech); // #question does this block ui? answer: no.
 
                 // #testing log voices
                 // speechSynthesis.getVoices().forEach(function (voice) {
@@ -264,9 +265,9 @@ export default function StreamingChat({}) {
     const detectedText = useRef<string | undefined>(undefined)
 
     // const [detected, setDetected] = useState<boolean>(false)
-    const detected = useRef<boolean>(false) //#todo move this above SendMessage for clarity?
+    const detected = useRef<boolean>(false) //#todo move this above SendMessage for clarity? rename to endKeywordDetected
     const [listening, setListening] = useState<boolean>(false)
-    const sending = useRef<boolean>(false)
+    const sending = useRef<boolean>(false) // @Ra: how is sending different from loading? if no meaningful diff we suggest merging
 
     // Ra's implementation
 
@@ -301,6 +302,7 @@ export default function StreamingChat({}) {
                         window.speechSynthesis.cancel();
                     }
                     // cut out any prior text before keyword
+                    // #question: @Ra since strings are passed by value and not reference, slice is redundant here. Correct?
                     let streamingText = transcript.text.slice()
                     streamingText = streamingText.substring(startIndex)
                     // display streaming text on the screen
@@ -308,13 +310,14 @@ export default function StreamingChat({}) {
                     console.log({ streamingText })
                     // check if there is matching END_KEYWORD in transcript.text
                     const endIndex = transcript.text.toLocaleLowerCase().indexOf(END_KEYWORD.toLocaleLowerCase())
-                    if (endIndex !== -1) {
+                    if (endIndex !== -1) { // @Ra: normally we'd add a conditiona i.e. && endIndex > startIndex | need to account for transcript wobble
                         console.log("END_KEYWORD DETECTED!")
                         // set detected state to true, to avoid sending multiple messages
                         detected.current = true
                         // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
+                        // #question: @Ra since strings are passed by value and not reference, slice is redundant here. Correct?
                         let message = transcript.text.slice()
-                        message = message.substring(startIndex + keyword.length, endIndex) //#question if end < start it will take the whole utterance and may not work #issue?
+                        message = message.substring(startIndex + keyword.length, endIndex) //#question if end < start it will take the whole utterance and may not work #issue? @Ra
                         // if there are "." or "," or "?" also cut it out
                         if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
                             message = message.substring(2)
