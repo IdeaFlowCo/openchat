@@ -90,7 +90,12 @@ export default function ChatInput({
                             </button>
                         ) : listening ? (
                             <button
-                                disabled
+                                onClick={async () => {
+                                    if (window.speechSynthesis.speaking) {
+                                        window.speechSynthesis.cancel();
+                                    }
+                                    await handleStopRecording()
+                                }}
                                 className="mr-4 rounded-full border border-black/10 bg-rose-600 p-3"
                             >
                                 <svg

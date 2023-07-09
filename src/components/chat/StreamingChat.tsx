@@ -151,7 +151,7 @@ export default function StreamingChat({}) {
 
                 // Open up the mic again
                 await startRecording();
-                detected.current = false
+                endKeywordDetected.current = false
 
                 // setAudioURL(url); old
                 setLoading(false);
@@ -265,20 +265,19 @@ export default function StreamingChat({}) {
     const detectedText = useRef<string | undefined>(undefined)
 
     // const [detected, setDetected] = useState<boolean>(false)
-    const detected = useRef<boolean>(false) //#todo move this above SendMessage for clarity? rename to endKeywordDetected
+    const endKeywordDetected = useRef<boolean>(false) //#todo move this above SendMessage for clarity? rename to endKeywordDetected
     const [listening, setListening] = useState<boolean>(false)
-    const sending = useRef<boolean>(false) // @Ra: how is sending different from loading? if no meaningful diff we suggest merging
+    const sendingDetectedMessage = useRef<boolean>(false) // @Ra: how is sending different from loading? if no meaningful diff we suggest merging
 
     // Ra's implementation
 
     // deps: [transcript.text, clickedButton]);
     useEffect(() => { 
         (async () => {
-            console.log({ transcript: transcript.text, sending: sending.current, detected: detected.current })
-            if (sending.current) {
+            if (sendingDetectedMessage.current) {
                 return;
             }
-            if (detected.current) {
+            if (endKeywordDetected.current) {
                 return;
             }
             if (!clickedButton) {
@@ -310,10 +309,10 @@ export default function StreamingChat({}) {
                     console.log({ streamingText })
                     // check if there is matching END_KEYWORD in transcript.text
                     const endIndex = transcript.text.toLocaleLowerCase().indexOf(END_KEYWORD.toLocaleLowerCase())
-                    if (endIndex !== -1) { // @Ra: normally we'd add a conditiona i.e. && endIndex > startIndex | need to account for transcript wobble
+                    if (endIndex !== -1 && endIndex > startIndex) { // @Ra: normally we'd add a conditiona i.e. && endIndex > startIndex | need to account for transcript wobble
                         console.log("END_KEYWORD DETECTED!")
                         // set detected state to true, to avoid sending multiple messages
-                        detected.current = true
+                        endKeywordDetected.current = true
                         // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
                         // #question: @Ra since strings are passed by value and not reference, slice is redundant here. Correct?
                         let message = transcript.text.slice()
@@ -322,19 +321,11 @@ export default function StreamingChat({}) {
                         if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
                             message = message.substring(2)
                         }
-                        console.log("IMPORTANT:", { detectedText: detectedText.current, message, recording })
-                        // only send if message is different from previous detected message
-                        // if (detectedText.current !== message && recording) {
-                        //     detectedText.current = message
-                        //     // stop recording to reset transcript.text
-                        //     await stopRecording()
-                        //     await sendMessage(message)
-                        // }
-                        if (!sending.current) { //#question why needed? to prevent duplicates? how relates to loading?
+                        if (!sendingDetectedMessage.current) { //#question why needed? to prevent duplicates? how relates to loading?
                             await stopRecording()
-                            sending.current = true
+                            sendingDetectedMessage.current = true
                             await sendMessage(message)
-                            sending.current = false
+                            sendingDetectedMessage.current = false
                         }
                     }
                 }
