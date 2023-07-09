@@ -116,9 +116,11 @@ export default function ChatInput({
                         ) : (
                             <button
                                 onClick={async () => {
-                                    await handleStopRecording()
+                                    if (window.speechSynthesis.speaking) {
+                                        window.speechSynthesis.cancel();
                                     }
-                                }
+                                    await handleStopRecording()
+                                }}
                                 disabled={!recording}
                                 className="mr-4 rounded-full border border-black/10 bg-indigo-600 p-3"
                             >
