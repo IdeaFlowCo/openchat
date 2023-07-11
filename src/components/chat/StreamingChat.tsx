@@ -69,7 +69,7 @@ export default function StreamingChat({}) {
     const [clickedButton, setClickedButton] = useState(false);
 
     // Define a state variable to hold the audio URL
-    const [audioURL, setAudioURL] = useState(null); //#old  
+    const [audioURL, setAudioURL] = useState(null); //#old
 
     // Function that sends a text message to the API route /api/openai/basic,
     // hopefully getting the A.I. text response + audio file back
@@ -140,9 +140,11 @@ export default function StreamingChat({}) {
                 console.log("responseJSON", responseJSON);
 
                 // Use handleAudioFetch to get and set the audioURL
-                var speech = new SpeechSynthesisUtterance();
-                speech.text = responseJSON.response.text;
-                window.speechSynthesis.speak(speech); // #question does this block ui? answer: no.
+                if (!speechRef.current) {
+                    speechRef.current = new SpeechSynthesisUtterance();
+                }
+                speechRef.current.text = responseJSON.response.text;
+                window.speechSynthesis.speak(speechRef.current); // #question does this block ui? answer: no.
 
                 // #testing log voices
                 // speechSynthesis.getVoices().forEach(function (voice) {
@@ -351,6 +353,9 @@ export default function StreamingChat({}) {
         }
     }, [messages]);
 
+    const speechRef = useRef<SpeechSynthesisUtterance>()
+    const [speakingRate, setSpeakingRate] = useState<string>('1')
+
     return (
         <>
             {/* <section className="flex flex-col justify-center items-center sm:mx-auto h-[80vh] b"> */}
@@ -367,6 +372,40 @@ export default function StreamingChat({}) {
                         />
                     ))}
                 </div>
+            </div>
+            <div id="rate-control" className="flex flex-col items-center">
+                <label className="text-sm" htmlFor="rate">Speaking speed:</label>
+                <div className="flex flex-row items-center">
+                    <input
+                        id="rate"
+                        type="range"
+                        min="0.5"
+                        max="2"
+                        value={speakingRate}
+                        step="0.1"
+                        onChange={(e) => {
+                            speechRef.current.rate = parseFloat(e.target.value)
+                            setSpeakingRate(e.target.value)
+                        }}
+                    />
+                    <span className="w-8 text-center">{speakingRate}</span>
+                </div>
+                <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={() => {
+                        if (!speechRef.current) {
+                            speechRef.current = new SpeechSynthesisUtterance()
+                        }
+                        if (window.speechSynthesis.speaking) {
+                            window.speechSynthesis.cancel()
+                        } else {
+                            speechRef.current.text = messages[0].message
+                            window.speechSynthesis.speak(speechRef.current)
+                        }
+                    }}
+                >
+                    Start/Stop Utterance Speed Test
+                </button>
             </div>
             <ChatInput
                 listening={listening}
