@@ -21,6 +21,10 @@ body {
     height: 100%;
 }
 
+#__next {
+    height: 100%;
+}
+
 @font-face {
     font-family: "Satoshi";
     src: url("/fonts/Satoshi-Light.otf");
