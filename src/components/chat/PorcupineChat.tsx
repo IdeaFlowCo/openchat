@@ -27,6 +27,8 @@ export const PorcupineChat = () => {
   const chatRef = useRef<HTMLDivElement>()
   const encoderRef = useRef<Encoder>()
   const harkRef = useRef<Harker>()
+  const notiTimeoutRef = useRef<NodeJS.Timeout>()
+  const notiIntervalRef = useRef<NodeJS.Timer>()
   const speechRef = useRef<SpeechSynthesisUtterance>()
   const startKeywordDetection = useRef<PorcupineDetection>()
   const streamRef = useRef<MediaStream>()
@@ -42,12 +44,18 @@ export const PorcupineChat = () => {
   const [messages, setMessages] = useState<MessageType[]>([
     getDefaultMessage(getFirstName(auth.user.name) || 'Ra'),
   ])
+  const [noti, setNoti] = useState<{
+    type: keyof (typeof NOTI_MESSAGES)['gpt']
+    message: string
+  }>()
+  const [porcupineAccessKey, setPorcupineAccessKey] = useState<string>(process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY)
   const [query, setQuery] = useState<string>('')
   const [speakingRate, setSpeakingRate] = useState<number>(1)
   const [useWhisperPrepared, setUseWhisperPrepared] = useState<boolean>()
 
   const {
     keywordDetection,
+    error: porcupineError,
     isLoaded,
     isListening,
     init,
@@ -65,69 +73,6 @@ export const PorcupineChat = () => {
       },
     })
 
-  const stopUttering = () => {
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel()
-      setIsUnttering(false)
-    }
-  }
-
-  const onStartUttering = () => {
-    setIsUnttering(true)
-  }
-
-  const onStopUttering = () => {
-    setIsUnttering(false)
-  }
-
-  const startUttering = (text: string) => {
-    if (!text) {
-      return
-    }
-    if (!speechRef.current) {
-      speechRef.current = new SpeechSynthesisUtterance()
-      speechRef.current.addEventListener('start', onStartUttering)
-      speechRef.current.addEventListener('end', onStopUttering)
-    }
-    speechRef.current.text = text
-    window.speechSynthesis.speak(speechRef.current)
-  }
-
-  const toggleUnttering = () => {
-    // console.log({ isUnttering })
-    if (isUnttering) {
-      stopUttering()
-    } else {
-      const lastMessage = messages
-        .slice()
-        .reverse()
-        .find((message) => message.sender === 'AI')?.message
-      // console.log({ lastMessage })
-      if (lastMessage) {
-        startUttering(lastMessage)
-      }
-    }
-  }
-
-  const stopPorcupine = async () => {
-    await stop()
-    if (harkRef.current) {
-      // @ts-ignore
-      harkRef.current.off('speaking', onStartSpeaking)
-      // @ts-ignore
-      harkRef.current.off('stopped_speaking', onStopSpeaking)
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
-      streamRef.current = undefined
-    }
-  }
-
-  const startPorcupine = async () => {
-    await start()
-    await prepareHark()
-  }
-
   const submitTranscript = async (text?: string) => {
     console.log('submitTranscript', text)
     if (!text) {
@@ -140,11 +85,13 @@ export const PorcupineChat = () => {
       setIsSending(false)
       return
     }
+    if (!isLoading) setIsLoading(true)
     setIsSending(true)
     setMessages((prevMessages) => [
       ...prevMessages,
       { message: text, sender: 'human' },
     ])
+    setNoti(undefined)
     setQuery('')
 
     try {
@@ -167,6 +114,9 @@ export const PorcupineChat = () => {
       if (dataJson) {
         if (dataJson.error) {
           setIsLoading(false)
+          setIsSending(false)
+          showErrorMessage(NOTI_MESSAGES.gpt.error)
+          startUttering(NOTI_MESSAGES.gpt.error)
           return
         }
 
@@ -180,10 +130,13 @@ export const PorcupineChat = () => {
 
       setIsLoading(false)
       setIsSending(false)
+      setNoti(undefined)
     } catch (sendDetectedTranscriptError) {
       console.error({ sendDetectedTranscriptError })
       setIsLoading(false)
       setIsSending(false)
+      showErrorMessage(NOTI_MESSAGES.gpt.error)
+      startUttering(NOTI_MESSAGES.gpt.error)
     }
   }
 
@@ -200,16 +153,21 @@ export const PorcupineChat = () => {
       ] = `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`
     }
 
-    const { default: axios } = await import('axios')
-    // send form data with audio file to Whisper endpoint
-    const response = await axios.post(
-      WHISPER_API_ENDPOINT + 'transcriptions',
-      body,
-      {
-        headers,
-      }
-    )
-    return response.data.text
+    try {
+      const { default: axios } = await import('axios')
+      // send form data with audio file to Whisper endpoint
+      const response = await axios.post(
+        WHISPER_API_ENDPOINT + 'transcriptions',
+        body,
+        {
+          headers,
+        }
+      )
+      return response.data.text
+    } catch (err) {
+      showErrorMessage('call to whisper failed!')
+      return ''
+    }
   }
 
   const transcribeAudio = async (
@@ -244,6 +202,7 @@ export const PorcupineChat = () => {
     // console.log({ transcribed })
     if (transcribed.error) {
       console.warn('24MB file size limit reached!')
+      showErrorMessage('24MB limit reached!')
       return
     }
     let text = transcribed.text.slice()
@@ -282,6 +241,28 @@ export const PorcupineChat = () => {
       onTranscribe()
     }
   }, [recording, isSending, transcript, useWhisperPrepared])
+
+  useEffect(() => {
+    if (isSending) {
+      notiTimeoutRef.current = setTimeout(() => {
+        setNoti({ type: 'loading', message: NOTI_MESSAGES.gpt.loading })
+        startUttering(NOTI_MESSAGES.gpt.loading)
+        clearTimeout(notiTimeoutRef.current)
+        notiIntervalRef.current = setInterval(() => {
+          startUttering(NOTI_MESSAGES.gpt.loading)
+        }, 1_000 * 10)
+      }, 1_000 * 5)
+    } else {
+      if (notiTimeoutRef.current) {
+        clearTimeout(notiTimeoutRef.current)
+        notiTimeoutRef.current = undefined
+      }
+      if (notiIntervalRef.current) {
+        clearInterval(notiIntervalRef.current)
+        notiIntervalRef.current = undefined
+      }
+    }
+  }, [isSending])
 
   /**
    * stop useWhisper recorder once auto stop timeout reached
@@ -326,6 +307,51 @@ export const PorcupineChat = () => {
     }
   }, [keywordDetection])
 
+  const stopUttering = () => {
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel()
+      setIsUnttering(false)
+    }
+  }
+
+  const onStartUttering = () => {
+    setIsUnttering(true)
+  }
+
+  const onStopUttering = () => {
+    setIsUnttering(false)
+  }
+
+  const startUttering = (text: string) => {
+    // console.log({ speechRef: speechRef.current })
+    if (!text) {
+      return
+    }
+    if (!speechRef.current) {
+      speechRef.current = new SpeechSynthesisUtterance()
+      speechRef.current.addEventListener('start', onStartUttering)
+      speechRef.current.addEventListener('end', onStopUttering)
+    }
+    speechRef.current.text = text
+    window.speechSynthesis.speak(speechRef.current)
+  }
+
+  const toggleUnttering = () => {
+    // console.log({ isUnttering })
+    if (isUnttering) {
+      stopUttering()
+    } else {
+      const lastMessage = messages
+        .slice()
+        .reverse()
+        .find((message) => message.sender === 'AI')?.message
+      // console.log({ lastMessage })
+      if (lastMessage) {
+        startUttering(lastMessage)
+      }
+    }
+  }
+
   useEffect(() => {
     if (speechRef.current) {
       // change utterance speaking rate
@@ -340,6 +366,39 @@ export const PorcupineChat = () => {
     }
   }, [messages])
 
+  const onStartSpeaking = () => {
+    setIsSpeaking(true)
+  }
+
+  const onStopSpeaking = () => {
+    setIsSpeaking(false)
+  }
+
+  const stopPorcupine = async () => {
+    await stop()
+    releaseHark()
+  }
+
+  const startPorcupine = async () => {
+    await start()
+    await prepareHark()
+  }
+
+  const releaseHark = () => {
+    // remove hark event listeners
+    if (harkRef.current) {
+      // @ts-ignore
+      harkRef.current.off('speaking', onStartSpeaking)
+      // @ts-ignore
+      harkRef.current.off('stopped_speaking', onStopSpeaking)
+    }
+    // release audio stream and remove event listeners
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = undefined
+    }
+  }
+
   const prepareUseWhisper = async () => {
     if (!useWhisperPrepared) {
       /**
@@ -350,14 +409,6 @@ export const PorcupineChat = () => {
       await stopRecording()
       setUseWhisperPrepared(true)
     }
-  }
-
-  const onStartSpeaking = () => {
-    setIsSpeaking(true)
-  }
-
-  const onStopSpeaking = () => {
-    setIsSpeaking(false)
   }
 
   const prepareHark = async () => {
@@ -387,13 +438,27 @@ export const PorcupineChat = () => {
     }
   }, [isLoaded])
 
+  const showErrorMessage = (message: string) => {
+    setNoti({ type: 'error', message })
+  }
+
+  useEffect(() => {
+    if (porcupineError) {
+      console.warn({ porcupineError })
+      showErrorMessage(porcupineError.toString())
+    }
+  }, [porcupineError])
+
   useEffect(() => {
     // initialize porcupine
     init(
-      process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY,
+      porcupineAccessKey,
       [...START_KEYWORDS, END_KEYWORD],
       PORCUPINE_MODEL
     )
+  }, [porcupineAccessKey])
+
+  useEffect(() => {
     // release resource on component unmount
     return () => {
       // clear auto stop timeout instance
@@ -406,18 +471,7 @@ export const PorcupineChat = () => {
         encoderRef.current.flush()
         encoderRef.current = undefined
       }
-      // remove hark event listeners
-      if (harkRef.current) {
-        // @ts-ignore
-        harkRef.current.off('speaking', onStartSpeaking)
-        // @ts-ignore
-        harkRef.current.off('stopped_speaking', onStopSpeaking)
-      }
-      // release audio stream and remove event listeners
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop())
-        streamRef.current = undefined
-      }
+      releaseHark()
       if (speechRef.current) {
         speechRef.current.removeEventListener('start', onStartUttering)
         speechRef.current.removeEventListener('end', onStopUttering)
@@ -427,7 +481,7 @@ export const PorcupineChat = () => {
   }, [])
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full w-screen flex-col">
       <div
         ref={chatRef}
         id="chat"
@@ -447,8 +501,27 @@ export const PorcupineChat = () => {
         isUnttering={isUnttering}
         speakingRate={speakingRate}
         onChangeSpeakingRate={setSpeakingRate}
+        onClickSetting={() => {
+          let accessKey = prompt(
+            'Please enter Porcupine access key',
+            ''
+          )
+          if (accessKey) {
+            setPorcupineAccessKey(accessKey)
+          }
+        }}
         onToggleUnttering={toggleUnttering}
       />
+      {noti ? (
+        <p
+          onClick={() => setNoti(undefined)}
+          className={`mt-2 text-center text-sm ${
+            noti.type === 'error' ? 'text-red-500' : 'text-gray-500'
+          }`}
+        >
+          {noti.message}
+        </p>
+      ) : null}
       <PorcupineInput
         isListening={isListening}
         isLoading={isLoading}
@@ -465,6 +538,13 @@ export const PorcupineChat = () => {
       />
     </div>
   )
+}
+
+const NOTI_MESSAGES = {
+  gpt: {
+    loading: 'hang on, still working',
+    error: 'Call to GPT Failed',
+  },
 }
 
 const getDefaultMessage = (name: string): MessageType => ({

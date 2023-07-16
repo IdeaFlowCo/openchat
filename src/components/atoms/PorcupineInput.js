@@ -44,9 +44,9 @@ export default function PorcupineInput({
   }, [isSpeaking])
 
   return (
-    <div className="mx-auto mt-4 w-full max-w-4xl p-4">
-      <div className="flex flex-row items-center justify-center">
-        <div className="relative flex w-full items-center justify-center rounded-full bg-[#f4f7fb] px-4 shadow-sm">
+    <div className="flex w-screen justify-center mt-4 py-4">
+      <div className="flex items-center justify-center px-2">
+        <div className="relative flex flex-row flex-1 items-center rounded-full bg-[#f4f7fb] shadow-sm">
           <label htmlFor="chat" className="sr-only">
             Chat
           </label>
@@ -54,7 +54,7 @@ export default function PorcupineInput({
           <input
             name="chat"
             id="chat"
-            className="block h-16 grow rounded-md border-0 bg-transparent px-2 text-gray-900  placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
+            className="flex w-full sm:w-[650px] h-16 px-2 sm:px-4 rounded-md border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
             placeholder="Type your response..."
             value={query}
             autoComplete="off"
@@ -66,7 +66,7 @@ export default function PorcupineInput({
             }}
           />
 
-          <span className="text-sm">Enter⏎</span>
+          <div className="text-sm mr-2 sm:mr-4">Enter⏎</div>
         </div>
 
         <div className="relative min-h-[64px] min-w-[80px]">
@@ -101,7 +101,7 @@ export default function PorcupineInput({
           ) : null}
         </div>
 
-        <div>
+        <div className='w-[3.125rem]'>
           {isRecording ? (
             <button
               onClick={async () => {
