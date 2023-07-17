@@ -5,6 +5,7 @@ export default function PorcupineInput({
   isLoading, // when end keyword is detected
   isSpeaking, // when microphone detect sound
   isRecording, // useWhisper start recording
+  isWhisperPrepared,
   query,
   onChangeQuery,
   onSetIsLoading,
@@ -44,9 +45,9 @@ export default function PorcupineInput({
   }, [isSpeaking])
 
   return (
-    <div className="flex w-screen justify-center mt-4 py-4">
+    <div className="mt-4 flex w-screen justify-center py-4">
       <div className="flex items-center justify-center px-2">
-        <div className="relative flex flex-row flex-1 items-center rounded-full bg-[#f4f7fb] shadow-sm">
+        <div className="relative flex flex-1 flex-row items-center rounded-full bg-[#f4f7fb] shadow-sm">
           <label htmlFor="chat" className="sr-only">
             Chat
           </label>
@@ -54,7 +55,7 @@ export default function PorcupineInput({
           <input
             name="chat"
             id="chat"
-            className="flex w-full sm:w-[650px] h-16 px-2 sm:px-4 rounded-md border-0 bg-transparent text-gray-900 placeholder:text-gray-400 focus:outline-0 sm:py-1.5 sm:text-sm sm:leading-6"
+            className="flex h-16 w-full rounded-md border-0 bg-transparent px-2 text-gray-900 placeholder:text-gray-400 focus:outline-0 sm:w-[650px] sm:px-4 sm:py-1.5 sm:text-sm sm:leading-6"
             placeholder="Type your response..."
             value={query}
             autoComplete="off"
@@ -66,7 +67,7 @@ export default function PorcupineInput({
             }}
           />
 
-          <div className="text-sm mr-2 sm:mr-4">Enter⏎</div>
+          <div className="mr-2 text-sm sm:mr-4">Enter⏎</div>
         </div>
 
         <div className="relative min-h-[64px] min-w-[80px]">
@@ -101,8 +102,8 @@ export default function PorcupineInput({
           ) : null}
         </div>
 
-        <div className='w-[3.125rem]'>
-          {isRecording ? (
+        <div className="w-[3.125rem]">
+          {isRecording && isWhisperPrepared ? (
             <button
               onClick={async () => {
                 /**

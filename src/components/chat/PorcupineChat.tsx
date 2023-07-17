@@ -40,6 +40,7 @@ export const PorcupineChat = () => {
   const [isSending, setIsSending] = useState<boolean>(false)
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
   const [isUnttering, setIsUnttering] = useState<boolean>(false)
+  const [isWhisperPrepared, setIsWhisperPrepared] = useState<boolean>(false)
 
   const [messages, setMessages] = useState<MessageType[]>([
     getDefaultMessage(getFirstName(auth.user.name) || 'Ra'),
@@ -48,10 +49,11 @@ export const PorcupineChat = () => {
     type: keyof (typeof NOTI_MESSAGES)['gpt']
     message: string
   }>()
-  const [porcupineAccessKey, setPorcupineAccessKey] = useState<string>(process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY)
+  const [porcupineAccessKey, setPorcupineAccessKey] = useState<string>(
+    process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY
+  )
   const [query, setQuery] = useState<string>('')
   const [speakingRate, setSpeakingRate] = useState<number>(1)
-  const [useWhisperPrepared, setUseWhisperPrepared] = useState<boolean>()
 
   const {
     keywordDetection,
@@ -76,13 +78,9 @@ export const PorcupineChat = () => {
   const submitTranscript = async (text?: string) => {
     console.log('submitTranscript', text)
     if (!text) {
-      setIsLoading(false)
-      setIsSending(false)
       return
     }
     if (!auth.user) {
-      setIsLoading(false)
-      setIsSending(false)
       return
     }
     if (!isLoading) setIsLoading(true)
@@ -127,16 +125,14 @@ export const PorcupineChat = () => {
 
         startUttering(dataJson.response.text)
       }
-
-      setIsLoading(false)
-      setIsSending(false)
-      setNoti(undefined)
+      return
     } catch (sendDetectedTranscriptError) {
       console.error({ sendDetectedTranscriptError })
       setIsLoading(false)
       setIsSending(false)
       showErrorMessage(NOTI_MESSAGES.gpt.error)
       startUttering(NOTI_MESSAGES.gpt.error)
+      return
     }
   }
 
@@ -221,6 +217,8 @@ export const PorcupineChat = () => {
     submitTranscript(text).then(() => {
       // lastTranscript.current = transcript.text
       transcript.blob = undefined
+      setIsLoading(false)
+      setIsSending(false)
     })
   }
 
@@ -231,7 +229,7 @@ export const PorcupineChat = () => {
     if (
       !isSending &&
       !recording &&
-      useWhisperPrepared &&
+      isWhisperPrepared &&
       /**
        * Recorded audio should not be empty.
        * Empty wav file always start with 44 bytes not 0.
@@ -240,7 +238,7 @@ export const PorcupineChat = () => {
     ) {
       onTranscribe()
     }
-  }, [recording, isSending, transcript, useWhisperPrepared])
+  }, [recording, isSending, isWhisperPrepared, transcript])
 
   useEffect(() => {
     if (isSending) {
@@ -400,14 +398,14 @@ export const PorcupineChat = () => {
   }
 
   const prepareUseWhisper = async () => {
-    if (!useWhisperPrepared) {
+    if (!isWhisperPrepared) {
       /**
        * fake start and stop useWhisper so that recorder is prepared
        * once start keyword detected, useWhisper can start record instantly
        */
       await startRecording()
       await stopRecording()
-      setUseWhisperPrepared(true)
+      setIsWhisperPrepared(true)
     }
   }
 
@@ -432,8 +430,6 @@ export const PorcupineChat = () => {
 
   useEffect(() => {
     if (isLoaded) {
-      start() // start porcupine wakeword detection
-      prepareHark()
       prepareUseWhisper()
     }
   }, [isLoaded])
@@ -451,11 +447,7 @@ export const PorcupineChat = () => {
 
   useEffect(() => {
     // initialize porcupine
-    init(
-      porcupineAccessKey,
-      [...START_KEYWORDS, END_KEYWORD],
-      PORCUPINE_MODEL
-    )
+    init(porcupineAccessKey, [...START_KEYWORDS, END_KEYWORD], PORCUPINE_MODEL)
   }, [porcupineAccessKey])
 
   useEffect(() => {
@@ -502,10 +494,7 @@ export const PorcupineChat = () => {
         speakingRate={speakingRate}
         onChangeSpeakingRate={setSpeakingRate}
         onClickSetting={() => {
-          let accessKey = prompt(
-            'Please enter Porcupine access key',
-            ''
-          )
+          let accessKey = prompt('Please enter Porcupine access key', '')
           if (accessKey) {
             setPorcupineAccessKey(accessKey)
           }
@@ -527,6 +516,7 @@ export const PorcupineChat = () => {
         isLoading={isLoading}
         isSpeaking={isSpeaking || speaking}
         isRecording={recording}
+        isWhisperPrepared={isWhisperPrepared}
         query={query}
         onChangeQuery={setQuery}
         onSetIsLoading={setIsLoading}
