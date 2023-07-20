@@ -1,6 +1,7 @@
 import { useWhisper } from '@chengsokdara/use-whisper'
 import { usePorcupine } from '@picovoice/porcupine-react'
 import { BuiltInKeyword, PorcupineDetection } from '@picovoice/porcupine-web'
+import { useChat, type CreateMessage, type Message } from 'ai/react'
 import porcupineModelBase64 from 'assets/porcupine_params'
 import { type RawAxiosRequestHeaders } from 'axios'
 import ChatMessage from 'components/atoms/ChatMessage'
@@ -9,7 +10,6 @@ import PorcupinePill from 'components/atoms/PorcupinePill'
 import type { Harker } from 'hark'
 import type { Encoder } from 'lamejs'
 import { useEffect, useRef, useState } from 'react'
-import { BasicCompletionType, MessageType } from 'types/portalTypes'
 import useSound from 'use-sound'
 import { useAuth } from 'util/auth'
 import { getFirstName } from 'util/string'
@@ -42,9 +42,9 @@ export const PorcupineChat = () => {
   const [isUnttering, setIsUnttering] = useState<boolean>(false)
   const [isWhisperPrepared, setIsWhisperPrepared] = useState<boolean>(false)
 
-  const [messages, setMessages] = useState<MessageType[]>([
-    getDefaultMessage(getFirstName(auth.user.name) || 'Ra'),
-  ])
+  // const [messages, setMessages] = useState<MessageType[]>([
+  //   getDefaultMessage(getFirstName(auth.user.name) || 'Ra'),
+  // ])
   const [noti, setNoti] = useState<{
     type: keyof (typeof NOTI_MESSAGES)['gpt']
     message: string
@@ -52,7 +52,7 @@ export const PorcupineChat = () => {
   const [porcupineAccessKey, setPorcupineAccessKey] = useState<string>(
     process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY
   )
-  const [query, setQuery] = useState<string>('')
+  // const [query, setQuery] = useState<string>('')
   const [speakingRate, setSpeakingRate] = useState<number>(1)
 
   const {
@@ -75,6 +75,44 @@ export const PorcupineChat = () => {
       },
     })
 
+  const {
+    messages,
+    append,
+    isLoading: isResponding,
+    input,
+    setInput,
+    handleInputChange,
+  } = useChat({
+    api: '/api/openai/stream',
+    initialMessages: [getDefaultMessage(getFirstName(auth.user.name) || 'Ra')],
+    onError: (sendDetectedTranscriptError) => {
+      console.error({ sendDetectedTranscriptError })
+      setIsLoading(false)
+      setIsSending(false)
+      showErrorMessage(NOTI_MESSAGES.gpt.error)
+      startUttering(NOTI_MESSAGES.gpt.error)
+    },
+    onFinish: (message) => {
+      if (message.role === 'assistant' && message.content) {
+        startUttering(message.content)
+      }
+      transcript.blob = undefined
+      setIsLoading(false)
+      setIsSending(false)
+    },
+    // onResponse: async (response) => {
+    //   let dataJson = await response.json()
+    //   console.log({ dataJson })
+    //   if (dataJson.error) {
+    //     setIsLoading(false)
+    //     setIsSending(false)
+    //     showErrorMessage(NOTI_MESSAGES.gpt.error)
+    //     startUttering(NOTI_MESSAGES.gpt.error)
+    //     // return
+    //   }
+    // },
+  })
+
   const submitTranscript = async (text?: string) => {
     console.log('submitTranscript', text)
     if (!text) {
@@ -85,46 +123,54 @@ export const PorcupineChat = () => {
     }
     if (!isLoading) setIsLoading(true)
     setIsSending(true)
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { message: text, sender: 'human' },
-    ])
+    // setMessages((prevMessages: Message[]) => [
+    //   ...prevMessages,
+    //   { content: text, role: 'user' },
+    // ])
     setNoti(undefined)
-    setQuery('')
+    // setQuery('')
+    setInput('')
 
     try {
-      const data: BasicCompletionType = {
-        messages: [{ message: text, sender: 'human' }],
-        userId: auth.user.id,
-      }
-      console.log({ data })
+      // const data: BasicCompletionType = {
+      //   messages: [{ message: text, sender: 'human' }],
+      //   userId: auth.user.id,
+      // }
+      // console.log({ data })
+      const data: CreateMessage = { content: text, role: 'user' }
 
-      let response = await fetch('/api/openai/basic', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      append(data, {
+        options: {
+          body: auth.user.id ? { userId: auth.user.id } : undefined,
         },
-        body: data ? JSON.stringify(data) : undefined,
       })
-      let dataJson = await response.json()
-      console.log({ dataJson })
 
-      if (dataJson) {
-        if (dataJson.error) {
-          setIsLoading(false)
-          setIsSending(false)
-          showErrorMessage(NOTI_MESSAGES.gpt.error)
-          startUttering(NOTI_MESSAGES.gpt.error)
-          return
-        }
+      // let response = await fetch('/api/openai/basic', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: data ? JSON.stringify(data) : undefined,
+      // })
+      // let dataJson = await response.json()
+      // console.log({ dataJson })
 
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { message: dataJson.response.text, sender: 'AI' },
-        ])
+      // if (dataJson) {
+      //   if (dataJson.error) {
+      //     setIsLoading(false)
+      //     setIsSending(false)
+      //     showErrorMessage(NOTI_MESSAGES.gpt.error)
+      //     startUttering(NOTI_MESSAGES.gpt.error)
+      //     return
+      //   }
 
-        startUttering(dataJson.response.text)
-      }
+      //   setMessages((prevMessages) => [
+      //     ...prevMessages,
+      //     { message: dataJson.response.text, sender: 'AI' },
+      // //   ])
+
+      //   startUttering(dataJson.response.text)
+      // }
       return
     } catch (sendDetectedTranscriptError) {
       console.error({ sendDetectedTranscriptError })
@@ -240,27 +286,27 @@ export const PorcupineChat = () => {
     }
   }, [recording, isSending, isWhisperPrepared, transcript])
 
-  useEffect(() => {
-    if (isSending) {
-      notiTimeoutRef.current = setTimeout(() => {
-        setNoti({ type: 'loading', message: NOTI_MESSAGES.gpt.loading })
-        startUttering(NOTI_MESSAGES.gpt.loading)
-        clearTimeout(notiTimeoutRef.current)
-        notiIntervalRef.current = setInterval(() => {
-          startUttering(NOTI_MESSAGES.gpt.loading)
-        }, 1_000 * 10)
-      }, 1_000 * 5)
-    } else {
-      if (notiTimeoutRef.current) {
-        clearTimeout(notiTimeoutRef.current)
-        notiTimeoutRef.current = undefined
-      }
-      if (notiIntervalRef.current) {
-        clearInterval(notiIntervalRef.current)
-        notiIntervalRef.current = undefined
-      }
-    }
-  }, [isSending])
+  // useEffect(() => {
+  //   if (isSending) {
+  //     notiTimeoutRef.current = setTimeout(() => {
+  //       setNoti({ type: 'loading', message: NOTI_MESSAGES.gpt.loading })
+  //       startUttering(NOTI_MESSAGES.gpt.loading)
+  //       clearTimeout(notiTimeoutRef.current)
+  //       notiIntervalRef.current = setInterval(() => {
+  //         startUttering(NOTI_MESSAGES.gpt.loading)
+  //       }, 1_000 * 10)
+  //     }, 1_000 * 5)
+  //   } else {
+  //     if (notiTimeoutRef.current) {
+  //       clearTimeout(notiTimeoutRef.current)
+  //       notiTimeoutRef.current = undefined
+  //     }
+  //     if (notiIntervalRef.current) {
+  //       clearInterval(notiIntervalRef.current)
+  //       notiIntervalRef.current = undefined
+  //     }
+  //   }
+  // }, [isSending])
 
   /**
    * stop useWhisper recorder once auto stop timeout reached
@@ -342,7 +388,7 @@ export const PorcupineChat = () => {
       const lastMessage = messages
         .slice()
         .reverse()
-        .find((message) => message.sender === 'AI')?.message
+        .find((message) => message.role === 'assistant')?.content
       // console.log({ lastMessage })
       if (lastMessage) {
         startUttering(lastMessage)
@@ -483,8 +529,8 @@ export const PorcupineChat = () => {
           {messages.map((message, index) => (
             <ChatMessage
               key={index}
-              message={message.message}
-              sender={message.sender}
+              message={message.content}
+              sender={message.role}
             />
           ))}
         </div>
@@ -517,9 +563,8 @@ export const PorcupineChat = () => {
         isSpeaking={isSpeaking || speaking}
         isRecording={recording}
         isWhisperPrepared={isWhisperPrepared}
-        query={query}
-        onChangeQuery={setQuery}
-        onSetIsLoading={setIsLoading}
+        query={input}
+        onChangeQuery={handleInputChange}
         onStartPorcupine={startPorcupine}
         onStopPorcupine={stopPorcupine}
         onStopRecording={stopRecording}
@@ -537,7 +582,13 @@ const NOTI_MESSAGES = {
   },
 }
 
-const getDefaultMessage = (name: string): MessageType => ({
-  message: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
-  sender: 'AI',
+// const getDefaultMessage = (name: string): MessageType => ({
+//   message: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
+//   sender: 'AI',
+// })
+
+const getDefaultMessage = (name: string): Message => ({
+  content: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
+  role: 'assistant',
+  id: 'initial-message',
 })

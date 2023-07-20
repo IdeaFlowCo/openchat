@@ -8,7 +8,6 @@ export default function PorcupineInput({
   isWhisperPrepared,
   query,
   onChangeQuery,
-  onSetIsLoading,
   onStartPorcupine,
   onStopPorcupine,
   onStopRecording,
@@ -59,7 +58,7 @@ export default function PorcupineInput({
             placeholder="Type your response..."
             value={query}
             autoComplete="off"
-            onChange={(e) => onChangeQuery?.(e.target.value)}
+            onChange={onChangeQuery}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && query) {
                 onSubmitQuery?.(query)
