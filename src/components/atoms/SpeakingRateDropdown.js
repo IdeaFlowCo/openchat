@@ -18,7 +18,7 @@ export default function SpeakingRateDropdown({
           leaveTo="transform opacity-0 scale-95"
         >
           <Menu.Items className="absolute bottom-12 mt-2 w-24 origin-bottom divide-y divide-gray-100 rounded-md bg-white p-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="px-1 py-1 ">
+            <div className="p-1">
               {getSpeakigRates().map(({ label, value }) => (
                 <Menu.Item key={value}>
                   <button

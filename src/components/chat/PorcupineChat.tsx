@@ -17,7 +17,7 @@ import { getFirstName } from 'util/string'
 const END_KEYWORD = BuiltInKeyword.Terminator
 const PORCUPINE_MODEL = { base64: porcupineModelBase64 }
 const START_KEYWORDS = [BuiltInKeyword.Alexa]
-const STOP_TIMEOUT = 60_000 * 5 // 5 minutes
+const STOP_TIMEOUT = 300 // 5 minutes
 const WHISPER_API_ENDPOINT = 'https://api.openai.com/v1/audio/'
 
 export const PorcupineChat = () => {
@@ -36,6 +36,7 @@ export const PorcupineChat = () => {
   const [playPing] = useSound('/sounds/ping.mp3')
   const [playSonar] = useSound('/sounds/sonar.mp3')
 
+  const [isAutoStop, setIsAutoStop] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSending, setIsSending] = useState<boolean>(false)
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
@@ -53,6 +54,7 @@ export const PorcupineChat = () => {
     process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY
   )
   // const [query, setQuery] = useState<string>('')
+  const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
   const [speakingRate, setSpeakingRate] = useState<number>(1)
 
   const {
@@ -90,7 +92,6 @@ export const PorcupineChat = () => {
       setIsLoading(false)
       setIsSending(false)
       showErrorMessage(NOTI_MESSAGES.gpt.error)
-      startUttering(NOTI_MESSAGES.gpt.error)
     },
     onFinish: (message) => {
       if (message.role === 'assistant' && message.content) {
@@ -177,7 +178,6 @@ export const PorcupineChat = () => {
       setIsLoading(false)
       setIsSending(false)
       showErrorMessage(NOTI_MESSAGES.gpt.error)
-      startUttering(NOTI_MESSAGES.gpt.error)
       return
     }
   }
@@ -328,7 +328,9 @@ export const PorcupineChat = () => {
         // start keyword detected
         startKeywordDetection.current = keywordDetection
         // start auto stop timeout
-        autoStopRef.current = setTimeout(onAutoStop, STOP_TIMEOUT)
+        if (isAutoStop) {
+          autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000)
+        }
         stopUttering() // stop utterance if it is speaking
         playPing() // play start keyword detection sound
         startRecording() // start useWhisper recorder
@@ -341,15 +343,17 @@ export const PorcupineChat = () => {
         // stop keyword detected
         startKeywordDetection.current = undefined
         // stop auto stop timeout
-        clearTimeout(autoStopRef.current)
-        autoStopRef.current = undefined
+        if (isAutoStop) {
+          clearTimeout(autoStopRef.current)
+          autoStopRef.current = undefined
+        }
         stopUttering() // stop untterance if it is speaking
         playSonar() // play stop keyword detection sound
         setIsLoading(true)
         stopRecording() // stop useWhisper recorder
       }
     }
-  }, [keywordDetection])
+  }, [autoStopTimeout, isAutoStop, keywordDetection])
 
   const stopUttering = () => {
     if (window.speechSynthesis.speaking) {
@@ -482,6 +486,7 @@ export const PorcupineChat = () => {
 
   const showErrorMessage = (message: string) => {
     setNoti({ type: 'error', message })
+    startUttering(message)
   }
 
   useEffect(() => {
@@ -511,6 +516,7 @@ export const PorcupineChat = () => {
       }
       releaseHark()
       if (speechRef.current) {
+        stopUttering()
         speechRef.current.removeEventListener('start', onStartUttering)
         speechRef.current.removeEventListener('end', onStopUttering)
       }
@@ -536,10 +542,14 @@ export const PorcupineChat = () => {
         </div>
       </div>
       <PorcupinePill
+        autoStopTimeout={autoStopTimeout}
+        isAutoStop={isAutoStop}
         isUnttering={isUnttering}
         speakingRate={speakingRate}
+        onChangeAutoStopTimeout={setAutoStopTimeout}
+        onChangeIsAutoStop={setIsAutoStop}
         onChangeSpeakingRate={setSpeakingRate}
-        onClickSetting={() => {
+        onChangePorcupineAccessKey={() => {
           let accessKey = prompt('Please enter Porcupine access key', '')
           if (accessKey) {
             setPorcupineAccessKey(accessKey)
