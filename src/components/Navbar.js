@@ -70,7 +70,7 @@ export default function Navbar() {
                             {item.name}
                         </a>
                     ))} */}
-                    <Link href="/about">
+                    <Link href="/about" legacyBehavior>
                         <button className="text-sm font-semibold leading-6 text-gray-900">
                             About
                         </button>
@@ -90,14 +90,14 @@ export default function Navbar() {
                         </button>
                     </Link> */}
                     {/* )} */}
-                    <Link href="/chat">
+                    <Link href="/chat" legacyBehavior>
                         <button className="text-sm font-semibold leading-6 text-gray-900">
                             Chat
                         </button>
                     </Link>
                     {auth.user && (
                         <>
-                            <Link href="/settings/general">
+                            <Link href="/settings/general" legacyBehavior>
                                 <button className="text-sm font-semibold leading-6 text-gray-900">
                                     Settings
                                 </button>
@@ -113,13 +113,13 @@ export default function Navbar() {
                         Log in <span aria-hidden="true">&rarr;</span>
                     </a> */}
                     {!auth.user ? (
-                        <Link href="/auth/signin">
+                        <Link href="/auth/signin" legacyBehavior>
                             <button className="text-sm font-semibold leading-6 text-gray-900">
                                 Sign in <span aria-hidden="true">&rarr;</span>
                             </button>
                         </Link>
                     ) : (
-                        <Link href="/auth/signout">
+                        <Link href="/auth/signout" legacyBehavior>
                             <button
                                 className="text-sm font-semibold leading-6 text-gray-900"
                                 onClick={(e) => {
@@ -161,7 +161,7 @@ export default function Navbar() {
                     <div className="mt-6 flow-root">
                         <div className="-my-6 divide-y divide-gray-500/10">
                             <div className="space-y-2 py-6">
-                                <Link href="/about">
+                                <Link href="/about" legacyBehavior>
                                     <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                                         About
                                     </button>
@@ -199,14 +199,14 @@ export default function Navbar() {
                                     </button>
                                 </Link> */}
                                 {/* )} */}
-                                <Link href="/chat">
+                                <Link href="/chat" legacyBehavior>
                                     <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                                         Chat
                                     </button>
                                 </Link>
                                 {auth.user && (
                                     <>
-                                        <Link href="/settings/general">
+                                        <Link href="/settings/general" legacyBehavior>
                                             <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                                                 Settings
                                             </button>
@@ -216,13 +216,13 @@ export default function Navbar() {
                             </div>
                             <div className="py-6">
                                 {!auth.user ? (
-                                    <Link href="/auth/signin">
+                                    <Link href="/auth/signin" legacyBehavior>
                                         <button className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                                             Sign in
                                         </button>
                                     </Link>
                                 ) : (
-                                    <Link href="/auth/signout">
+                                    <Link href="/auth/signout" legacyBehavior>
                                         <button
                                             className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                             onClick={(e) => {

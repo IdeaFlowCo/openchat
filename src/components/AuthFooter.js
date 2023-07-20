@@ -9,33 +9,33 @@ function AuthFooter(props) {
           {props.showAgreement && (
             <div className="mb-3">
               By signing up, you are agreeing to our{" "}
-              <Link href={props.termsPath}>
-                <a className="text-indigo-600">Terms of Service</a>
+              <Link href={props.termsPath} className="text-indigo-600">
+                Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href={props.privacyPolicyPath}>
-                <a className="text-indigo-600">Privacy Policy</a>
+              <Link href={props.privacyPolicyPath} className="text-indigo-600">
+                Privacy Policy
               </Link>
               .
             </div>
           )}
 
           {props.signinText}
-          <Link href={props.signinPath}>
-            <a className="ml-3 text-indigo-600">{props.signinAction}</a>
+          <Link href={props.signinPath} className="ml-3 text-indigo-600">
+            {props.signinAction}
           </Link>
         </>
       )}
 
       {props.type === "signin" && (
         <>
-          <Link href={props.signupPath}>
-            <a className="text-indigo-600">{props.signupAction}</a>
+          <Link href={props.signupPath} className="text-indigo-600">
+            {props.signupAction}
           </Link>
 
           {props.forgotPassAction && (
-            <Link href={props.forgotPassPath}>
-              <a className="ml-4 text-indigo-600">{props.forgotPassAction}</a>
+            <Link href={props.forgotPassPath} className="ml-4 text-indigo-600">
+              {props.forgotPassAction}
             </Link>
           )}
         </>
@@ -44,8 +44,8 @@ function AuthFooter(props) {
       {props.type === "forgotpass" && (
         <>
           {props.signinText}
-          <Link href={props.signinPath}>
-            <a className="ml-3 text-indigo-600">{props.signinAction}</a>
+          <Link href={props.signinPath} className="ml-3 text-indigo-600">
+            {props.signinAction}
           </Link>
         </>
       )}

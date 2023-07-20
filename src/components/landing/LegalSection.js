@@ -23,34 +23,34 @@ function LegalSection(props) {
     return (
         <section className="py-10 px-4 z-100">
             <div className="flex justify-center space-x-5">
-                <Link href="/legal/terms-of-service">
-                    <a
-                        className={
-                            "" +
-                            (section === "terms-of-service" ? " underline" : "")
-                        }
-                    >
+                <Link
+                    href="/legal/terms-of-service"
+                    className={
+                        "" +
+                        (section === "terms-of-service" ? " underline" : "")
+                    }>
+                    
                         Terms of Service
-                    </a>
+                    
                 </Link>
-                <Link href="/legal/privacy-policy">
-                    <a
-                        className={
-                            "" +
-                            (section === "privacy-policy" ? " underline" : "")
-                        }
-                    >
+                <Link
+                    href="/legal/privacy-policy"
+                    className={
+                        "" +
+                        (section === "privacy-policy" ? " underline" : "")
+                    }>
+                    
                         Privacy Policy
-                    </a>
+                    
                 </Link>
-                <Link href="/legal/claims">
-                    <a
-                        className={
-                            "" + (section === "claims" ? " underline" : "")
-                        }
-                    >
+                <Link
+                    href="/legal/claims"
+                    className={
+                        "" + (section === "claims" ? " underline" : "")
+                    }>
+                    
                         Claims
-                    </a>
+                    
                 </Link>
             </div>
             <div className="container mx-auto mt-12">

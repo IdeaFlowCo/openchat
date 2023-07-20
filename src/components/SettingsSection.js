@@ -57,15 +57,19 @@ function SettingsSection(props) {
       )}
 
       <div className="flex justify-center space-x-5">
-        <Link href="/settings/general">
-          <a className={"" + (section === "general" ? " underline" : "")}>
+        <Link
+          href="/settings/general"
+          className={"" + (section === "general" ? " underline" : "")}>
+          
             General
-          </a>
+          
         </Link>
-        <Link href="/settings/password">
-          <a className={"" + (section === "password" ? " underline" : "")}>
+        <Link
+          href="/settings/password"
+          className={"" + (section === "password" ? " underline" : "")}>
+          
             Password
-          </a>
+          
         </Link>
         {/* <Link href="/settings/billing">
           <a className={"" + (section === "billing" ? " underline" : "")}>

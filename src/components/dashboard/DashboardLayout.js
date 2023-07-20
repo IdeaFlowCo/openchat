@@ -60,7 +60,7 @@ export default function DashboardLayout({
                     <Dialog
                         as="div"
                         className="relative z-50
-                         lg:hidden"
+                        lg:hidden"
                         onClose={setSidebarOpen}
                     >
                         <Transition.Child
@@ -144,7 +144,7 @@ export default function DashboardLayout({
                                                                         href={
                                                                             item.href
                                                                         }
-                                                                    >
+                                                                        legacyBehavior>
                                                                         <div
                                                                             className={classNames(
                                                                                 item.name ===
@@ -223,7 +223,7 @@ export default function DashboardLayout({
                                                     </ul>
                                                 </li> */}
                                                 <li className="mt-auto">
-                                                    <Link href="/settings/general">
+                                                    <Link href="/settings/general" legacyBehavior>
                                                         <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                                             <Cog6ToothIcon
                                                                 className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
@@ -263,7 +263,7 @@ export default function DashboardLayout({
                                     <ul role="list" className="-mx-2 space-y-1">
                                         {navigation.map((item) => (
                                             <li key={item.name}>
-                                                <Link href={item.href}>
+                                                <Link href={item.href} legacyBehavior>
                                                     <div
                                                         className={classNames(
                                                             item.name ===
@@ -329,7 +329,7 @@ export default function DashboardLayout({
                                     </ul>
                                 </li> */}
                                 <li className="mt-auto">
-                                    <Link href="/settings/general">
+                                    <Link href="/settings/general" legacyBehavior>
                                         <div className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
                                             <Cog6ToothIcon
                                                 className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
@@ -477,7 +477,7 @@ export default function DashboardLayout({
                                             ))} */}
                                             <Menu.Item key="settings">
                                                 {({ active }) => (
-                                                    <Link href="/settings/general">
+                                                    <Link href="/settings/general" legacyBehavior>
                                                         <button
                                                             className={classNames(
                                                                 active
@@ -493,7 +493,7 @@ export default function DashboardLayout({
                                             </Menu.Item>
                                             <Menu.Item key="signout">
                                                 {({ active }) => (
-                                                    <Link href="/auth/signout">
+                                                    <Link href="/auth/signout" legacyBehavior>
                                                         <button
                                                             className={classNames(
                                                                 active

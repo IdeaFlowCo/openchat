@@ -35,7 +35,7 @@ export default function PortalSettingsLayout({
                     <ul role="list" className="-mx-2 space-y-1">
                         {desktopSidebarNav.map((item) => (
                             <li key={item.name}>
-                                <Link href={item.href}>
+                                <Link href={item.href} legacyBehavior>
                                     <button
                                         className={classNames(
                                             item.name === currentPage

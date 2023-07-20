@@ -217,9 +217,7 @@ function EditDeepformModal({ id, onDone, host }) {
                                             {!isCreate && (
                                                 <>
                                                     <div className="w-fit flex gap-2 justify-center items-center">
-                                                        <Link
-                                                            href={`/form/${id}`}
-                                                        >
+                                                        <Link href={`/form/${id}`} legacyBehavior>
                                                             <button
                                                                 className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
 

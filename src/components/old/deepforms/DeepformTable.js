@@ -40,7 +40,7 @@ function DeepformTable({ host }) {
             toast((t) => (
                 <span className="flex gap-2">
                     Upgrade to Pro or Business to create more Deepforms.{" "}
-                    <Link href="/pricing">
+                    <Link href="/pricing" legacyBehavior>
                         <button
                             onClick={() => toast.dismiss(t.id)}
                             className=" inline-flex justify-center self-end py-2 px-4 w-fit text-sm font-medium rounded-md bg-indigo-600 hover:bg-indigo-500 text-white border border-gray-300"

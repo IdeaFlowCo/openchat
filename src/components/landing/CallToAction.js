@@ -36,12 +36,12 @@ function CallToAction() {
                             The chat app where disparate ideas connect.
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
-                            <Link href="/pricing">
+                            <Link href="/pricing" legacyBehavior>
                                 <button className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                                     Get started for free
                                 </button>
                             </Link>
-                            <Link href="/about">
+                            <Link href="/about" legacyBehavior>
                                 <button className="text-sm font-semibold leading-6 text-white">
                                     Contact Us <span aria-hidden="true">→</span>
                                 </button>
