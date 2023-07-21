@@ -44,7 +44,7 @@ export default function PorcupineInput({
   }, [isSpeaking])
 
   return (
-    <div className="mt-4 flex w-screen justify-center py-4">
+    <div className="flex w-screen justify-center py-4">
       <div className="flex items-center justify-center px-2">
         <div className="relative flex flex-1 flex-row items-center rounded-full bg-[#f4f7fb] shadow-sm">
           <label htmlFor="chat" className="sr-only">

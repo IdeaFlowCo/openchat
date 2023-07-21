@@ -16,8 +16,9 @@ import { getFirstName } from 'util/string'
 
 const END_KEYWORD = BuiltInKeyword.Terminator
 const PORCUPINE_MODEL = { base64: porcupineModelBase64 }
+const PORCUPINE_STORAGE_KEY = 'porcupine-access-key'
 const START_KEYWORDS = [BuiltInKeyword.Alexa]
-const STOP_TIMEOUT = 300 // 5 minutes
+const STOP_TIMEOUT = 5 // 5 seconds
 const WHISPER_API_ENDPOINT = 'https://api.openai.com/v1/audio/'
 
 export const PorcupineChat = () => {
@@ -51,7 +52,8 @@ export const PorcupineChat = () => {
     message: string
   }>()
   const [porcupineAccessKey, setPorcupineAccessKey] = useState<string>(
-    process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY
+    localStorage.getItem(PORCUPINE_STORAGE_KEY) ??
+      process.env.NEXT_PUBLIC_PORCUPINE_ACCESS_KEY
   )
   // const [query, setQuery] = useState<string>('')
   const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
@@ -113,6 +115,14 @@ export const PorcupineChat = () => {
     //   }
     // },
   })
+
+  const changePorcupineAccessKey = async () => {
+    let accessKey = prompt('Please enter Porcupine access key', '')
+    if (accessKey) {
+      setPorcupineAccessKey(accessKey)
+      localStorage.setItem(PORCUPINE_STORAGE_KEY, accessKey)
+    }
+  }
 
   const submitTranscript = async (text?: string) => {
     console.log('submitTranscript', text)
@@ -308,13 +318,19 @@ export const PorcupineChat = () => {
   //   }
   // }, [isSending])
 
+  const clearAutoStopTimeout = () => {
+    if (autoStopRef.current) {
+      clearTimeout(autoStopRef.current)
+      autoStopRef.current = undefined
+    }
+  }
+
   /**
    * stop useWhisper recorder once auto stop timeout reached
    */
   const onAutoStop = async () => {
     // console.log('onAutoStop')
-    clearTimeout(autoStopRef.current)
-    autoStopRef.current = undefined
+    clearAutoStopTimeout()
     stopUttering()
     playSonar()
     setIsLoading(true)
@@ -328,7 +344,7 @@ export const PorcupineChat = () => {
         // start keyword detected
         startKeywordDetection.current = keywordDetection
         // start auto stop timeout
-        if (isAutoStop) {
+        if (isAutoStop && !isSpeaking) {
           autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000)
         }
         stopUttering() // stop utterance if it is speaking
@@ -344,8 +360,7 @@ export const PorcupineChat = () => {
         startKeywordDetection.current = undefined
         // stop auto stop timeout
         if (isAutoStop) {
-          clearTimeout(autoStopRef.current)
-          autoStopRef.current = undefined
+          clearAutoStopTimeout()
         }
         stopUttering() // stop untterance if it is speaking
         playSonar() // play stop keyword detection sound
@@ -353,7 +368,7 @@ export const PorcupineChat = () => {
         stopRecording() // stop useWhisper recorder
       }
     }
-  }, [autoStopTimeout, isAutoStop, keywordDetection])
+  }, [autoStopTimeout, isAutoStop, isSpeaking, keywordDetection])
 
   const stopUttering = () => {
     if (window.speechSynthesis.speaking) {
@@ -416,6 +431,7 @@ export const PorcupineChat = () => {
 
   const onStartSpeaking = () => {
     setIsSpeaking(true)
+    clearAutoStopTimeout()
   }
 
   const onStopSpeaking = () => {
@@ -467,10 +483,11 @@ export const PorcupineChat = () => {
       audio: true,
     })
     // console.log({ stream: stream.current })
-    if (!harkRef.current) {
+    if (!harkRef.current && streamRef.current) {
       const { default: harkjs } = await import('hark')
       harkRef.current = harkjs(streamRef.current, {
         interval: 100,
+        threshold: -60,
         play: false,
       })
       harkRef.current.on('speaking', onStartSpeaking)
@@ -505,10 +522,7 @@ export const PorcupineChat = () => {
     // release resource on component unmount
     return () => {
       // clear auto stop timeout instance
-      if (autoStopRef.current) {
-        clearTimeout(autoStopRef.current)
-        autoStopRef.current = undefined
-      }
+      clearAutoStopTimeout()
       // flush out lamejs
       if (encoderRef.current) {
         encoderRef.current.flush()
@@ -549,12 +563,7 @@ export const PorcupineChat = () => {
         onChangeAutoStopTimeout={setAutoStopTimeout}
         onChangeIsAutoStop={setIsAutoStop}
         onChangeSpeakingRate={setSpeakingRate}
-        onChangePorcupineAccessKey={() => {
-          let accessKey = prompt('Please enter Porcupine access key', '')
-          if (accessKey) {
-            setPorcupineAccessKey(accessKey)
-          }
-        }}
+        onChangePorcupineAccessKey={changePorcupineAccessKey}
         onToggleUnttering={toggleUnttering}
       />
       {noti ? (

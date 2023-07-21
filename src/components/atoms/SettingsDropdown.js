@@ -1,5 +1,6 @@
-import { Menu, Switch, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Switch, Popover, Transition } from '@headlessui/react'
+import { Fragment, useState } from 'react'
+import { usePopper } from 'react-popper'
 
 export default function SettingsDropdown({
   autoStopTimeout,
@@ -8,35 +9,45 @@ export default function SettingsDropdown({
   onChangeIsAutoStop,
   onChangePorcupineAccessKey,
 }) {
+  let [referenceElement, setReferenceElement] = useState()
+  let [popperElement, setPopperElement] = useState()
+  let { styles, attributes } = usePopper(referenceElement, popperElement)
+
   const increment = () => {
     onChangeAutoStopTimeout(autoStopTimeout + 1)
   }
 
   const decrement = () => {
     if (autoStopTimeout > 0) {
-      onChangeAutoStopTimeout(autoStopTimeout + 1)
+      onChangeAutoStopTimeout(autoStopTimeout - 1)
     }
   }
 
   return (
-    <div className="text-right">
-      <Menu as="div" className="relative inline-block text-left">
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
+    <Popover className="relative">
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-200"
+        enterFrom="opacity-0 translate-y-1"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-150"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 translate-y-1"
+      >
+        <Popover.Panel
+          ref={setPopperElement}
+          className="absolute z-10 my-4 w-screen max-w-sm px-4 sm:px-0"
+          style={styles.popper}
+          {...attributes.popper}
         >
-          <Menu.Items className="absolute bottom-12 mt-2 min-w-[300px] origin-bottom divide-y divide-gray-100 rounded-md bg-white p-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="p-1 mb-2">
-              <Menu.Item>
-                <button onClick={onChangePorcupineAccessKey} className="flex w-full flex-col items-center rounded-md px-2 py-2 text-sm hover:bg-[#96BE64] hover:text-white">
-                  Change Porcupine Access Key
-                </button>
-              </Menu.Item>
+          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+            <div className="border-b border-gray-200 p-2">
+              <button
+                onClick={onChangePorcupineAccessKey}
+                className="flex w-full flex-col items-center rounded-md px-2 py-3 text-sm hover:bg-[#96BE64] hover:text-white"
+              >
+                Change Porcupine Access Key
+              </button>
             </div>
             <div className="flex flex-col p-4">
               <div className="mb-2 flex flex-row items-center">
@@ -54,36 +65,34 @@ export default function SettingsDropdown({
                     } inline-block h-4 w-4 transform rounded-full bg-white transition`}
                   />
                 </Switch>
-                <Menu.Item disabled>
-                  <div className="flex flex-row items-center">
-                    <button
-                      className={`group flex flex-row items-center px-2 py-2 text-sm text-gray-900`}
-                      onClick={() => onChangeIsAutoStop?.(!isAutoStop)}
-                    >
-                      Automatic respond
-                    </button>
-                  </div>
-                </Menu.Item>
+                <div className="flex flex-row items-center">
+                  <button
+                    className={`group flex flex-row items-center px-2 py-2 text-sm text-gray-900`}
+                    onClick={() => onChangeIsAutoStop?.(!isAutoStop)}
+                  >
+                    Automatic respond
+                  </button>
+                </div>
               </div>
               <div class="custom-number-input w-full text-right">
                 <div class="relative flex h-10 w-full flex-row items-center overflow-hidden rounded-lg border bg-transparent">
                   <button
                     data-action="decrement"
-                    class=" h-full w-20 cursor-pointer rounded-l  outline-none "
+                    class="h-full w-20 cursor-pointer rounded-l border-r border-r-gray-200 outline-none hover:bg-[#96BE64] hover:text-white"
                     onClick={decrement}
                   >
-                    <span class="m-auto text-2xl font-thin">−</span>
+                    <span class="m-auto text-2xl font-thin">&minus;</span>
                   </button>
                   <input
                     type="number"
-                    class="text-md md:text-basecursor-default flex h-9 w-full items-center border-none font-semibold text-gray-700  outline-none outline-none hover:text-black focus:text-black  focus:outline-none"
+                    class="text-md md:text-basecursor-default mr-[1px] flex h-9 w-full items-center border-none font-semibold text-gray-700 outline-none hover:text-black focus:text-black focus:outline-none"
                     name="custom-input-number"
                     value={autoStopTimeout}
                     onChange={(e) => onChangeAutoStopTimeout?.(e.target.value)}
                   />
                   <button
                     data-action="increment"
-                    class="h-full w-20 cursor-pointer rounded-r  "
+                    class="h-full w-20 cursor-pointer rounded-r border-l border-l-gray-200 hover:bg-[#96BE64] hover:text-white"
                     onClick={increment}
                   >
                     <span class="m-auto text-2xl font-thin">+</span>
@@ -94,15 +103,16 @@ export default function SettingsDropdown({
                 </label>
               </div>
             </div>
-          </Menu.Items>
-        </Transition>
-        <div className="min-w-[64px]">
-          <Menu.Button className="inline-flex w-full justify-center rounded-md bg-opacity-20 px-4 py-2 text-sm font-medium text-black hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-            <SettingIcon className="h6 w-6" />
-          </Menu.Button>
-        </div>
-      </Menu>
-    </div>
+          </div>
+        </Popover.Panel>
+      </Transition>
+      <Popover.Button
+        ref={setReferenceElement}
+        className="inline-flex w-full justify-center rounded-md bg-opacity-20 px-4 py-2 text-sm font-medium text-black hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+      >
+        <SettingIcon className="h6 w-6" />
+      </Popover.Button>
+    </Popover>
   )
 }
 
@@ -114,7 +124,6 @@ function toHoursAndMinutes(totalSeconds) {
   const minutes = totalMinutes % 60
 
   return `${hours}h ${minutes}m ${seconds}s`
-  // return { h: hours, m: minutes, s: seconds };
 }
 
 const SettingIcon = (props) => {
