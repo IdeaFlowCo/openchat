@@ -4,6 +4,7 @@ import { BuiltInKeyword, PorcupineDetection } from '@picovoice/porcupine-web'
 import { useChat, type CreateMessage, type Message } from 'ai/react'
 import porcupineModelBase64 from 'assets/porcupine_params'
 import { type RawAxiosRequestHeaders } from 'axios'
+import Alert from 'components/atoms/Alert'
 import ChatMessage from 'components/atoms/ChatMessage'
 import PorcupineInput from 'components/atoms/PorcupineInput'
 import PorcupinePill from 'components/atoms/PorcupinePill'
@@ -17,8 +18,18 @@ import { getFirstName } from 'util/string'
 const END_KEYWORD = BuiltInKeyword.Terminator
 const PORCUPINE_MODEL = { base64: porcupineModelBase64 }
 const PORCUPINE_STORAGE_KEY = 'porcupine-access-key'
-const START_KEYWORDS = [BuiltInKeyword.Alexa]
+const START_KEYWORD = BuiltInKeyword.Alexa
 const STOP_TIMEOUT = 5 // 5 seconds
+const VOICE_COMMANDS = [
+  {
+    command: 'off-auto-stop',
+    matcher: 'turn off automatic response',
+  },
+  {
+    command: 'on-auto-stop',
+    matcher: 'turn on automatic response',
+  },
+] as const
 const WHISPER_API_ENDPOINT = 'https://api.openai.com/v1/audio/'
 
 export const PorcupineChat = () => {
@@ -48,7 +59,7 @@ export const PorcupineChat = () => {
   //   getDefaultMessage(getFirstName(auth.user.name) || 'Ra'),
   // ])
   const [noti, setNoti] = useState<{
-    type: keyof (typeof NOTI_MESSAGES)['gpt']
+    type: 'error' | 'success'
     message: string
   }>()
   const [porcupineAccessKey, setPorcupineAccessKey] = useState<string>(
@@ -249,6 +260,42 @@ export const PorcupineChat = () => {
     return { text }
   }
 
+  const checkIsVoiceCommand = (
+    text: string
+  ): typeof VOICE_COMMANDS[number] | undefined => {
+    let result = undefined
+    VOICE_COMMANDS.forEach((voiceCommand) => {
+      console.log('checkIsVoiceCommand', {
+        text: text.toLocaleLowerCase(),
+        matcher: voiceCommand.matcher.toLocaleLowerCase(),
+      })
+      if (text.toLocaleLowerCase().includes(voiceCommand.matcher.toLocaleLowerCase())) {
+        console.log('is true')
+        result = voiceCommand
+      }
+    })
+    return result
+  }
+
+  const runVoiceCommand = (
+    voiceCommand: typeof VOICE_COMMANDS[number]
+  ) => {
+    switch (voiceCommand.command) {
+      case 'off-auto-stop':
+        console.log('turn off auto response!')
+        setIsAutoStop(false)
+        break
+      case 'on-auto-stop':
+        console.log('turn on auto response!')
+        setIsAutoStop(true)
+        break
+      default:
+    }
+    transcript.blob = undefined
+    setIsLoading(false)
+    showSuccessMessage(voiceCommand.matcher)
+  }
+
   const onTranscribe = async () => {
     const transcribed = await transcribeAudio(transcript.blob)
     // console.log({ transcribed })
@@ -258,15 +305,33 @@ export const PorcupineChat = () => {
       return
     }
     let text = transcribed.text.slice()
-    const lowerCaseText = transcribed.text.toLocaleLowerCase()
-    if (lowerCaseText.includes(BuiltInKeyword.Terminator.toLocaleLowerCase())) {
+    const lowerCaseText = transcribed.text.slice().toLocaleLowerCase()
+    if (lowerCaseText.includes(START_KEYWORD.toLocaleLowerCase())) {
+      // cutout start keyword from transcribed text
+      text = text.substring(
+        lowerCaseText.indexOf(
+          START_KEYWORD.toLocaleLowerCase() + START_KEYWORD.length + 1
+        )
+      )
+      // cutout any punctuations
+      if (text.startsWith(',') || text.startsWith('!')) {
+        text = text.substring(1)
+      }
+    }
+    if (lowerCaseText.includes(END_KEYWORD.toLocaleLowerCase())) {
       // cutout end keyword from transcribed text
       text = text.substring(
         0,
-        lowerCaseText.lastIndexOf(
-          BuiltInKeyword.Terminator.toLocaleLowerCase()
-        ) - 1
+        lowerCaseText.lastIndexOf(END_KEYWORD.toLocaleLowerCase()) - 1
       )
+    }
+    text = text.trim()
+    const voiceCommand = checkIsVoiceCommand(text)
+    console.log({ voiceCommand })
+    if (voiceCommand) {
+      console.log('run command')
+      runVoiceCommand(voiceCommand)
+      return
     }
     // console.log({ text })
     // submit transcribed text to ChatGPT-4
@@ -370,14 +435,14 @@ export const PorcupineChat = () => {
   useEffect(() => {
     if (keywordDetection !== null) {
       // console.log({ keywordDetection })
-      if (keywordDetection.label === BuiltInKeyword.Alexa) {
+      if (keywordDetection.label === START_KEYWORD) {
         // start keyword detected
         onStartKeywordDetected()
       }
       if (
         startKeywordDetection.current &&
         keywordDetection.index > startKeywordDetection.current.index &&
-        keywordDetection.label === BuiltInKeyword.Terminator
+        keywordDetection.label === END_KEYWORD
       ) {
         // stop keyword detected
         onEndKeywordDetected()
@@ -522,6 +587,10 @@ export const PorcupineChat = () => {
     startUttering(message)
   }
 
+  const showSuccessMessage = (message: string) => {
+    setNoti({ type: 'success', message })
+  }
+
   useEffect(() => {
     if (porcupineError) {
       console.warn({ porcupineError })
@@ -531,7 +600,7 @@ export const PorcupineChat = () => {
 
   useEffect(() => {
     // initialize porcupine
-    init(porcupineAccessKey, [...START_KEYWORDS, END_KEYWORD], PORCUPINE_MODEL)
+    init(porcupineAccessKey, [START_KEYWORD, END_KEYWORD], PORCUPINE_MODEL)
   }, [porcupineAccessKey])
 
   useEffect(() => {
@@ -583,14 +652,11 @@ export const PorcupineChat = () => {
         onToggleUnttering={toggleUnttering}
       />
       {noti ? (
-        <p
-          onClick={() => setNoti(undefined)}
-          className={`mt-2 text-center text-sm ${
-            noti.type === 'error' ? 'text-red-500' : 'text-gray-500'
-          }`}
-        >
-          {noti.message}
-        </p>
+        <Alert
+          message={noti.message}
+          type={noti.type}
+          onClose={() => setNoti(undefined)}
+        />
       ) : null}
       <PorcupineInput
         isListening={isListening}
@@ -624,7 +690,7 @@ const NOTI_MESSAGES = {
 // })
 
 const getDefaultMessage = (name: string): Message => ({
-  content: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
+  content: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORD}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
   role: 'assistant',
   id: 'initial-message',
 })
