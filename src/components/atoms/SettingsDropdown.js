@@ -40,7 +40,7 @@ export default function SettingsDropdown({
           style={styles.popper}
           {...attributes.popper}
         >
-          <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+          <div className="overflow-hidden bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
             <div className="border-b border-gray-200 p-2">
               <button
                 onClick={onChangePorcupineAccessKey}

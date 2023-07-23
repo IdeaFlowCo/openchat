@@ -8,6 +8,7 @@ export default function PorcupineInput({
   isWhisperPrepared,
   query,
   onChangeQuery,
+  onForceStopRecording,
   onStartPorcupine,
   onStopPorcupine,
   onStopRecording,
@@ -105,16 +106,17 @@ export default function PorcupineInput({
           {isRecording && isWhisperPrepared ? (
             <button
               onClick={async () => {
+                await onForceStopRecording()
                 /**
                  * Start keyword detected
                  * - stop computer utterance
                  * - stop recording
                  * - stop porcupine
                  */
-                onStopUttering?.()
-                await onStopRecording?.()
-                onStopPorcupine?.()
-                onSetIsLoading(true)
+                // onStopUttering?.()
+                // await onStopRecording?.()
+                // onStopPorcupine?.()
+                // onSetIsLoading(true)
               }}
               className="rounded-full border bg-[#96BE64] p-3"
             >

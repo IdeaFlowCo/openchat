@@ -318,23 +318,53 @@ export const PorcupineChat = () => {
   //   }
   // }, [isSending])
 
-  const clearAutoStopTimeout = () => {
+  /**
+   * stop useWhisper recorder once auto stop timeout reached
+   */
+  const onAutoStop = async () => {
+    // console.log('onAutoStop')
+    stopAutoStopTimeout()
+    stopUttering()
+    playSonar()
+    setIsLoading(true)
+    await stopRecording()
+  }
+
+  const startAutoStopTimeout = () => {
+    autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000)
+  }
+
+  const stopAutoStopTimeout = () => {
     if (autoStopRef.current) {
       clearTimeout(autoStopRef.current)
       autoStopRef.current = undefined
     }
   }
 
-  /**
-   * stop useWhisper recorder once auto stop timeout reached
-   */
-  const onAutoStop = async () => {
-    // console.log('onAutoStop')
-    clearAutoStopTimeout()
-    stopUttering()
-    playSonar()
+  useEffect(() => {
+    if (isAutoStop && recording && !isSpeaking) {
+      startAutoStopTimeout()
+    }
+    if (isAutoStop && !recording) {
+      stopAutoStopTimeout()
+    }
+  }, [autoStopTimeout, isAutoStop, recording, isSpeaking])
+
+  const onEndKeywordDetected = async () => {
+    startKeywordDetection.current = undefined
+    // stop auto stop timeout
+    stopUttering() // stop untterance if it is speaking
+    playSonar() // play stop keyword detection sound
     setIsLoading(true)
-    await stopRecording()
+    stopRecording() // stop useWhisper recorder
+  }
+
+  const onStartKeywordDetected = () => {
+    startKeywordDetection.current = keywordDetection
+    // start auto stop timeout
+    stopUttering() // stop utterance if it is speaking
+    playPing() // play start keyword detection sound
+    startRecording() // start useWhisper recorder
   }
 
   useEffect(() => {
@@ -342,14 +372,7 @@ export const PorcupineChat = () => {
       // console.log({ keywordDetection })
       if (keywordDetection.label === BuiltInKeyword.Alexa) {
         // start keyword detected
-        startKeywordDetection.current = keywordDetection
-        // start auto stop timeout
-        if (isAutoStop && !isSpeaking) {
-          autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000)
-        }
-        stopUttering() // stop utterance if it is speaking
-        playPing() // play start keyword detection sound
-        startRecording() // start useWhisper recorder
+        onStartKeywordDetected()
       }
       if (
         startKeywordDetection.current &&
@@ -357,18 +380,10 @@ export const PorcupineChat = () => {
         keywordDetection.label === BuiltInKeyword.Terminator
       ) {
         // stop keyword detected
-        startKeywordDetection.current = undefined
-        // stop auto stop timeout
-        if (isAutoStop) {
-          clearAutoStopTimeout()
-        }
-        stopUttering() // stop untterance if it is speaking
-        playSonar() // play stop keyword detection sound
-        setIsLoading(true)
-        stopRecording() // stop useWhisper recorder
+        onEndKeywordDetected()
       }
     }
-  }, [autoStopTimeout, isAutoStop, isSpeaking, keywordDetection])
+  }, [keywordDetection])
 
   const stopUttering = () => {
     if (window.speechSynthesis.speaking) {
@@ -431,7 +446,7 @@ export const PorcupineChat = () => {
 
   const onStartSpeaking = () => {
     setIsSpeaking(true)
-    clearAutoStopTimeout()
+    stopAutoStopTimeout()
   }
 
   const onStopSpeaking = () => {
@@ -455,6 +470,7 @@ export const PorcupineChat = () => {
       harkRef.current.off('speaking', onStartSpeaking)
       // @ts-ignore
       harkRef.current.off('stopped_speaking', onStopSpeaking)
+      harkRef.current = undefined
     }
     // release audio stream and remove event listeners
     if (streamRef.current) {
@@ -522,7 +538,7 @@ export const PorcupineChat = () => {
     // release resource on component unmount
     return () => {
       // clear auto stop timeout instance
-      clearAutoStopTimeout()
+      stopAutoStopTimeout()
       // flush out lamejs
       if (encoderRef.current) {
         encoderRef.current.flush()
@@ -584,6 +600,7 @@ export const PorcupineChat = () => {
         isWhisperPrepared={isWhisperPrepared}
         query={input}
         onChangeQuery={handleInputChange}
+        onForceStopRecording={onEndKeywordDetected}
         onStartPorcupine={startPorcupine}
         onStopPorcupine={stopPorcupine}
         onStopRecording={stopRecording}
