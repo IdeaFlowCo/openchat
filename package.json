@@ -53,7 +53,8 @@
     "stripe": "8.132.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss": "3.0.23",
-    "use-sound": "^4.0.1"
+    "use-sound": "^4.0.1",
+    "words-to-numbers": "^1.5.1"
   },
   "scripts": {
     "email": "email dev",

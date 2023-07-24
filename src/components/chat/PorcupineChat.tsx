@@ -14,6 +14,8 @@ import { useEffect, useRef, useState } from 'react'
 import useSound from 'use-sound'
 import { useAuth } from 'util/auth'
 import { getFirstName } from 'util/string'
+import wordsToNumbers from 'words-to-numbers'
+import { type VoiceCommand } from 'types/useWhisperTypes'
 
 const END_KEYWORD = BuiltInKeyword.Terminator
 const PORCUPINE_MODEL = { base64: porcupineModelBase64 }
@@ -28,6 +30,10 @@ const VOICE_COMMANDS = [
   {
     command: 'on-auto-stop',
     matcher: 'turn on automatic response',
+  },
+  {
+    command: 'change-auto-stop',
+    matcher: 'change automatic response',
   },
 ] as const
 const WHISPER_API_ENDPOINT = 'https://api.openai.com/v1/audio/'
@@ -260,26 +266,7 @@ export const PorcupineChat = () => {
     return { text }
   }
 
-  const checkIsVoiceCommand = (
-    text: string
-  ): typeof VOICE_COMMANDS[number] | undefined => {
-    let result = undefined
-    VOICE_COMMANDS.forEach((voiceCommand) => {
-      console.log('checkIsVoiceCommand', {
-        text: text.toLocaleLowerCase(),
-        matcher: voiceCommand.matcher.toLocaleLowerCase(),
-      })
-      if (text.toLocaleLowerCase().includes(voiceCommand.matcher.toLocaleLowerCase())) {
-        console.log('is true')
-        result = voiceCommand
-      }
-    })
-    return result
-  }
-
-  const runVoiceCommand = (
-    voiceCommand: typeof VOICE_COMMANDS[number]
-  ) => {
+  const runVoiceCommand = (voiceCommand: VoiceCommand) => {
     switch (voiceCommand.command) {
       case 'off-auto-stop':
         console.log('turn off auto response!')
@@ -289,11 +276,51 @@ export const PorcupineChat = () => {
         console.log('turn on auto response!')
         setIsAutoStop(true)
         break
+      case 'change-auto-stop':
+        console.log('change automatic response time!', {
+          args: voiceCommand.args,
+        })
+        if (voiceCommand.args && typeof voiceCommand.args === 'number') {
+          setAutoStopTimeout(voiceCommand.args)
+        } else {
+          transcript.blob = undefined
+          setIsLoading(false)
+          showErrorMessage('incorrect voice command.')
+        }
+        break
       default:
     }
     transcript.blob = undefined
     setIsLoading(false)
     showSuccessMessage(voiceCommand.matcher)
+  }
+
+  const checkIsVoiceCommand = (text: string): VoiceCommand | undefined => {
+    let result = undefined
+    VOICE_COMMANDS.forEach((voiceCommand) => {
+      console.log('checkIsVoiceCommand', {
+        text: text.toLocaleLowerCase(),
+        matcher: voiceCommand.matcher.toLocaleLowerCase(),
+      })
+      if (
+        text
+          .toLocaleLowerCase()
+          .includes(voiceCommand.matcher.toLocaleLowerCase())
+      ) {
+        if (voiceCommand.command === 'change-auto-stop') {
+          let args = wordsToNumbers(text)
+          if (typeof args === 'string') {
+            args = args.match(/\d+/)[0]
+            args = parseInt(args, 10)
+          }
+          console.log({ args })
+          result = { ...voiceCommand, args }
+        } else {
+          result = voiceCommand
+        }
+      }
+    })
+    return result
   }
 
   const onTranscribe = async () => {
