@@ -627,11 +627,13 @@ export const PorcupineChat = () => {
 
   useEffect(() => {
     // initialize porcupine
-    try {
-      init(porcupineAccessKey, [START_KEYWORD, END_KEYWORD], PORCUPINE_MODEL)
-    } catch (porcupineError) {
+    init(
+      porcupineAccessKey,
+      [START_KEYWORD, END_KEYWORD],
+      PORCUPINE_MODEL
+    ).catch((porcupineError) => {
       console.warn({ porcupineError })
-    }
+    })
   }, [porcupineAccessKey])
 
   useEffect(() => {

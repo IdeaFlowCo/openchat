@@ -1,6 +1,7 @@
 import React from 'react'
 import Meta from 'components/Meta'
 // import StreamingChat from "../components/chat/StreamingChat";
+import ErrorBoundary from '../components/atoms/ErrorBoundary'
 import { requireAuth } from '../util/auth'
 import dynamic from 'next/dynamic'
 
@@ -14,11 +15,11 @@ const PorcupineChat = dynamic(
 
 function ChatPage(props) {
   return (
-    <>
+    <ErrorBoundary fallback={<PorcupineChat />}>
       <Meta title="Chat" description="Chat with GPT" />
       {/* <StreamingChat /> */}
       <PorcupineChat />
-    </>
+    </ErrorBoundary>
   )
 }
 
