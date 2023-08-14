@@ -43,7 +43,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0",
     "react-email": "1.9.3",
-    "react-hook-form": "7.33.0",
+    "react-hook-form": "6.15.1",
     "react-hot-toast": "^2.4.0",
     "react-popper": "^2.3.0",
     "react-query": "^3.39.3",
