@@ -1,13 +1,14 @@
 import React from 'react'
 import Meta from 'components/Meta'
-// import StreamingChat from "../components/chat/StreamingChat";
 import ErrorBoundary from '../components/atoms/ErrorBoundary'
 import { requireAuth } from '../util/auth'
 import dynamic from 'next/dynamic'
 
-const PorcupineChat = dynamic(
+const StreamingChat = dynamic(
   () =>
-    import('../components/chat/PorcupineChat').then((mod) => mod.PorcupineChat),
+    // import('../components/chat/StreamingChat').then((mod) => mod.StreamingChat),
+    // import('../components/chat/PorcupineChat').then((mod) => mod.PorcupineChat),
+    import('../components/chat/GoogleSttChat').then((mod) => mod.GoogleSttChat),
   {
     ssr: false,
   }
@@ -15,10 +16,9 @@ const PorcupineChat = dynamic(
 
 function ChatPage(props) {
   return (
-    <ErrorBoundary fallback={<PorcupineChat />}>
+    <ErrorBoundary fallback={<StreamingChat />}>
       <Meta title="Chat" description="Chat with GPT" />
-      {/* <StreamingChat /> */}
-      <PorcupineChat />
+      <StreamingChat />
     </ErrorBoundary>
   )
 }

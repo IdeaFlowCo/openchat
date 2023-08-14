@@ -8,7 +8,6 @@ export default function PorcupinePill({
   speakingRate = 1,
   onChangeAutoStopTimeout,
   onChangeIsAutoStop,
-  onChangePorcupineAccessKey,
   onChangeSpeakingRate,
   onToggleUnttering,
 }) {
@@ -30,7 +29,6 @@ export default function PorcupinePill({
         isAutoStop={isAutoStop}
         onChangeAutoStopTimeout={onChangeAutoStopTimeout}
         onChangeIsAutoStop={onChangeIsAutoStop}
-        onChangePorcupineAccessKey={onChangePorcupineAccessKey}
       />
     </div>
   )
