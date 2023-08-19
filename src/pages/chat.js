@@ -23,4 +23,6 @@ function ChatPage(props) {
   )
 }
 
-export default requireAuth(ChatPage)
+// TODO: uncomment when supabase work again
+// export default requireAuth(ChatPage)
+export default ChatPage

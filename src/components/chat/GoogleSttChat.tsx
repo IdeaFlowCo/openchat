@@ -49,6 +49,7 @@ export const GoogleSttChat = () => {
   const encoderRef = useRef<Encoder>()
   const endKeywordDetectedRef = useRef<boolean>(false)
   const harkRef = useRef<Harker>()
+  const interimRef = useRef<string>('')
   const processorRef = useRef<any>()
   const sendingDetectedMessageRef = useRef<boolean>(false)
   const socketRef = useRef<Socket>()
@@ -92,7 +93,7 @@ export const GoogleSttChat = () => {
     handleInputChange,
   } = useChat({
     api: '/api/openai/stream',
-    initialMessages: [getDefaultMessage(getFirstName(auth.user.name) || 'Ra')],
+    initialMessages: [getDefaultMessage(getFirstName(auth.user?.name) || 'Ra')],
     onError: (sendDetectedTranscriptError) => {
       console.error({ sendDetectedTranscriptError })
       setIsLoading(false)
@@ -161,56 +162,56 @@ export const GoogleSttChat = () => {
   }
 
   const onSpeechRecognized = async (data: WordRecognized) => {
-    if (!data.isFinal) {
-      if (
-        data.text &&
-        !endKeywordDetectedRef.current &&
-        !sendingDetectedMessageRef.current
-      ) {
-        /**
-         * loop through START_KEYWORDS to find matching text in transcript.text
-         */
-        for (const keyword of START_KEYWORDS) {
-          // check there is matching START_KEYWORD in transcript.text
-          const startIndex = data.text
+    interimRef.current += data.text
+    if (
+      interimRef.current &&
+      !endKeywordDetectedRef.current &&
+      !sendingDetectedMessageRef.current
+    ) {
+      /**
+       * loop through START_KEYWORDS to find matching text in transcript.text
+       */
+      for (const keyword of START_KEYWORDS) {
+        // check there is matching START_KEYWORD in transcript.text
+        const startIndex = interimRef.current
+          .toLocaleLowerCase()
+          .lastIndexOf(keyword.toLocaleLowerCase())
+        if (startIndex !== -1) {
+          console.log('START_KEYWORD DETECTED!')
+          // start listening mode since keyword was detected
+          if (!startKeywordDetectedRef.current) {
+            stopUttering()
+            playPing()
+            await startRecording()
+            startKeywordDetectedRef.current = true
+          }
+          // check if there is matching END_KEYWORD in interimRef.current
+          const endIndex = interimRef.current
             .toLocaleLowerCase()
-            .lastIndexOf(keyword.toLocaleLowerCase())
-          if (startIndex !== -1) {
-            console.log('START_KEYWORD DETECTED!')
-            // start listening mode since keyword was detected
-            if (!startKeywordDetectedRef.current) {
-              stopUttering()
-              playPing()
-              await startRecording()
-              startKeywordDetectedRef.current = true
+            .lastIndexOf(END_KEYWORD.toLocaleLowerCase())
+          if (endIndex !== -1 && endIndex > startIndex) {
+            console.log('END_KEYWORD DETECTED!')
+            // set detected state to true, to avoid sending multiple messages
+            endKeywordDetectedRef.current = true
+            interimRef.current = ''
+            // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
+            let message = interimRef.current.slice()
+            message = message.substring(startIndex + keyword.length, endIndex)
+            // if there are "." or "," or "?" also cut it out
+            if (
+              message.startsWith('.') ||
+              message.startsWith(',') ||
+              message.startsWith('?')
+            ) {
+              message = message.substring(2)
             }
-            // check if there is matching END_KEYWORD in data.text
-            const endIndex = data.text
-              .toLocaleLowerCase()
-              .indexOf(END_KEYWORD.toLocaleLowerCase())
-            if (endIndex !== -1 && endIndex > startIndex) {
-              console.log('END_KEYWORD DETECTED!')
-              // set detected state to true, to avoid sending multiple messages
-              endKeywordDetectedRef.current = true
-              // cut out START_KEYWORD and END_KEYWORD to create message to be sent to ChatGPT
-              let message = data.text.slice()
-              message = message.substring(startIndex + keyword.length, endIndex)
-              // if there are "." or "," or "?" also cut it out
-              if (
-                message.startsWith('.') ||
-                message.startsWith(',') ||
-                message.startsWith('?')
-              ) {
-                message = message.substring(2)
-              }
-              if (!sendingDetectedMessageRef.current) {
-                startKeywordDetectedRef.current = undefined
-                endKeywordDetectedRef.current = undefined
-                stopUttering()
-                playSonar()
-                setIsLoading(true)
-                await stopRecording()
-              }
+            if (!sendingDetectedMessageRef.current) {
+              startKeywordDetectedRef.current = undefined
+              endKeywordDetectedRef.current = undefined
+              stopUttering()
+              playSonar()
+              setIsLoading(true)
+              await stopRecording()
             }
           }
         }
@@ -309,8 +310,13 @@ export const GoogleSttChat = () => {
   }
 
   const prepareSocket = async () => {
-    // socketRef.current = io('http://localhost:8080')
-    socketRef.current = io('https://talktogpt-api.onrender.com')
+    if (process.env.NODE_ENV === 'development') {
+      // socketRef.current = io('http://localhost:8080')
+      socketRef.current = io('https://eec4e80981a1.ngrok.app')
+    } else {
+      // socketRef.current = io('https://talktogpt-api.onrender.com')
+      socketRef.current = io('https://talktogpt-cd054735c08a.herokuapp.com')
+    }
 
     socketRef.current.on('connect', () => {
       console.log('connected')
@@ -480,9 +486,10 @@ export const GoogleSttChat = () => {
     if (!text) {
       return
     }
-    if (!auth.user) {
-      return
-    }
+    // TODO: uncomment when supabase work again
+    // if (!auth.user) {
+    //   return
+    // }
     if (!isLoading) setIsLoading(true)
     setIsSending(true)
     setNoti(undefined)
@@ -493,7 +500,7 @@ export const GoogleSttChat = () => {
 
       append(data, {
         options: {
-          body: auth.user.id ? { userId: auth.user.id } : undefined,
+          body: auth.user?.id ? { userId: auth.user.id } : undefined,
         },
       })
       return
@@ -554,6 +561,7 @@ export const GoogleSttChat = () => {
     const body = new FormData()
     body.append('file', file)
     body.append('model', 'whisper-1')
+    body.append('temperature', '0.1')
     const headers: RawAxiosRequestHeaders = {}
     headers['Content-Type'] = 'multipart/form-data'
     if (process.env.NEXT_PUBLIC_OPENAI_API_KEY) {

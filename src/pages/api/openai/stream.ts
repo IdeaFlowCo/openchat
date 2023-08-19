@@ -26,7 +26,11 @@ export default async function handler(req: Request, res: Response) {
   const { messages, userId }: OpenAIStreamRequestBody = await req.json()
   console.log({ messages, userId })
 
-  if (!messages || !userId) {
+  // TODO: uncomment when supabase work again
+  // if (!messages || !userId) {
+  //   return new Response('Missing messages, userId.', { status: 400 })
+  // }
+  if (!messages) {
     return new Response('Missing messages, userId.', { status: 400 })
   }
 
