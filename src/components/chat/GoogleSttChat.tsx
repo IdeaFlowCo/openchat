@@ -5,6 +5,7 @@ import Alert from 'components/atoms/Alert'
 import ChatMessage from 'components/atoms/ChatMessage'
 import GoogleSTTInput from 'components/atoms/GoogleSTTInput'
 import GoogleSTTPill from 'components/atoms/GoogleSTTPill'
+import InterimHistory from 'components/atoms/InterimHistory'
 import type { Harker } from 'hark'
 import type { Encoder } from 'lamejs'
 import { useEffect, useRef, useState } from 'react'
@@ -50,6 +51,7 @@ export const GoogleSttChat = () => {
   const endKeywordDetectedRef = useRef<boolean>(false)
   const harkRef = useRef<Harker>()
   const interimRef = useRef<string>('')
+  const interimsRef = useRef<string[]>([])
   const processorRef = useRef<any>()
   const sendingDetectedMessageRef = useRef<boolean>(false)
   const socketRef = useRef<Socket>()
@@ -68,6 +70,7 @@ export const GoogleSttChat = () => {
   const [isUnttering, setIsUnttering] = useState<boolean>(false)
   const [isWhisperPrepared, setIsWhisperPrepared] = useState<boolean>(false)
 
+  const [interim, setInterim] = useState<string>('')
   const [noti, setNoti] = useState<{
     type: 'error' | 'success'
     message: string
@@ -163,6 +166,10 @@ export const GoogleSttChat = () => {
 
   const onSpeechRecognized = async (data: WordRecognized) => {
     interimRef.current += data.text
+    setInterim(data.text)
+    if (data.isFinal) {
+      interimsRef.current.push(data.text)
+    }
     if (
       interimRef.current &&
       !endKeywordDetectedRef.current &&
@@ -312,7 +319,7 @@ export const GoogleSttChat = () => {
   const prepareSocket = async () => {
     if (process.env.NODE_ENV === 'development') {
       // socketRef.current = io('http://localhost:8080')
-      socketRef.current = io('https://eec4e80981a1.ngrok.app')
+      socketRef.current = io('https://e14f358cf4e0.ngrok.app')
     } else {
       // socketRef.current = io('https://talktogpt-api.onrender.com')
       socketRef.current = io('https://talktogpt-cd054735c08a.herokuapp.com')
@@ -471,6 +478,8 @@ export const GoogleSttChat = () => {
     if (audioContextRef.current?.state !== 'closed') {
       audioContextRef.current?.close()
     }
+    interimsRef.current = []
+    setInterim('')
     setIsListening(false)
   }
 
@@ -689,6 +698,9 @@ export const GoogleSttChat = () => {
           type={noti.type}
           onClose={() => setNoti(undefined)}
         />
+      ) : null}
+      {interim ? (
+        <InterimHistory interims={interimsRef.current} interim={interim} />
       ) : null}
       <GoogleSTTInput
         isListening={isListening}

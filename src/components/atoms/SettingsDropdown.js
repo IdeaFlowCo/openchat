@@ -76,28 +76,28 @@ export default function SettingsDropdown({
                   </button>
                 </div>
               </div>
-              <div class="custom-number-input w-full text-right">
-                <div class="relative flex h-10 w-full flex-row items-center overflow-hidden rounded-lg border bg-transparent">
+              <div className="custom-number-input w-full text-right">
+                <div className="relative flex h-10 w-full flex-row items-center overflow-hidden rounded-lg border bg-transparent">
                   <button
                     data-action="decrement"
-                    class="h-full w-20 cursor-pointer rounded-l border-r border-r-gray-200 outline-none hover:bg-[#96BE64] hover:text-white"
+                    className="h-full w-20 cursor-pointer rounded-l border-r border-r-gray-200 outline-none hover:bg-[#96BE64] hover:text-white"
                     onClick={decrement}
                   >
-                    <span class="m-auto text-2xl font-thin">&minus;</span>
+                    <span className="m-auto text-2xl font-thin">&minus;</span>
                   </button>
                   <input
                     type="number"
-                    class="text-md md:text-basecursor-default mr-[1px] flex h-9 w-full items-center border-none font-semibold text-gray-700 outline-none hover:text-black focus:text-black focus:outline-none"
+                    className="text-md md:text-basecursor-default mr-[1px] flex h-9 w-full items-center border-none font-semibold text-gray-700 outline-none hover:text-black focus:text-black focus:outline-none"
                     name="custom-input-number"
                     value={autoStopTimeout}
                     onChange={(e) => onChangeAutoStopTimeout?.(e.target.value)}
                   />
                   <button
                     data-action="increment"
-                    class="h-full w-20 cursor-pointer rounded-r border-l border-l-gray-200 hover:bg-[#96BE64] hover:text-white"
+                    className="h-full w-20 cursor-pointer rounded-r border-l border-l-gray-200 hover:bg-[#96BE64] hover:text-white"
                     onClick={increment}
                   >
-                    <span class="m-auto text-2xl font-thin">+</span>
+                    <span className="m-auto text-2xl font-thin">+</span>
                   </button>
                 </div>
                 <label className="text-xs">
