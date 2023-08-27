@@ -38,7 +38,10 @@ const VOICE_COMMANDS = [
     matcher: 'change automatic response',
   },
 ] as const
-const WHISPER_API_ENDPOINT = 'https://api.openai.com/v1/audio/'
+const TALKTOGPT_SOCKET_ENDPOINT =
+  process.env.NODE_ENV === 'development'
+    ? 'https://20c88c46b0ca.ngrok.app'
+    : 'https://talktogpt-cd054735c08a.herokuapp.com'
 
 export const GoogleSttChat = () => {
   const auth = useAuth()
@@ -317,17 +320,11 @@ export const GoogleSttChat = () => {
   }
 
   const prepareSocket = async () => {
-    if (process.env.NODE_ENV === 'development') {
-      // socketRef.current = io('http://localhost:8080')
-      socketRef.current = io('https://e14f358cf4e0.ngrok.app')
-    } else {
-      // socketRef.current = io('https://talktogpt-api.onrender.com')
-      socketRef.current = io('https://talktogpt-cd054735c08a.herokuapp.com')
-    }
+    // socketRef.current = io('https://talktogpt-api.onrender.com')
+    socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT)
 
     socketRef.current.on('connect', () => {
       console.log('connected')
-      socketRef.current.emit('startGoogleCloudStream')
     })
 
     socketRef.current.on('receive_audio_text', (data) => {
@@ -440,6 +437,8 @@ export const GoogleSttChat = () => {
 
     setIsListening(true)
 
+    socketRef.current.emit('startGoogleCloudStream')
+
     processorRef.current.port.onmessage = ({ data: audio }) => {
       socketRef.current.emit('send_audio_data', { audio })
     }
@@ -481,6 +480,7 @@ export const GoogleSttChat = () => {
     interimsRef.current = []
     setInterim('')
     setIsListening(false)
+    socketRef.current.emit('endGoogleCloudStream')
   }
 
   const stopUttering = () => {
@@ -558,40 +558,33 @@ export const GoogleSttChat = () => {
       setIsSending(false)
       return { error: new Error('24MB limit reached!'), text: '' }
     }
-    const file = new File([blob], 'speech.mp3', { type: 'audio/mpeg' })
     // submit audio blob to Whisper for transcription
-    const text = await whisperTranscript(file)
+    const text = await whisperTranscript(blob)
     // console.log('onTranscribing', { text })
     return { text }
   }
 
-  const whisperTranscript = async (file: File) => {
-    // Whisper only accept multipart/form-data currently
-    const body = new FormData()
-    body.append('file', file)
-    body.append('model', 'whisper-1')
-    body.append('temperature', '0.1')
-    const headers: RawAxiosRequestHeaders = {}
-    headers['Content-Type'] = 'multipart/form-data'
-    if (process.env.NEXT_PUBLIC_OPENAI_API_KEY) {
-      headers[
-        'Authorization'
-      ] = `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`
-    }
-
+  const whisperTranscript = async (blob: Blob) => {
     try {
-      const { default: axios } = await import('axios')
-      // send form data with audio file to Whisper endpoint
-      const response = await axios.post(
-        WHISPER_API_ENDPOINT + 'transcriptions',
-        body,
-        {
-          headers,
+      const base64 = await new Promise<string | ArrayBuffer | null>(
+        (resolve) => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result)
+          reader.readAsDataURL(blob)
         }
       )
-      return response.data.text
-    } catch (err) {
-      showErrorMessage('call to whisper failed!')
+      const body = {
+        file: base64,
+      }
+      const headers = { 'Content-Type': 'application/json' }
+      const { default: axios } = await import('axios')
+      const response = await axios.post('/api/openai/whisper', JSON.stringify(body), {
+        headers,
+      })
+      console.log({ response })
+      return response?.data?.text
+    } catch (error) {
+      console.warn('whisperTranscript', { error })
       return ''
     }
   }
