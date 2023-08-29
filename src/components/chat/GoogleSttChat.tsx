@@ -15,6 +15,7 @@ import useSound from 'use-sound'
 import { useAuth } from 'util/auth'
 import { getFirstName } from 'util/string'
 import wordsToNumbers from 'words-to-numbers'
+import { Mp3Encoder } from 'lamejs'
 
 interface WordRecognized {
   isFinal: boolean
@@ -40,7 +41,7 @@ const VOICE_COMMANDS = [
 ] as const
 const TALKTOGPT_SOCKET_ENDPOINT =
   process.env.NODE_ENV === 'development'
-    ? 'https://20c88c46b0ca.ngrok.app'
+    ? 'http://localhost:8080'
     : 'https://talktogpt-cd054735c08a.herokuapp.com'
 
 export const GoogleSttChat = () => {
@@ -255,7 +256,14 @@ export const GoogleSttChat = () => {
       showErrorMessage('24MB limit reached!')
       return
     }
+    if (!transcribed.text) {
+      showErrorMessage('Voice command not detected. Please speak again.')
+      setIsLoading(false)
+      setIsSending(false)
+      return;
+    }
     let text = transcribed.text.slice()
+
     const lowerCaseText = transcribed.text.slice().toLocaleLowerCase()
     if (lowerCaseText.includes(START_KEYWORDS[0].toLocaleLowerCase())) {
       // cutout start keyword from transcribed text
@@ -284,7 +292,7 @@ export const GoogleSttChat = () => {
       runVoiceCommand(voiceCommand)
       return
     }
-    // console.log({ text })
+    console.log({ text })
     // submit transcribed text to ChatGPT-4
     submitTranscript(text).then(() => {
       // lastTranscript.current = transcript.text
@@ -491,6 +499,7 @@ export const GoogleSttChat = () => {
   }
 
   const submitTranscript = async (text?: string) => {
+    console.log(text)
     console.log('submitTranscript', text)
     if (!text) {
       return
@@ -538,56 +547,53 @@ export const GoogleSttChat = () => {
     }
   }
 
-  const transcribeAudio = async (
-    blob: Blob
-  ): Promise<{ error?: Error; text: string }> => {
+  const transcribeAudio = async (blob: Blob): Promise<{ error?: Error; text: string }> => {
     if (!encoderRef.current) {
-      const { Mp3Encoder } = await import('lamejs')
-      // initialize lamejs encoder
-      encoderRef.current = new Mp3Encoder(1, 44100, 96)
+      encoderRef.current = new Mp3Encoder(1, 44100, 96);
     }
-    const buffer = await blob.arrayBuffer()
-    // console.log({ wav: buffer.byteLength })
-    // convert wav to mp3 to reduce file size
-    const mp3 = encoderRef.current.encodeBuffer(new Int16Array(buffer))
-    blob = new Blob([mp3], { type: 'audio/mpeg' })
-    // console.log({ blob, mp3: mp3.byteLength })
-    // mp3 should not exceed 24MB
-    if (mp3.byteLength > 24_000_000) {
-      setIsLoading(false)
-      setIsSending(false)
-      return { error: new Error('24MB limit reached!'), text: '' }
-    }
-    // submit audio blob to Whisper for transcription
-    const text = await whisperTranscript(blob)
-    // console.log('onTranscribing', { text })
-    return { text }
-  }
 
-  const whisperTranscript = async (blob: Blob) => {
+    // Convert blob to base64 string
+    const base64 = await blobToBase64(blob);
+    if (!base64) {
+      return { error: new Error('Failed to read blob data.'), text: '' };
+    }
+
+    // Transcribe the audio
+    const text = await whisperTranscript(base64);
+    return { text };
+  };
+
+  const blobToBase64 = (blob: Blob): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result?.toString().split(',')[1] || null;
+        resolve(base64data);
+      };
+      reader.readAsDataURL(blob);
+    });
+  };
+
+
+  const whisperTranscript = async (base64: string): Promise<string> => {
     try {
-      const base64 = await new Promise<string | ArrayBuffer | null>(
-        (resolve) => {
-          const reader = new FileReader()
-          reader.onloadend = () => resolve(reader.result)
-          reader.readAsDataURL(blob)
-        }
-      )
       const body = {
         file: base64,
-      }
-      const headers = { 'Content-Type': 'application/json' }
-      const { default: axios } = await import('axios')
+      };
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      const { default: axios } = await import('axios');
       const response = await axios.post('/api/openai/whisper', JSON.stringify(body), {
         headers,
-      })
-      console.log({ response })
-      return response?.data?.text
+      });
+      return response?.data?.text || '';
     } catch (error) {
-      console.warn('whisperTranscript', { error })
-      return ''
+      console.warn('whisperTranscript', { error });
+      return '';
     }
-  }
+  };
+
 
   /**
    * check before sending audio blob to Whisper for transcription
