@@ -22,7 +22,7 @@ interface WordRecognized {
   text: string
 }
 
-const START_KEYWORDS = ['Alexa']
+const START_KEYWORDS = ['Alexa', 'Alex']
 const END_KEYWORD = 'Terminator'
 const STOP_TIMEOUT = 5 // 5 seconds
 const VOICE_COMMANDS = [
@@ -172,6 +172,7 @@ export const GoogleSttChat = () => {
     interimRef.current += data.text
     setInterim(data.text)
     if (data.isFinal) {
+      console.log('interimsRef:', interimsRef.current);
       interimsRef.current.push(data.text)
     }
     if (
@@ -586,6 +587,7 @@ export const GoogleSttChat = () => {
       const { default: axios } = await import('axios');
       const response = await axios.post('/api/openai/whisper', JSON.stringify(body), {
         headers,
+        maxBodyLength: 25 * 1024 * 1024,
       });
       return response?.data?.text || '';
     } catch (error) {
