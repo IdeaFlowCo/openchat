@@ -136,7 +136,7 @@ export const GoogleSttChat = () => {
                         args = args.match(/\d+/)[0]
                         args = parseInt(args, 10)
                     }
-                    console.log({args})
+                    // console.log({args})
                     result = {...voiceCommand, args}
                 } else {
                     result = voiceCommand
@@ -169,8 +169,45 @@ export const GoogleSttChat = () => {
         await stopRecording()
     }
 
+    const processStartKeyword = async (keyword: string, startIndex: number) => {
+        if (!startKeywordDetectedRef.current) {
+            stopUttering();
+            playPing();
+            await startRecording();
+            startKeywordDetectedRef.current = true;
+        }
+    };
+
+    const processEndKeyword = async (startIndex: number, endIndex: number, keyword: string) => {
+        console.log('END_KEYWORD DETECTED!');
+        endKeywordDetectedRef.current = true;
+        setIsProcessing(true);
+
+        let message = interimRef.current.slice();
+        message = message.substring(startIndex + keyword.length, endIndex);
+
+        console.log('message', message);
+        if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
+            message = message.substring(2);
+        }
+        console.log('message', message);
+
+        interimRef.current = '';
+
+        if (!sendingDetectedMessageRef.current) {
+            startKeywordDetectedRef.current = undefined;
+            endKeywordDetectedRef.current = undefined;
+            stopUttering();
+            playSonar();
+            setIsLoading(true);
+            await stopRecording();
+        }
+
+        setIsProcessing(false);
+    };
+
     const onSpeechRecognized = async (data: WordRecognized) => {
-        console.log("Entered onSpeechRecognized");
+        // console.log("Entered onSpeechRecognized");
 
         try {
             if (isProcessing) return;
@@ -188,39 +225,12 @@ export const GoogleSttChat = () => {
 
                     if (startIndex !== -1) {
                         console.log('START_KEYWORD DETECTED!');
-
-                        if (!startKeywordDetectedRef.current) {
-                            stopUttering();
-                            playPing();
-                            await startRecording();
-                            startKeywordDetectedRef.current = true;
-                        }
+                        await processStartKeyword(keyword, startIndex);
 
                         const endIndex = interimRef.current.toLocaleLowerCase().lastIndexOf(END_KEYWORD.toLocaleLowerCase());
 
                         if (endIndex !== -1 && endIndex > startIndex) {
-                            console.log('END_KEYWORD DETECTED!');
-                            endKeywordDetectedRef.current = true;
-                            setIsProcessing(true);
-                            interimRef.current = '';
-
-                            let message = interimRef.current.slice();
-                            message = message.substring(startIndex + keyword.length, endIndex);
-
-                            if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
-                                message = message.substring(2);
-                            }
-
-                            if (!sendingDetectedMessageRef.current) {
-                                startKeywordDetectedRef.current = undefined;
-                                endKeywordDetectedRef.current = undefined;
-                                stopUttering();
-                                playSonar();
-                                setIsLoading(true);
-                                await stopRecording();
-                            }
-
-                            setIsProcessing(false);
+                            await processEndKeyword(startIndex, endIndex, keyword);
                         }
                     }
                 }
@@ -229,8 +239,9 @@ export const GoogleSttChat = () => {
             console.error("An error occurred in onSpeechRecognized: ", error);
         }
 
-        console.log("Exited onSpeechRecognized");
+        // console.log("Exited onSpeechRecognized");
     };
+
 
     const onStartSpeaking = () => {
         setIsSpeaking(true)
@@ -250,7 +261,7 @@ export const GoogleSttChat = () => {
     }
 
     const onTranscribe = async () => {
-        console.log({transcript})
+        // console.log({transcript})
         const transcribed = await transcribeAudio(transcript.blob)
         // console.log({ transcribed })
         if (transcribed.error) {
@@ -286,15 +297,15 @@ export const GoogleSttChat = () => {
                 lowerCaseText.lastIndexOf(END_KEYWORD.toLocaleLowerCase()) - 1
             )
         }
-        text = text.trim()
+        text = text.trim().replace(/,$/, '');
         const voiceCommand = checkIsVoiceCommand(text)
-        console.log({voiceCommand})
+        // console.log({voiceCommand})
         if (voiceCommand) {
-            console.log('run command')
+            // console.log('run command')
             runVoiceCommand(voiceCommand)
             return
         }
-        console.log({text})
+        // console.log({text})
         // submit transcribed text to ChatGPT-4
         submitTranscript(text).then(() => {
             // lastTranscript.current = transcript.text
@@ -334,7 +345,7 @@ export const GoogleSttChat = () => {
         socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT)
 
         socketRef.current.on('connect', () => {
-            console.log('connected')
+            // console.log('connected')
         })
 
         socketRef.current.on('receive_audio_text', (data) => {
@@ -343,7 +354,7 @@ export const GoogleSttChat = () => {
         })
 
         socketRef.current.on('disconnect', () => {
-            console.log('disconnected', socketRef.current.id)
+            // console.log('disconnected', socketRef.current.id)
         })
     }
 
@@ -373,17 +384,17 @@ export const GoogleSttChat = () => {
     const runVoiceCommand = (voiceCommand: VoiceCommand) => {
         switch (voiceCommand.command) {
             case 'off-auto-stop':
-                console.log('turn off auto response!')
+                // console.log('turn off auto response!')
                 setIsAutoStop(false)
                 break
             case 'on-auto-stop':
-                console.log('turn on auto response!')
+                // console.log('turn on auto response!')
                 setIsAutoStop(true)
                 break
             case 'change-auto-stop':
-                console.log('change automatic response time!', {
+                /*console.log('change automatic response time!', {
                     args: voiceCommand.args,
-                })
+                })*/
                 if (voiceCommand.args && typeof voiceCommand.args === 'number') {
                     setAutoStopTimeout(voiceCommand.args)
                 } else {
@@ -501,8 +512,8 @@ export const GoogleSttChat = () => {
     }
 
     const submitTranscript = async (text?: string) => {
-        console.log(text)
-        console.log('submitTranscript', text)
+        // console.log(text)
+        // console.log('submitTranscript', text)
         if (!text) {
             return
         }
