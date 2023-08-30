@@ -24,7 +24,7 @@ interface WordRecognized {
 
 const START_KEYWORDS = ['Alexa', 'Alex']
 const END_KEYWORD = 'Terminator'
-const STOP_TIMEOUT = 5 // 5 seconds
+const STOP_TIMEOUT = 1 // 5 seconds
 const VOICE_COMMANDS = [
     {
         command: 'off-auto-stop',
@@ -169,28 +169,30 @@ export const GoogleSttChat = () => {
         await stopRecording()
     }
 
+    const startsWithKeyword = (text: string, keywords: string[]): boolean => {
+        const lowerText = text.toLocaleLowerCase();
+        return keywords.some(keyword => lowerText.startsWith(keyword.toLocaleLowerCase()));
+    }
+
     const processStartKeyword = async (keyword: string, startIndex: number) => {
+        console.log('START_KEYWORD DETECTED!');
         if (!startKeywordDetectedRef.current) {
             stopUttering();
             playPing();
             await startRecording();
             startKeywordDetectedRef.current = true;
         }
-    };
+    }
 
     const processEndKeyword = async (startIndex: number, endIndex: number, keyword: string) => {
         console.log('END_KEYWORD DETECTED!');
         endKeywordDetectedRef.current = true;
         setIsProcessing(true);
 
-        let message = interimRef.current.slice();
-        message = message.substring(startIndex + keyword.length, endIndex);
-
-        console.log('message', message);
+        let message = interimRef.current.slice(startIndex + keyword.length, endIndex).trim();
         if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
             message = message.substring(2);
         }
-        console.log('message', message);
 
         interimRef.current = '';
 
@@ -204,18 +206,16 @@ export const GoogleSttChat = () => {
         }
 
         setIsProcessing(false);
-    };
+    }
 
     const onSpeechRecognized = async (data: WordRecognized) => {
-        // console.log("Entered onSpeechRecognized");
-
         try {
             if (isProcessing) return;
 
             interimRef.current += data.text;
             setInterim(data.text);
 
-            if (data.isFinal) {
+            if (data.isFinal && !startsWithKeyword(data.text, [...START_KEYWORDS, END_KEYWORD])) {
                 interimsRef.current.push(data.text);
             }
 
@@ -224,11 +224,9 @@ export const GoogleSttChat = () => {
                     const startIndex = interimRef.current.toLocaleLowerCase().lastIndexOf(keyword.toLocaleLowerCase());
 
                     if (startIndex !== -1) {
-                        console.log('START_KEYWORD DETECTED!');
                         await processStartKeyword(keyword, startIndex);
 
                         const endIndex = interimRef.current.toLocaleLowerCase().lastIndexOf(END_KEYWORD.toLocaleLowerCase());
-
                         if (endIndex !== -1 && endIndex > startIndex) {
                             await processEndKeyword(startIndex, endIndex, keyword);
                         }
@@ -238,8 +236,6 @@ export const GoogleSttChat = () => {
         } catch (error) {
             console.error("An error occurred in onSpeechRecognized: ", error);
         }
-
-        // console.log("Exited onSpeechRecognized");
     };
 
 
