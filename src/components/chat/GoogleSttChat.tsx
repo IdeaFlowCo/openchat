@@ -101,7 +101,7 @@ export const GoogleSttChat = () => {
         handleInputChange,
     } = useChat({
         api: '/api/openai/stream',
-        initialMessages: [getDefaultMessage(getFirstName(auth.user?.name) || 'Ra')],
+        initialMessages: [],
         onError: (sendDetectedTranscriptError) => {
             console.error({sendDetectedTranscriptError})
             setIsLoading(false)
@@ -212,31 +212,46 @@ export const GoogleSttChat = () => {
         try {
             if (isProcessing) return;
 
-            interimRef.current += data.text;
+            // Append the new recognized text to the existing interim text
+            interimRef.current += ` ${data.text}`;
+
+            // Update the interim state
             setInterim(data.text);
 
-            if (data.isFinal && !startsWithKeyword(data.text, [...START_KEYWORDS, END_KEYWORD])) {
+            if (data.isFinal) {
                 interimsRef.current.push(data.text);
+                // Reset the interim and startKeywordDetected flag
+                interimRef.current = '';
+                startKeywordDetectedRef.current = false;
             }
 
-            if (interimRef.current && !endKeywordDetectedRef.current && !sendingDetectedMessageRef.current) {
+            // Look for START_KEYWORD only if it hasn't been detected yet
+            if (!startKeywordDetectedRef.current) {
                 for (const keyword of START_KEYWORDS) {
-                    const startIndex = interimRef.current.toLocaleLowerCase().lastIndexOf(keyword.toLocaleLowerCase());
-
+                    const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
                     if (startIndex !== -1) {
                         await processStartKeyword(keyword, startIndex);
+                        break;
+                    }
+                }
+            }
 
-                        const endIndex = interimRef.current.toLocaleLowerCase().lastIndexOf(END_KEYWORD.toLocaleLowerCase());
-                        if (endIndex !== -1 && endIndex > startIndex) {
-                            await processEndKeyword(startIndex, endIndex, keyword);
-                        }
+            // Look for END_KEYWORD only if START_KEYWORD has been detected
+            if (startKeywordDetectedRef.current) {
+                const endIndex = interimRef.current.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase());
+                console.log(endIndex);
+                if (endIndex !== -1) {
+                    const startIndex = interimRef.current.toLowerCase().indexOf(START_KEYWORDS[0].toLowerCase());
+                    if (startIndex !== -1 && endIndex > startIndex) {
+                        await processEndKeyword(startIndex, endIndex, END_KEYWORD);
                     }
                 }
             }
         } catch (error) {
-            console.error("An error occurred in onSpeechRecognized: ", error);
+            console.error("An error occurred in onSpeechRecognized:", error);
         }
     };
+
 
 
     const onStartSpeaking = () => {
