@@ -1,6 +1,5 @@
 import { useWhisper } from '@chengsokdara/use-whisper'
 import { useChat, type CreateMessage, type Message } from 'ai/react'
-import { type RawAxiosRequestHeaders } from 'axios'
 import Alert from 'components/atoms/Alert'
 import ChatMessage from 'components/atoms/ChatMessage'
 import GoogleSTTInput from 'components/atoms/GoogleSTTInput'
@@ -23,7 +22,6 @@ interface WordRecognized {
 }
 
 const START_KEYWORDS = ['Alexa', 'Alex']
-const END_KEYWORD = 'Terminator'
 const STOP_TIMEOUT = 1 // 5 seconds
 const VOICE_COMMANDS = [
     {
@@ -169,11 +167,6 @@ export const GoogleSttChat = () => {
         await stopRecording()
     }
 
-    const startsWithKeyword = (text: string, keywords: string[]): boolean => {
-        const lowerText = text.toLocaleLowerCase();
-        return keywords.some(keyword => lowerText.startsWith(keyword.toLocaleLowerCase()));
-    }
-
     const processStartKeyword = async (keyword: string, startIndex: number) => {
         console.log('START_KEYWORD DETECTED!');
         if (!startKeywordDetectedRef.current) {
@@ -182,30 +175,6 @@ export const GoogleSttChat = () => {
             await startRecording();
             startKeywordDetectedRef.current = true;
         }
-    }
-
-    const processEndKeyword = async (startIndex: number, endIndex: number, keyword: string) => {
-        console.log('END_KEYWORD DETECTED!');
-        endKeywordDetectedRef.current = true;
-        setIsProcessing(true);
-
-        let message = interimRef.current.slice(startIndex + keyword.length, endIndex).trim();
-        if (message.startsWith('.') || message.startsWith(',') || message.startsWith('?')) {
-            message = message.substring(2);
-        }
-
-        interimRef.current = '';
-
-        if (!sendingDetectedMessageRef.current) {
-            startKeywordDetectedRef.current = undefined;
-            endKeywordDetectedRef.current = undefined;
-            stopUttering();
-            playSonar();
-            setIsLoading(true);
-            await stopRecording();
-        }
-
-        setIsProcessing(false);
     }
 
     const onSpeechRecognized = async (data: WordRecognized) => {
@@ -232,18 +201,6 @@ export const GoogleSttChat = () => {
                     if (startIndex !== -1) {
                         await processStartKeyword(keyword, startIndex);
                         break;
-                    }
-                }
-            }
-
-            // Look for END_KEYWORD only if START_KEYWORD has been detected
-            if (startKeywordDetectedRef.current) {
-                const endIndex = interimRef.current.toLowerCase().lastIndexOf(END_KEYWORD.toLowerCase());
-                console.log(endIndex);
-                if (endIndex !== -1) {
-                    const startIndex = interimRef.current.toLowerCase().indexOf(START_KEYWORDS[0].toLowerCase());
-                    if (startIndex !== -1 && endIndex > startIndex) {
-                        await processEndKeyword(startIndex, endIndex, END_KEYWORD);
                     }
                 }
             }
@@ -301,13 +258,7 @@ export const GoogleSttChat = () => {
                 text = text.substring(1)
             }
         }
-        if (lowerCaseText.includes(END_KEYWORD.toLocaleLowerCase())) {
-            // cutout end keyword from transcribed text
-            text = text.substring(
-                0,
-                lowerCaseText.lastIndexOf(END_KEYWORD.toLocaleLowerCase()) - 1
-            )
-        }
+
         text = text.trim().replace(/,$/, '');
         const voiceCommand = checkIsVoiceCommand(text)
         // console.log({voiceCommand})
@@ -760,7 +711,7 @@ const NOTI_MESSAGES = {
 // })
 
 const getDefaultMessage = (name: string): Message => ({
-    content: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
+    content: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
     role: 'assistant',
     id: 'initial-message',
 })
