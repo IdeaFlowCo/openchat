@@ -44,9 +44,9 @@ export default function GoogleSTTInput({
   }, [isSpeaking])
 
   return (
-    <div className="flex w-screen justify-center py-4">
-      <div className="flex items-center justify-center px-2">
-        <div className="relative flex flex-1 flex-row items-center rounded-full bg-[#f4f7fb] shadow-sm">
+      <div className="flex w-screen justify-center py-4">
+        <div className="flex items-center justify-center px-2 min-w-[90%]">
+          <div className="relative flex flex-grow flex-row items-center rounded-full bg-[#f4f7fb] shadow-sm min-w-[200px] sm:min-w-[300px]">
           <label htmlFor="chat" className="sr-only">
             Chat
           </label>
@@ -54,7 +54,7 @@ export default function GoogleSTTInput({
           <input
             name="chat"
             id="chat"
-            className="flex h-16 w-full rounded-md border-0 bg-transparent px-2 text-gray-900 placeholder:text-gray-400 focus:outline-0 sm:w-[650px] sm:px-4 sm:py-1.5 sm:text-sm sm:leading-6"
+            className="flex h-16 w-full rounded-md border-0 bg-transparent px-2 text-gray-900 placeholder:text-gray-400 focus:outline-0 sm:px-4 sm:py-1.5 sm:text-sm sm:leading-6"
             placeholder="Type your response..."
             value={query}
             autoComplete="off"
@@ -66,7 +66,7 @@ export default function GoogleSTTInput({
             }}
           />
 
-          <div className="mr-2 text-sm sm:mr-4">Enter⏎</div>
+          <div className="mr-2 text-sm sm:mr-4">⏎</div>
         </div>
 
         <div className="relative min-h-[64px] min-w-[80px]">
