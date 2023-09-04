@@ -18,10 +18,7 @@ const requireAuth = (fn) => async (req, res) => {
     const {
       data: { user },
       error,
-    } = {
-      data: {user: {}},
-      error: null
-    }
+    } = await supabase.auth.getUser(accessToken);
 
     // Throw error if there is one
     if (error) throw error;

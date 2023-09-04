@@ -4,7 +4,7 @@ const supabase = require("./_supabase");
 
 // Get user by uid
 function getUser(uid) {
-  return null;
+  return supabase.from("users").select("*").eq("id", uid).single().then(handle);
 }
 
 // WARNING: If you use this, make sure to bring back other Stripe dependencies and ofc 
