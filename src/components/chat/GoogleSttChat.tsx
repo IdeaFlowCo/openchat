@@ -40,7 +40,7 @@ const VOICE_COMMANDS = [
 const TALKTOGPT_SOCKET_ENDPOINT =
     process.env.NODE_ENV === 'development'
         ? 'http://localhost:8080'
-        : 'https://talktogpt-api-marcelolima381-gmailcom-plank-talktogpt.vercel.app'
+        : 'https://talktogpt-cd054735c08a.herokuapp.com'
 
 export const GoogleSttChat = () => {
     const auth = useAuth()
