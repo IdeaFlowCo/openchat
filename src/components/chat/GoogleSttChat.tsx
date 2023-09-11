@@ -12,35 +12,21 @@ import io, { type Socket } from 'socket.io-client'
 import { type VoiceCommand } from 'types/useWhisperTypes'
 import useSound from 'use-sound'
 import { useAuth } from 'util/auth'
-import { getFirstName } from 'util/string'
-import wordsToNumbers from 'words-to-numbers'
 import { Mp3Encoder } from 'lamejs'
+import {
+    blobToBase64,
+    checkIsVoiceCommand,
+    extractStartKeyword,
+    getVoiceCommandAction,
+    handleStartKeywords,
+    whisperTranscript
+} from "./methods";
+import { START_KEYWORDS, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
 
 interface WordRecognized {
     isFinal: boolean
     text: string
 }
-
-const START_KEYWORDS = ['Alexa', 'Alex']
-const STOP_TIMEOUT = 1 // 5 seconds
-const VOICE_COMMANDS = [
-    {
-        command: 'off-auto-stop',
-        matcher: 'turn off automatic response',
-    },
-    {
-        command: 'on-auto-stop',
-        matcher: 'turn on automatic response',
-    },
-    {
-        command: 'change-auto-stop',
-        matcher: 'change automatic response',
-    },
-] as const
-const TALKTOGPT_SOCKET_ENDPOINT =
-    process.env.NODE_ENV === 'development'
-        ? 'http://localhost:8080'
-        : 'https://talktogpt-cd054735c08a.herokuapp.com'
 
 export const GoogleSttChat = () => {
     const auth = useAuth()
@@ -116,48 +102,15 @@ export const GoogleSttChat = () => {
         },
     })
 
-    const checkIsVoiceCommand = (text: string): VoiceCommand | undefined => {
-        let result = undefined
-        VOICE_COMMANDS.forEach((voiceCommand) => {
-            console.log('checkIsVoiceCommand', {
-                text: text.toLocaleLowerCase(),
-                matcher: voiceCommand.matcher.toLocaleLowerCase(),
-            })
-            if (
-                text
-                    .toLocaleLowerCase()
-                    .includes(voiceCommand.matcher.toLocaleLowerCase())
-            ) {
-                if (voiceCommand.command === 'change-auto-stop') {
-                    let args = wordsToNumbers(text)
-                    if (typeof args === 'string') {
-                        args = args.match(/\d+/)[0]
-                        args = parseInt(args, 10)
-                    }
-                    // console.log({args})
-                    result = {...voiceCommand, args}
-                } else {
-                    result = voiceCommand
-                }
-            }
-        })
-        return result
-    }
-
     const forceStopRecording = async () => {
         startKeywordDetectedRef.current = undefined
-        // stop auto stop timeout
-        stopUttering() // stop untterance if it is speaking
-        playSonar() // play stop keyword detection sound
+        stopUttering()
+        playSonar()
         setIsLoading(true)
-        stopRecording() // stop useWhisper recorder
+        stopRecording()
     }
 
-    /**
-     * stop useWhisper recorder once auto stop timeout reached
-     */
     const onAutoStop = async () => {
-        // console.log('onAutoStop')
         startKeywordDetectedRef.current = undefined
         endKeywordDetectedRef.current = undefined
         stopAutoStopTimeout()
@@ -168,7 +121,6 @@ export const GoogleSttChat = () => {
     }
 
     const processStartKeyword = async (keyword: string, startIndex: number) => {
-        console.log('START_KEYWORD DETECTED!');
         if (!startKeywordDetectedRef.current) {
             stopUttering();
             playPing();
@@ -181,27 +133,20 @@ export const GoogleSttChat = () => {
         try {
             if (isProcessing) return;
 
-            // Append the new recognized text to the existing interim text
             interimRef.current += ` ${data.text}`;
-
-            // Update the interim state
             setInterim(data.text);
 
             if (data.isFinal) {
                 interimsRef.current.push(data.text);
-                // Reset the interim and startKeywordDetected flag
                 interimRef.current = '';
                 startKeywordDetectedRef.current = false;
             }
 
-            // Look for START_KEYWORD only if it hasn't been detected yet
             if (!startKeywordDetectedRef.current) {
-                for (const keyword of START_KEYWORDS) {
+                const keyword = extractStartKeyword(interimRef.current);
+                if (keyword) {
                     const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
-                    if (startIndex !== -1) {
-                        await processStartKeyword(keyword, startIndex);
-                        break;
-                    }
+                    await processStartKeyword(keyword, startIndex);
                 }
             }
         } catch (error) {
@@ -209,73 +154,45 @@ export const GoogleSttChat = () => {
         }
     };
 
-
-
-    const onStartSpeaking = () => {
-        setIsSpeaking(true)
-        stopAutoStopTimeout()
-    }
-
-    const onStartUttering = () => {
-        setIsUnttering(true)
-    }
-
-    const onStopSpeaking = () => {
-        setIsSpeaking(false)
-    }
-
-    const onStopUttering = () => {
-        setIsUnttering(false)
-    }
-
-    const onTranscribe = async () => {
-        // console.log({transcript})
-        const transcribed = await transcribeAudio(transcript.blob)
-        // console.log({ transcribed })
+    const handleTranscriptionResults = (transcribed: {
+        error?: Error;
+        text: string;
+    }): string | null => {
         if (transcribed.error) {
-            console.warn('24MB file size limit reached!')
-            showErrorMessage('24MB limit reached!')
-            return
+            console.warn('24MB file size limit reached!');
+            showErrorMessage('24MB limit reached!');
+            return null;
         }
         if (!transcribed.text) {
-            showErrorMessage('Voice command not detected. Please speak again.')
-            setIsLoading(false)
-            setIsSending(false)
+            showErrorMessage('Voice command not detected. Please speak again.');
+            setIsLoading(false);
+            setIsSending(false);
+            return null;
+        }
+        return transcribed.text;
+    }
+
+
+    const onTranscribe = async () => {
+        const transcribed = await transcribeAudio(transcript.blob);
+
+        const transcriptionText = handleTranscriptionResults(transcribed);
+        if (!transcriptionText) return;
+
+        let text = handleStartKeywords(transcriptionText);
+
+        const voiceCommand = checkIsVoiceCommand(text);
+        if (voiceCommand) {
+            runVoiceCommand(voiceCommand);
             return;
         }
-        let text = transcribed.text.slice()
 
-        const lowerCaseText = transcribed.text.slice().toLocaleLowerCase()
-        if (lowerCaseText.includes(START_KEYWORDS[0].toLocaleLowerCase())) {
-            // cutout start keyword from transcribed text
-            text = text.substring(
-                lowerCaseText.indexOf(
-                    START_KEYWORDS[0].toLocaleLowerCase() + START_KEYWORDS[0].length + 1
-                )
-            )
-            // cutout any punctuations
-            if (text.startsWith(',') || text.startsWith('!')) {
-                text = text.substring(1)
-            }
-        }
+        await submitTranscript(text);
 
-        text = text.trim().replace(/,$/, '');
-        const voiceCommand = checkIsVoiceCommand(text)
-        // console.log({voiceCommand})
-        if (voiceCommand) {
-            // console.log('run command')
-            runVoiceCommand(voiceCommand)
-            return
-        }
-        // console.log({text})
-        // submit transcribed text to ChatGPT-4
-        submitTranscript(text).then(() => {
-            // lastTranscript.current = transcript.text
-            transcript.blob = undefined
-            setIsLoading(false)
-            setIsSending(false)
-        })
-    }
+        transcript.blob = undefined;
+        setIsLoading(false);
+        setIsSending(false);
+    };
 
     const prepareHark = async () => {
         if (!harkRef.current && streamRef.current) {
@@ -303,20 +220,16 @@ export const GoogleSttChat = () => {
     }
 
     const prepareSocket = async () => {
-        // socketRef.current = io('https://talktogpt-api.onrender.com')
         socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT)
 
         socketRef.current.on('connect', () => {
-            // console.log('connected')
         })
 
         socketRef.current.on('receive_audio_text', (data) => {
-            // console.log('received audio text', data)
             onSpeechRecognized(data)
         })
 
         socketRef.current.on('disconnect', () => {
-            // console.log('disconnected', socketRef.current.id)
         })
     }
 
@@ -344,33 +257,30 @@ export const GoogleSttChat = () => {
     }
 
     const runVoiceCommand = (voiceCommand: VoiceCommand) => {
-        switch (voiceCommand.command) {
-            case 'off-auto-stop':
-                // console.log('turn off auto response!')
-                setIsAutoStop(false)
-                break
-            case 'on-auto-stop':
-                // console.log('turn on auto response!')
-                setIsAutoStop(true)
-                break
-            case 'change-auto-stop':
-                /*console.log('change automatic response time!', {
-                    args: voiceCommand.args,
-                })*/
-                if (voiceCommand.args && typeof voiceCommand.args === 'number') {
-                    setAutoStopTimeout(voiceCommand.args)
-                } else {
-                    transcript.blob = undefined
-                    setIsLoading(false)
-                    showErrorMessage('incorrect voice command.')
+        const action = getVoiceCommandAction(voiceCommand);
+
+        switch (action?.type) {
+            case 'SET_IS_AUTO_STOP':
+                setIsAutoStop(action.value);
+                break;
+            case 'SET_AUTO_STOP_TIMEOUT':
+                setAutoStopTimeout(action.value);
+                break;
+            case 'SHOW_MESSAGE':
+                if (action.messageType === 'error') {
+                    showErrorMessage(action.message);
+                } else if (action.messageType === 'success') {
+                    showSuccessMessage(action.message);
                 }
-                break
+                break;
             default:
+                transcript.blob = undefined;
+                setIsLoading(false);
+                showErrorMessage('Unknown command.');
+                break;
         }
-        transcript.blob = undefined
-        setIsLoading(false)
-        showSuccessMessage(voiceCommand.matcher)
     }
+
 
     const showErrorMessage = (message: string) => {
         setNoti({type: 'error', message})
@@ -428,7 +338,6 @@ export const GoogleSttChat = () => {
     }
 
     const startUttering = (text: string) => {
-        // console.log({ speechRef: speechRef.current })
         if (!text) {
             return
         }
@@ -474,8 +383,6 @@ export const GoogleSttChat = () => {
     }
 
     const submitTranscript = async (text?: string) => {
-        // console.log(text)
-        // console.log('submitTranscript', text)
         if (!text) {
             return
         }
@@ -507,7 +414,6 @@ export const GoogleSttChat = () => {
     }
 
     const toggleUnttering = () => {
-        // console.log({ isUnttering })
         if (isUnttering) {
             stopUttering()
         } else {
@@ -515,7 +421,6 @@ export const GoogleSttChat = () => {
                 .slice()
                 .reverse()
                 .find((message) => message.role === 'assistant')?.content
-            // console.log({ lastMessage })
             if (lastMessage) {
                 startUttering(lastMessage)
             }
@@ -530,7 +435,6 @@ export const GoogleSttChat = () => {
             encoderRef.current = new Mp3Encoder(1, 44100, 96);
         }
 
-        // Convert blob to base64 string
         const base64 = await blobToBase64(blob);
         if (!base64) {
             return {error: new Error('Failed to read blob data.'), text: ''};
@@ -541,38 +445,43 @@ export const GoogleSttChat = () => {
         return {text};
     };
 
-    const blobToBase64 = (blob: Blob): Promise<string | null> => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64data = reader.result?.toString().split(',')[1] || null;
-                resolve(base64data);
-            };
-            reader.readAsDataURL(blob);
-        });
-    };
+    const onStartSpeaking = () => {
+        setIsSpeaking(true)
+        stopAutoStopTimeout()
+    }
 
+    const onStartUttering = () => {
+        setIsUnttering(true)
+    }
 
-    const whisperTranscript = async (base64: string): Promise<string> => {
-        try {
-            const body = {
-                file: base64,
-            };
-            const headers = {
-                'Content-Type': 'application/json',
-            };
-            const {default: axios} = await import('axios');
-            const response = await axios.post('/api/openai/whisper', JSON.stringify(body), {
-                headers,
-                maxBodyLength: 25 * 1024 * 1024,
-            });
-            return response?.data?.text || '';
-        } catch (error) {
-            console.warn('whisperTranscript', {error});
-            return '';
+    const onStopSpeaking = () => {
+        setIsSpeaking(false)
+    }
+
+    const onStopUttering = () => {
+        setIsUnttering(false)
+    }
+
+    const cleanUpResources = () => {
+        releaseSocket()
+        releaseHark()
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop())
+            streamRef.current = undefined
         }
-    };
-
+        // clear auto stop timeout instance
+        stopAutoStopTimeout()
+        // flush out lamejs
+        if (encoderRef.current) {
+            encoderRef.current.flush()
+            encoderRef.current = undefined
+        }
+        if (speechRef.current) {
+            stopUttering()
+            speechRef.current.removeEventListener('start', onStartUttering)
+            speechRef.current.removeEventListener('end', onStopUttering)
+        }
+    }
 
     /**
      * check before sending audio blob to Whisper for transcription
@@ -621,26 +530,7 @@ export const GoogleSttChat = () => {
     useEffect(() => {
         prepareUseWhisper()
         // release resource on component unmount
-        return () => {
-            releaseSocket()
-            releaseHark()
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach((track) => track.stop())
-                streamRef.current = undefined
-            }
-            // clear auto stop timeout instance
-            stopAutoStopTimeout()
-            // flush out lamejs
-            if (encoderRef.current) {
-                encoderRef.current.flush()
-                encoderRef.current = undefined
-            }
-            if (speechRef.current) {
-                stopUttering()
-                speechRef.current.removeEventListener('start', onStartUttering)
-                speechRef.current.removeEventListener('end', onStopUttering)
-            }
-        }
+        return cleanUpResources;
     }, [])
 
     return (
