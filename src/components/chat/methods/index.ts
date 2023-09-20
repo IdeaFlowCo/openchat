@@ -1,6 +1,6 @@
 import { VoiceCommand } from "../../../types/useWhisperTypes";
 import wordsToNumbers from "words-to-numbers";
-import { START_KEYWORDS, VOICE_COMMANDS } from "../constants";
+import { END_KEYWORD, START_KEYWORDS, VOICE_COMMANDS } from "../constants";
 
 type VoiceCommandAction =
     | { type: 'SET_IS_AUTO_STOP', value: boolean }
@@ -57,19 +57,23 @@ export const trimText = (text: string): string => {
 }
 
 export const handleStartKeywords = (text: string): string => {
-    const lowerCaseText = text.toLocaleLowerCase();
-    if (lowerCaseText.includes(START_KEYWORDS[0].toLocaleLowerCase())) {
-        text = text.substring(
-            lowerCaseText.indexOf(
-                START_KEYWORDS[0].toLocaleLowerCase() + START_KEYWORDS[0].length + 1
-            )
-        );
-        if (text.startsWith(',') || text.startsWith('!')) {
-            text = text.substring(1);
+    const lowerCaseText = text.toLowerCase();
+
+    START_KEYWORDS.forEach((keyword) => {
+        const keywordIndex = lowerCaseText.indexOf(keyword.toLowerCase());
+        if (keywordIndex !== -1) {
+            text = text.substring(keywordIndex + keyword.length);
         }
+    });
+
+    const endKeywordIndex = lowerCaseText.lastIndexOf(END_KEYWORD.toLowerCase());
+    if (endKeywordIndex !== -1) {
+        text = text.substring(0, endKeywordIndex).trim();
     }
+
     return trimText(text);
 }
+
 
 export const blobToBase64 = (blob: Blob): Promise<string | null> => {
     return new Promise((resolve) => {
@@ -101,5 +105,10 @@ export const whisperTranscript = async (base64: string): Promise<string> => {
         return '';
     }
 };
+
+export const detectEndKeyword = (interimText: string): boolean => {
+    return interimText.toLowerCase().includes(END_KEYWORD.toLowerCase());
+};
+
 
 

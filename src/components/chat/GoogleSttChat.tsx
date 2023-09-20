@@ -16,6 +16,7 @@ import { Mp3Encoder } from 'lamejs'
 import {
     blobToBase64,
     checkIsVoiceCommand,
+    detectEndKeyword,
     extractStartKeyword,
     getVoiceCommandAction,
     handleStartKeywords,
@@ -149,10 +150,18 @@ export const GoogleSttChat = () => {
                     await processStartKeyword(keyword, startIndex);
                 }
             }
+
+            // Check for end keyword and stop recording if detected
+            if (detectEndKeyword(interimRef.current) && !endKeywordDetectedRef.current) {
+                endKeywordDetectedRef.current = true;
+                await onAutoStop();  // Or any other method you want to call when stopping
+            }
+
         } catch (error) {
             console.error("An error occurred in onSpeechRecognized:", error);
         }
     };
+
 
     const handleTranscriptionResults = (transcribed: {
         error?: Error;
