@@ -29,6 +29,8 @@ interface WordRecognized {
     text: string
 }
 
+let audio = ''
+
 export const GoogleSttChat = () => {
     const auth = useAuth()
 
@@ -56,9 +58,37 @@ export const GoogleSttChat = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isSending, setIsSending] = useState<boolean>(false)
     const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
-    const [isUnttering, setIsUnttering] = useState<boolean>(false)
+    const [isUttering, setIsUttering] = useState<boolean>(false)
     const [isWhisperPrepared, setIsWhisperPrepared] = useState<boolean>(false)
-    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false)
+    const storedMessagesRef = useRef(null)
+    const lastSpeechIndexRef = useRef(0)
+    const isReadyToSpeech = useRef(true)
+
+    const onStartUttering = () => {
+        setIsUttering(true)
+    }
+
+    const onStopUttering = () => {
+        lastSpeechIndexRef.current += 1
+        setIsUttering(false)
+        if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
+            startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
+        }
+    }
+    
+    const startUttering = (text: string) => {
+        if (!text) {
+            return
+        }
+        if (!speechRef.current) {
+            speechRef.current = new SpeechSynthesisUtterance()
+            speechRef.current.addEventListener('start', onStartUttering)
+            speechRef.current.addEventListener('end', onStopUttering)
+        }
+        speechRef.current.text = text
+        window.speechSynthesis.speak(speechRef.current)
+    }
 
     const [interim, setInterim] = useState<string>('')
     const [noti, setNoti] = useState<{
@@ -67,6 +97,27 @@ export const GoogleSttChat = () => {
     }>()
     const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
     const [speakingRate, setSpeakingRate] = useState<number>(1)
+
+    const extractMessages = (messages) => {
+        const finalMessages = []
+
+        messages.forEach(message => {
+            const exploded = message.content.split('. ')
+            if (exploded.length === 1) {
+                finalMessages.push(message)
+            }else{
+                exploded.forEach(explodedMsg => {
+                    finalMessages.push({
+                    ...message,
+                    content: `${explodedMsg}.`
+                    })
+                    
+                })
+            }
+        });
+        
+        return finalMessages
+    }
 
     const {recording, speaking, transcript, startRecording, stopRecording} =
         useWhisper({
@@ -94,14 +145,25 @@ export const GoogleSttChat = () => {
             showErrorMessage(NOTI_MESSAGES.gpt.error)
         },
         onFinish: (message) => {
-            if (message.role === 'assistant' && message.content) {
-                startUttering(message.content)
-            }
             transcript.blob = undefined
             setIsLoading(false)
             setIsSending(false)
         },
+        onResponse: () => {
+            lastSpeechIndexRef.current = 0
+            storedMessagesRef.current = []
+        }
     })
+
+    
+    const finalMessages = extractMessages(messages)
+    const lastIndexUser = finalMessages.findLastIndex(message => message.role === 'user')
+    storedMessagesRef.current = lastIndexUser >= 0 ? finalMessages.slice(lastIndexUser+1).map(message => message.content) : []
+    
+    if (storedMessagesRef.current.length > 0 && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
+        isReadyToSpeech.current = false
+        setTimeout(() => {startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])}, 1000)
+    }
 
     const forceStopRecording = async () => {
         startKeywordDetectedRef.current = undefined
@@ -346,18 +408,7 @@ export const GoogleSttChat = () => {
         }
     }
 
-    const startUttering = (text: string) => {
-        if (!text) {
-            return
-        }
-        if (!speechRef.current) {
-            speechRef.current = new SpeechSynthesisUtterance()
-            speechRef.current.addEventListener('start', onStartUttering)
-            speechRef.current.addEventListener('end', onStopUttering)
-        }
-        speechRef.current.text = text
-        window.speechSynthesis.speak(speechRef.current)
-    }
+    
 
     const stopAutoStopTimeout = () => {
         if (autoStopRef.current) {
@@ -387,11 +438,12 @@ export const GoogleSttChat = () => {
     const stopUttering = () => {
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel()
-            setIsUnttering(false)
+            setIsUttering(false)
         }
     }
 
     const submitTranscript = async (text?: string) => {
+        isReadyToSpeech.current = true
         if (!text) {
             return
         }
@@ -423,7 +475,7 @@ export const GoogleSttChat = () => {
     }
 
     const toggleUnttering = () => {
-        if (isUnttering) {
+        if (isUttering) {
             stopUttering()
         } else {
             const lastMessage = messages
@@ -459,16 +511,8 @@ export const GoogleSttChat = () => {
         stopAutoStopTimeout()
     }
 
-    const onStartUttering = () => {
-        setIsUnttering(true)
-    }
-
     const onStopSpeaking = () => {
         setIsSpeaking(false)
-    }
-
-    const onStopUttering = () => {
-        setIsUnttering(false)
     }
 
     const cleanUpResources = () => {
@@ -550,7 +594,7 @@ export const GoogleSttChat = () => {
                 className="flex w-full flex-1 items-start justify-center overflow-auto p-4 sm:pt-10"
             >
                 <div className="container flex max-w-3xl flex-col gap-3">
-                    {messages.map((message, index) => (
+                    {finalMessages.map((message, index) => (
                         <ChatMessage
                             key={index}
                             message={message.content}
@@ -562,7 +606,7 @@ export const GoogleSttChat = () => {
             <GoogleSTTPill
                 autoStopTimeout={autoStopTimeout}
                 isAutoStop={isAutoStop}
-                isUnttering={isUnttering}
+                isUnttering={isUttering}
                 speakingRate={speakingRate}
                 onChangeAutoStopTimeout={setAutoStopTimeout}
                 onChangeIsAutoStop={setIsAutoStop}
