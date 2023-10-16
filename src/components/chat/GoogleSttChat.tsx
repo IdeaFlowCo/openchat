@@ -86,6 +86,7 @@ export const GoogleSttChat = () => {
             speechRef.current.addEventListener('start', onStartUttering)
             speechRef.current.addEventListener('end', onStopUttering)
         }
+        speechRef.current.lang = "en-US"
         speechRef.current.text = text
         window.speechSynthesis.speak(speechRef.current)
     }
