@@ -20,9 +20,15 @@ import {
     extractStartKeyword,
     getVoiceCommandAction,
     handleStartKeywords,
+    splitTextsBySeparator,
     whisperTranscript
 } from "./methods";
 import { START_KEYWORDS, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
+
+const TEXT_SEPARATORS = {
+    PARAGRAPH_BREAK: '\n\n',
+    LINE_BREAK: '\n'
+}
 
 interface WordRecognized {
     isFinal: boolean
@@ -99,26 +105,7 @@ export const GoogleSttChat = () => {
     const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
     const [speakingRate, setSpeakingRate] = useState<number>(1)
 
-    const extractMessages = (messages) => {
-        const finalMessages = []
-
-        messages.forEach(message => {
-            const exploded = message.content.split('. ')
-            if (exploded.length === 1) {
-                finalMessages.push(message)
-            }else{
-                exploded.forEach(explodedMsg => {
-                    finalMessages.push({
-                    ...message,
-                    content: `${explodedMsg}.`
-                    })
-                    
-                })
-            }
-        });
-        
-        return finalMessages
-    }
+    
 
     const {recording, speaking, transcript, startRecording, stopRecording} =
         useWhisper({
@@ -156,10 +143,11 @@ export const GoogleSttChat = () => {
         }
     })
 
-    
-    const finalMessages = extractMessages(messages)
-    const lastIndexUser = finalMessages.findLastIndex(message => message.role === 'user')
-    storedMessagesRef.current = lastIndexUser >= 0 ? finalMessages.slice(lastIndexUser+1).map(message => message.content) : []
+    const messagesSplitByParagraph = splitTextsBySeparator(messages, TEXT_SEPARATORS.PARAGRAPH_BREAK)
+    const messagesSplitByLine = splitTextsBySeparator(messagesSplitByParagraph, TEXT_SEPARATORS.LINE_BREAK)
+
+    const lastIndexUser = messagesSplitByLine.findLastIndex(message => message.role === 'user')
+    storedMessagesRef.current = lastIndexUser >= 0 ? messagesSplitByLine.slice(lastIndexUser+1).map(message => message.content) : []
     
     if (storedMessagesRef.current.length > 0 && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
         isReadyToSpeech.current = false
@@ -186,15 +174,16 @@ export const GoogleSttChat = () => {
 
     const processStartKeyword = async (keyword: string, startIndex: number) => {
         if (!startKeywordDetectedRef.current) {
+            await startRecording();
             stopUttering();
             playPing();
-            await startRecording();
             startKeywordDetectedRef.current = true;
         }
     }
 
     const onSpeechRecognized = async (data: WordRecognized) => {
         try {
+
             if (isProcessing) return;
 
             interimRef.current += ` ${data.text}`;
@@ -208,8 +197,10 @@ export const GoogleSttChat = () => {
 
             if (!startKeywordDetectedRef.current) {
                 const keyword = extractStartKeyword(interimRef.current);
+                console.log(data, keyword, interimRef.current)
                 if (keyword) {
                     const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
+                    console.log("ENTRAMOS", startIndex)
                     await processStartKeyword(keyword, startIndex);
                 }
             }
@@ -595,7 +586,7 @@ export const GoogleSttChat = () => {
                 className="flex w-full flex-1 items-start justify-center overflow-auto p-4 sm:pt-10"
             >
                 <div className="container flex max-w-3xl flex-col gap-3">
-                    {finalMessages.map((message, index) => (
+                    {messagesSplitByLine.map((message, index) => (
                         <ChatMessage
                             key={index}
                             message={message.content}

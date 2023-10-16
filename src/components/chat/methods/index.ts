@@ -1,6 +1,7 @@
 import { VoiceCommand } from "../../../types/useWhisperTypes";
 import wordsToNumbers from "words-to-numbers";
 import { END_KEYWORD, START_KEYWORDS, VOICE_COMMANDS } from "../constants";
+import { Message } from "ai";
 
 type VoiceCommandAction =
     | { type: 'SET_IS_AUTO_STOP', value: boolean }
@@ -87,6 +88,7 @@ export const blobToBase64 = (blob: Blob): Promise<string | null> => {
 };
 
 export const whisperTranscript = async (base64: string): Promise<string> => {
+    console.log("WHISPER")
     try {
         const body = {
             file: base64,
@@ -111,4 +113,22 @@ export const detectEndKeyword = (interimText: string): boolean => {
 };
 
 
-
+export const splitTextsBySeparator = (texts: Message[], separator:string): Message[] => {
+    const finalMessages = []
+    texts.forEach(text => {
+        const exploded = text.content.split(separator)
+        if (exploded.length === 1) {
+            finalMessages.push(text)
+        }else{
+            exploded.forEach(explodedMsg => {
+                finalMessages.push({
+                ...text,
+                content: explodedMsg
+                })
+                
+            })
+        }
+    });
+    
+    return finalMessages
+}
