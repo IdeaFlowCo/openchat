@@ -71,6 +71,7 @@ export const GoogleSttChat = () => {
     const storedMessagesRef = useRef(null)
     const lastSpeechIndexRef = useRef(0)
     const isReadyToSpeech = useRef(true)
+    const [firstMessage, setFirstMessage] = useState<string | null>(null)
 
     const onStartUttering = () => {
         setIsUttering(true)
@@ -129,7 +130,6 @@ export const GoogleSttChat = () => {
     const {
         messages,
         append,
-        isLoading: isResponding,
         input,
         setInput,
         handleInputChange,
@@ -144,9 +144,9 @@ export const GoogleSttChat = () => {
         },
         onFinish: (message) => {
             transcript.blob = undefined
+            setFirstMessage(message.content)
             setIsLoading(false)
             setIsSending(false)
-            
         },
         onResponse: () => {
             lastSpeechIndexRef.current = 0
@@ -160,12 +160,15 @@ export const GoogleSttChat = () => {
 
     const lastIndexUser = messagesSplitByLine.findLastIndex(message => message.role === 'user')
     storedMessagesRef.current = lastIndexUser >= 0 ? messagesSplitByLine.slice(lastIndexUser+1).map(message => message.content) : []
-    
-    if ((storedMessagesRef.current.length > 1 || (storedMessagesRef.current.length === 1 && !isSending)) 
-        && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
+    if (storedMessagesRef.current.length > 1 && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
         isReadyToSpeech.current = false
         startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
+        
     }
+
+    useEffect(() => {
+        if (firstMessage && storedMessagesRef.current.length === 1) startUttering(firstMessage)
+    }, [firstMessage])
 
     const forceStopRecording = async () => {
         startKeywordDetectedRef.current = undefined
