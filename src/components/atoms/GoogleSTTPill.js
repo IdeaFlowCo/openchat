@@ -1,7 +1,7 @@
 import SettingsDropdown from './SettingsDropdown'
 import SpeakingRateDropdown from './SpeakingRateDropdown'
 
-export default function PorcupinePill({
+export default function GoogleSTTPill({
   autoStopTimeout,
   isAutoStop,
   isUnttering,

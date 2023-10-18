@@ -24,6 +24,7 @@ import {
     whisperTranscript
 } from "./methods";
 import { START_KEYWORDS, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
+import {isAndroid} from 'react-device-detect';
 
 const TEXT_SEPARATORS = {
     PARAGRAPH_BREAK: '\n\n',
@@ -77,9 +78,10 @@ export const GoogleSttChat = () => {
 
     const onStopUttering = () => {
         lastSpeechIndexRef.current += 1
-        setIsUttering(false)
         if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
             startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
+        } else {
+            setIsUttering(false)
         }
     }
     
@@ -87,14 +89,22 @@ export const GoogleSttChat = () => {
         if (!text) {
             return
         }
-        if (!speechRef.current) {
-            speechRef.current = new SpeechSynthesisUtterance()
-            speechRef.current.addEventListener('start', onStartUttering)
-            speechRef.current.addEventListener('end', onStopUttering)
+        setIsUttering(true)
+        if (!isAndroid) {
+            if (!speechRef.current) {
+                speechRef.current = new SpeechSynthesisUtterance()
+                speechRef.current.addEventListener('start', onStartUttering)
+                speechRef.current.addEventListener('end', onStopUttering)
+            }
+            speechRef.current.lang = "en-US"
+            speechRef.current.text = text
+            globalThis.speechSynthesis.speak(speechRef.current)
+        } else {
+            globalThis.ReactNativeWebView.postMessage(JSON.stringify({
+                type: "speaking-start",
+                data: text, 
+            }))
         }
-        speechRef.current.lang = "en-US"
-        speechRef.current.text = text
-        window.speechSynthesis.speak(speechRef.current)
     }
 
     const [interim, setInterim] = useState<string>('')
@@ -136,6 +146,7 @@ export const GoogleSttChat = () => {
             transcript.blob = undefined
             setIsLoading(false)
             setIsSending(false)
+            
         },
         onResponse: () => {
             lastSpeechIndexRef.current = 0
@@ -145,13 +156,15 @@ export const GoogleSttChat = () => {
 
     const messagesSplitByParagraph = splitTextsBySeparator(messages, TEXT_SEPARATORS.PARAGRAPH_BREAK)
     const messagesSplitByLine = splitTextsBySeparator(messagesSplitByParagraph, TEXT_SEPARATORS.LINE_BREAK)
+    
 
     const lastIndexUser = messagesSplitByLine.findLastIndex(message => message.role === 'user')
     storedMessagesRef.current = lastIndexUser >= 0 ? messagesSplitByLine.slice(lastIndexUser+1).map(message => message.content) : []
     
-    if (storedMessagesRef.current.length > 0 && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
+    if ((storedMessagesRef.current.length > 1 || (storedMessagesRef.current.length === 1 && !isSending)) 
+        && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
         isReadyToSpeech.current = false
-        setTimeout(() => {startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])}, 1000)
+        startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
     }
 
     const forceStopRecording = async () => {
@@ -197,10 +210,8 @@ export const GoogleSttChat = () => {
 
             if (!startKeywordDetectedRef.current) {
                 const keyword = extractStartKeyword(interimRef.current);
-                console.log(data, keyword, interimRef.current)
                 if (keyword) {
                     const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
-                    console.log("ENTRAMOS", startIndex)
                     await processStartKeyword(keyword, startIndex);
                 }
             }
@@ -360,6 +371,7 @@ export const GoogleSttChat = () => {
 
     const startListening = async () => {
         await prepareSocket()
+        
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop())
         }
@@ -375,7 +387,7 @@ export const GoogleSttChat = () => {
 
         await prepareHark()
 
-        audioContextRef.current = new window.AudioContext()
+        audioContextRef.current = new globalThis.AudioContext()
         await audioContextRef.current.audioWorklet.addModule(
             '/worklets/recorderWorkletProcessor.js'
         )
@@ -392,7 +404,6 @@ export const GoogleSttChat = () => {
         audioInputRef.current.connect(processorRef.current)
 
         setIsListening(true)
-
         socketRef.current.emit('startGoogleCloudStream')
 
         processorRef.current.port.onmessage = ({data: audio}) => {
@@ -428,10 +439,16 @@ export const GoogleSttChat = () => {
     }
 
     const stopUttering = () => {
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel()
-            setIsUttering(false)
+        if (!isAndroid && globalThis.speechSynthesis.speaking) {
+            globalThis.speechSynthesis.cancel()
         }
+        if (isAndroid) {
+            globalThis.ReactNativeWebView.postMessage(JSON.stringify({
+                type: "speaking-stop"
+            }))
+        }
+        
+        setIsUttering(false)
     }
 
     const submitTranscript = async (text?: string) => {
@@ -527,6 +544,18 @@ export const GoogleSttChat = () => {
             speechRef.current.removeEventListener('end', onStopUttering)
         }
     }
+
+    useEffect(() => {
+        function handleStopUttering(message: {data: {type: string, data: boolean}}) {
+            const {data, type} = message.data
+            if (type === 'speaking' && data === false) {
+                onStopUttering()
+            }
+        }
+
+        window.addEventListener("message", handleStopUttering);
+        return () => window.removeEventListener("message", handleStopUttering);
+    }, [])
 
     /**
      * check before sending audio blob to Whisper for transcription

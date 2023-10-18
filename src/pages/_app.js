@@ -8,10 +8,8 @@ import { QueryClientProvider } from "react-query";
 import { Toaster } from "react-hot-toast";
 import Navbar from "components/Navbar";
 import Footer from "components/Footer";
-import useSpeechSynthesisHack from 'hooks/useSpeechSynthesisHack'
 
 function MyApp({ Component, pageProps }) {
-    useSpeechSynthesisHack()
     return (
         <QueryClientProvider client={client}>
             <AuthProvider>
