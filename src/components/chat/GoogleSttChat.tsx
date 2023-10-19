@@ -72,6 +72,7 @@ export const GoogleSttChat = () => {
     const lastSpeechIndexRef = useRef(0)
     const isReadyToSpeech = useRef(true)
     const [firstMessage, setFirstMessage] = useState<string | null>(null)
+    const [isFinalData, setIsFinalData] = useState<boolean>(false);
 
     const onStartUttering = () => {
         setIsUttering(true)
@@ -117,11 +118,12 @@ export const GoogleSttChat = () => {
     const [speakingRate, setSpeakingRate] = useState<number>(1)
 
     
-
-    const {recording, speaking, transcript, startRecording, stopRecording} =
+    // REMOVE
+    const {recording, transcript, startRecording, stopRecording} =
         useWhisper({
             apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
             autoTranscribe: false,
+            removeSilence: true,
             whisperConfig: {
                 language: 'en',
             },
@@ -172,6 +174,7 @@ export const GoogleSttChat = () => {
 
     const forceStopRecording = async () => {
         startKeywordDetectedRef.current = undefined
+        setIsFinalData(false)
         stopUttering()
         playSonar()
         setIsLoading(true)
@@ -181,6 +184,7 @@ export const GoogleSttChat = () => {
     const onAutoStop = async () => {
         startKeywordDetectedRef.current = undefined
         endKeywordDetectedRef.current = undefined
+        setIsFinalData(false)
         stopAutoStopTimeout()
         stopUttering()
         playSonar()
@@ -188,7 +192,7 @@ export const GoogleSttChat = () => {
         await stopRecording()
     }
 
-    const processStartKeyword = async (keyword: string, startIndex: number) => {
+    const processStartKeyword = async () => {
         if (!startKeywordDetectedRef.current) {
             await startRecording();
             stopUttering();
@@ -209,13 +213,16 @@ export const GoogleSttChat = () => {
                 interimsRef.current.push(data.text);
                 interimRef.current = '';
                 startKeywordDetectedRef.current = false;
+                setIsFinalData(true)
+            } else {
+                setIsFinalData(false)
             }
 
             if (!startKeywordDetectedRef.current) {
                 const keyword = extractStartKeyword(interimRef.current);
                 if (keyword) {
-                    const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
-                    await processStartKeyword(keyword, startIndex);
+                    // const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
+                    await processStartKeyword();
                 }
             }
 
@@ -384,6 +391,8 @@ export const GoogleSttChat = () => {
                 sampleRate: 16000,
                 sampleSize: 16,
                 channelCount: 1,
+                noiseSuppression: true,
+                echoCancellation: true,
             },
             video: false,
         })
@@ -401,14 +410,14 @@ export const GoogleSttChat = () => {
             audioContextRef.current,
             'recorder.worklet'
         )
-
+        
         processorRef.current.connect(audioContextRef.current.destination)
         audioContextRef.current.resume()
         audioInputRef.current.connect(processorRef.current)
 
         setIsListening(true)
         socketRef.current.emit('startGoogleCloudStream')
-
+        
         processorRef.current.port.onmessage = ({data: audio}) => {
             socketRef.current.emit('send_audio_data', {audio})
         }
@@ -582,13 +591,13 @@ export const GoogleSttChat = () => {
     }, [recording, isSending, isWhisperPrepared, transcript])
 
     useEffect(() => {
-        if (isAutoStop && recording && !isSpeaking) {
+        if (isAutoStop && recording && isFinalData) {
             startAutoStopTimeout()
         }
-        if (isAutoStop && !recording) {
+        if ((isAutoStop && !recording) || !isFinalData) {
             stopAutoStopTimeout()
         }
-    }, [autoStopTimeout, isAutoStop, recording, isSpeaking])
+    }, [isAutoStop, recording, isSpeaking, isFinalData])
 
     useEffect(() => {
         if (speechRef.current) {
