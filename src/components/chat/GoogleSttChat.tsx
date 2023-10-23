@@ -566,8 +566,7 @@ export const GoogleSttChat = () => {
         }
 
         function handleBlur(){
-            setIsSpeaking(false)
-            setIsListening(false)
+            stopListening()
         }
 
         window.addEventListener("message", handleStopUttering);
