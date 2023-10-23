@@ -565,8 +565,17 @@ export const GoogleSttChat = () => {
             }
         }
 
+        function handleBlur(){
+            setIsSpeaking(false)
+            setIsListening(false)
+        }
+
         window.addEventListener("message", handleStopUttering);
-        return () => window.removeEventListener("message", handleStopUttering);
+        window.addEventListener("blur", handleBlur)
+        return () => {
+            window.removeEventListener("message", handleStopUttering)
+            window.removeEventListener("blur", handleBlur)
+        };
     }, [])
 
     /**
