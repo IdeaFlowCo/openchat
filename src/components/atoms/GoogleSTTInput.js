@@ -102,35 +102,21 @@ export default function GoogleSTTInput({
         </div>
 
         <div className="w-[3.125rem]">
-          {isRecording && isWhisperPrepared ? (
+          {isRecording && isWhisperPrepared && (
+              <button
+                onClick={async () => {
+                  await onForceStopRecording()
+                }}
+                className="rounded-full border bg-[#96BE64] p-3"
+              >
+                {isSpeaking ? <MicWaveIcon /> : <MicIcon />}
+              </button>
+          )}
+
+          {!(isRecording && isWhisperPrepared) && isSpeaking && (
             <button
               onClick={async () => {
-                await onForceStopRecording()
-                /**
-                 * Start keyword detected
-                 * - stop computer utterance
-                 * - stop recording
-                 * - stop porcupine
-                 */
-                // onStopUttering?.()
-                // await onStopRecording?.()
-                // onStopPorcupine?.()
-                // onSetIsLoading(true)
-              }}
-              className="rounded-full border bg-[#96BE64] p-3"
-            >
-              {isSpeaking ? <MicWaveIcon /> : <MicIcon />}
-            </button>
-          ) : isSpeaking ? (
-            <button
-              onClick={async () => {
-                /**
-                 * Start keyword not detected and there is sound detected
-                 * - stop computer utterance
-                 * - stop porcupine
-                 */
                 onStopUttering?.()
-                // onStopPorcupine?.()
                 onStopListening?.()
               }}
               disabled={isLoading}
@@ -138,16 +124,12 @@ export default function GoogleSTTInput({
             >
               <MicWaveIcon />
             </button>
-          ) : isListening ? (
+          )}
+
+          {!(isRecording && isWhisperPrepared) && !isSpeaking && isListening && (
             <button
               onClick={() => {
-                /**
-                 * Start keyword not detected and no sound detected
-                 * - stop computer utterance
-                 * - stop porcupine
-                 */
                 onStopUttering?.()
-                // onStopPorcupine?.()
                 onStopListening?.()
               }}
               disabled={isLoading}
@@ -155,11 +137,12 @@ export default function GoogleSTTInput({
             >
               <MicIcon />
             </button>
-          ) : (
+          )}
+
+          {!(isRecording && isWhisperPrepared) && !isSpeaking && !isListening && (
             <button
               onClick={async () => {
                 onStartListening?.()
-                // onStartPorcupine?.()
               }}
               className="rounded-full border bg-white p-3 text-white hover:opacity-70 "
             >

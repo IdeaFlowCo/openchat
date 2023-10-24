@@ -38,7 +38,7 @@ export default function SpeakingRateDropdown({
         </Transition>
         <div className="min-w-[64px]">
           <Menu.Button className="inline-flex w-full justify-center rounded-md bg-opacity-20 px-4 py-2 text-sm font-medium text-black hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-            {`${speakingRate.toFixed(1)}x`}
+            {`${speakingRate}x`}
           </Menu.Button>
         </div>
       </Menu>
@@ -48,10 +48,22 @@ export default function SpeakingRateDropdown({
 
 const getSpeakigRates = () => {
   let rates = []
-  for (let i = 0.5; i <= 3; i += 0.5) {
+  for (let i = 0.5; i <= 1; i += 0.5) {
     rates.push({
       label: `${i.toFixed(1)}x`,
       value: i,
+    })
+  }
+  for (let j = 1.25; j <= 1.75; j += 0.25) {
+    rates.push({
+      label: `${j}x`,
+      value: j,
+    })
+  }
+  for (let k = 2; k <= 3; k += 0.5) {
+    rates.push({
+      label: `${k.toFixed(1)}x`,
+      value: k,
     })
   }
   return rates
