@@ -103,7 +103,7 @@ export const GoogleSttChat = () => {
             return
         }
         dispatch({type: Actions.START_UTTERING})
-        if (!isAndroid) {
+        if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
             if (!speechRef.current) {
                 speechRef.current = new SpeechSynthesisUtterance()
                 speechRef.current.addEventListener('start', onStartUttering)
@@ -451,10 +451,11 @@ export const GoogleSttChat = () => {
     }
 
     const stopUttering = () => {
-        if (!isAndroid && globalThis.speechSynthesis.speaking) {
-            globalThis.speechSynthesis.cancel()
-        }
-        if (isAndroid) {
+        if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
+            if (globalThis.speechSynthesis.speaking) {
+                globalThis.speechSynthesis.cancel()
+            }
+        } else {
             globalThis.ReactNativeWebView.postMessage(JSON.stringify({
                 type: "speaking-stop"
             }))
