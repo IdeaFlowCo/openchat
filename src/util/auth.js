@@ -261,12 +261,12 @@ function useMergeExtraData(user, { enabled }) {
             case "error":
                 // Uh oh.. Let's at least show a helpful error.
                 // TODO: uncomment when supabase work again
-                // throw new Error(`
-                //     Error: ${error.message}
-                //     This happened while attempting to fetch extra user data from the database
-                //     to include with the authenticated user. Make sure the database is setup or
-                //     disable merging extra user data by setting MERGE_DB_USER to false.
-                // `);
+                throw new Error(`
+                    Error: ${error.message}
+                    This happened while attempting to fetch extra user data from the database
+                    to include with the authenticated user. Make sure the database is setup or
+                    disable merging extra user data by setting MERGE_DB_USER to false.
+                `);
                 return null
             default:
                 // We have an `idle` or `loading` status so return `null`
