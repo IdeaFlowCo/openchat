@@ -7,7 +7,7 @@ import GoogleSTTPill from 'components/atoms/GoogleSTTPill'
 import InterimHistory from 'components/atoms/InterimHistory'
 import type { Harker } from 'hark'
 import type { Encoder } from 'lamejs'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import io, { type Socket } from 'socket.io-client'
 import { type VoiceCommand } from 'types/useWhisperTypes'
 import useSound from 'use-sound'
@@ -25,6 +25,7 @@ import {
 } from "./methods";
 import { START_KEYWORDS, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
 import {isAndroid} from 'react-device-detect';
+import {initialState, Actions, reducer} from './reducers'
 
 const TEXT_SEPARATORS = {
     PARAGRAPH_BREAK: '\n\n',
@@ -36,11 +37,21 @@ interface WordRecognized {
     text: string
 }
 
-let audio = ''
+
+interface ReducerState {
+    isAutoStop: boolean
+    isListening: boolean
+    isLoading: boolean
+    isSending: boolean
+    isSpeaking: boolean
+    isUttering: boolean
+    isWhisperPrepared: boolean
+    isFinalData: boolean
+}
+
 
 export const GoogleSttChat = () => {
     const auth = useAuth()
-
     const audioContextRef = useRef<any>()
     const audioInputRef = useRef<any>()
     const autoStopRef = useRef<NodeJS.Timeout>()
@@ -56,26 +67,26 @@ export const GoogleSttChat = () => {
     const speechRef = useRef<SpeechSynthesisUtterance>()
     const startKeywordDetectedRef = useRef<boolean>(false)
     const streamRef = useRef<MediaStream>()
+    const storedMessagesRef = useRef(null)
+    const lastSpeechIndexRef = useRef(0)
+    const isReadyToSpeech = useRef(true)
+
+    const [firstMessage, setFirstMessage] = useState<string | null>(null)
+    const [interim, setInterim] = useState<string>('')
+    const [noti, setNoti] = useState<{
+        type: 'error' | 'success'
+        message: string
+    }>()
+    const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
+    const [speakingRate, setSpeakingRate] = useState<number>(1)
+
+    const [state, dispatch] = useReducer(reducer, initialState)
 
     const [playPing] = useSound('/sounds/ping.mp3')
     const [playSonar] = useSound('/sounds/sonar.mp3')
 
-    const [isAutoStop, setIsAutoStop] = useState<boolean>(true)
-    const [isListening, setIsListening] = useState<boolean>(false)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [isSending, setIsSending] = useState<boolean>(false)
-    const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
-    const [isUttering, setIsUttering] = useState<boolean>(false)
-    const [isWhisperPrepared, setIsWhisperPrepared] = useState<boolean>(false)
-    const [isProcessing, setIsProcessing] = useState<boolean>(false)
-    const storedMessagesRef = useRef(null)
-    const lastSpeechIndexRef = useRef(0)
-    const isReadyToSpeech = useRef(true)
-    const [firstMessage, setFirstMessage] = useState<string | null>(null)
-    const [isFinalData, setIsFinalData] = useState<boolean>(false);
-
     const onStartUttering = () => {
-        setIsUttering(true)
+        dispatch({type: Actions.START_UTTERING})
     }
 
     const onStopUttering = () => {
@@ -83,7 +94,7 @@ export const GoogleSttChat = () => {
         if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
             startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
         } else {
-            setIsUttering(false)
+            dispatch({type: Actions.STOP_UTTERING})
         }
     }
     
@@ -91,7 +102,7 @@ export const GoogleSttChat = () => {
         if (!text) {
             return
         }
-        setIsUttering(true)
+        dispatch({type: Actions.START_UTTERING})
         if (!isAndroid) {
             if (!speechRef.current) {
                 speechRef.current = new SpeechSynthesisUtterance()
@@ -109,16 +120,8 @@ export const GoogleSttChat = () => {
         }
     }
 
-    const [interim, setInterim] = useState<string>('')
-    const [noti, setNoti] = useState<{
-        type: 'error' | 'success'
-        message: string
-    }>()
-    const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
-    const [speakingRate, setSpeakingRate] = useState<number>(1)
-
     
-    // REMOVE
+
     const {recording, transcript, startRecording, stopRecording} =
         useWhisper({
             apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -140,15 +143,13 @@ export const GoogleSttChat = () => {
         initialMessages: [],
         onError: (sendDetectedTranscriptError) => {
             console.error({sendDetectedTranscriptError})
-            setIsLoading(false)
-            setIsSending(false)
+            dispatch({type: Actions.STOP_SENDING_CHAT})
             showErrorMessage(NOTI_MESSAGES.gpt.error)
         },
         onFinish: (message) => {
             transcript.blob = undefined
             setFirstMessage(message.content)
-            setIsLoading(false)
-            setIsSending(false)
+            dispatch({type: Actions.STOP_SENDING_CHAT})
         },
         onResponse: () => {
             lastSpeechIndexRef.current = 0
@@ -174,37 +175,37 @@ export const GoogleSttChat = () => {
 
     const forceStopRecording = async () => {
         startKeywordDetectedRef.current = undefined
-        setIsFinalData(false)
+        dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
         stopUttering()
         playSonar()
-        setIsLoading(true)
+        dispatch({type: Actions.START_LOADING})
         stopRecording()
     }
 
     const onAutoStop = async () => {
         startKeywordDetectedRef.current = undefined
         endKeywordDetectedRef.current = undefined
-        setIsFinalData(false)
+        dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
         stopAutoStopTimeout()
         stopUttering()
+        console.table("SONAR")
         playSonar()
-        setIsLoading(true)
+        dispatch({type: Actions.START_LOADING})
         await stopRecording()
     }
 
     const processStartKeyword = async () => {
-        if (!startKeywordDetectedRef.current) {
+        console.table("PING")
+        
             await startRecording();
             stopUttering();
             playPing();
             startKeywordDetectedRef.current = true;
-        }
+        
     }
 
     const onSpeechRecognized = async (data: WordRecognized) => {
         try {
-
-            if (isProcessing) return;
 
             interimRef.current += ` ${data.text}`;
             setInterim(data.text);
@@ -213,13 +214,14 @@ export const GoogleSttChat = () => {
                 interimsRef.current.push(data.text);
                 interimRef.current = '';
                 startKeywordDetectedRef.current = false;
-                setIsFinalData(true)
+                dispatch({type: Actions.FINAL_DATA_RECEIVED})
             } else {
-                setIsFinalData(false)
+                dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
             }
 
             if (!startKeywordDetectedRef.current) {
                 const keyword = extractStartKeyword(interimRef.current);
+                console.log({keyword})
                 if (keyword) {
                     // const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
                     await processStartKeyword();
@@ -249,8 +251,7 @@ export const GoogleSttChat = () => {
         }
         if (!transcribed.text) {
             showErrorMessage('Voice command not detected. Please speak again.');
-            setIsLoading(false);
-            setIsSending(false);
+            dispatch({type: Actions.STOP_SENDING_CHAT})
             return null;
         }
         return transcribed.text;
@@ -274,8 +275,7 @@ export const GoogleSttChat = () => {
         await submitTranscript(text);
 
         transcript.blob = undefined;
-        setIsLoading(false);
-        setIsSending(false);
+        dispatch({type: Actions.STOP_SENDING_CHAT})
     };
 
     const prepareHark = async () => {
@@ -292,14 +292,14 @@ export const GoogleSttChat = () => {
     }
 
     const prepareUseWhisper = async () => {
-        if (!isWhisperPrepared) {
+        if (!state.isWhisperPrepared) {
             /**
              * fake start and stop useWhisper so that recorder is prepared
              * once start keyword detected, useWhisper can start record instantly
              */
             await startRecording()
             await stopRecording()
-            setIsWhisperPrepared(true)
+            dispatch({type: Actions.PREPARE_WHISPER})
         }
     }
 
@@ -330,8 +330,8 @@ export const GoogleSttChat = () => {
 
     const releaseSocket = async () => {
         if (socketRef.current) {
-            socketRef.current.emit('endGoogleCloudStream')
-            socketRef.current.disconnect()
+            socketRef.current?.emit('endGoogleCloudStream')
+            socketRef.current?.disconnect()
         }
         processorRef.current?.disconnect()
         audioInputRef.current?.disconnect()
@@ -345,7 +345,7 @@ export const GoogleSttChat = () => {
 
         switch (action?.type) {
             case 'SET_IS_AUTO_STOP':
-                setIsAutoStop(action.value);
+                dispatch({type: Actions.TOGGLE_AUTO_STOP, value: action.value});
                 break;
             case 'SET_AUTO_STOP_TIMEOUT':
                 setAutoStopTimeout(action.value);
@@ -359,7 +359,7 @@ export const GoogleSttChat = () => {
                 break;
             default:
                 transcript.blob = undefined;
-                setIsLoading(false);
+                dispatch({type: Actions.STOP_LOADING})
                 showErrorMessage('Unknown command.');
                 break;
         }
@@ -415,11 +415,11 @@ export const GoogleSttChat = () => {
         audioContextRef.current.resume()
         audioInputRef.current.connect(processorRef.current)
 
-        setIsListening(true)
-        socketRef.current.emit('startGoogleCloudStream')
+        dispatch({type: Actions.START_LISTENING})
+        socketRef.current?.emit('startGoogleCloudStream')
         
         processorRef.current.port.onmessage = ({data: audio}) => {
-            socketRef.current.emit('send_audio_data', {audio})
+            socketRef.current?.emit('send_audio_data', {audio})
         }
     }
 
@@ -446,8 +446,8 @@ export const GoogleSttChat = () => {
         }
         interimsRef.current = []
         setInterim('')
-        setIsListening(false)
-        socketRef.current.emit('endGoogleCloudStream')
+        dispatch({type: Actions.STOP_LISTENING})
+        socketRef.current?.emit('endGoogleCloudStream')
     }
 
     const stopUttering = () => {
@@ -460,7 +460,7 @@ export const GoogleSttChat = () => {
             }))
         }
         
-        setIsUttering(false)
+        dispatch({type: Actions.STOP_UTTERING})
     }
 
     const submitTranscript = async (text?: string) => {
@@ -472,8 +472,7 @@ export const GoogleSttChat = () => {
         // if (!auth.user) {
         //   return
         // }
-        if (!isLoading) setIsLoading(true)
-        setIsSending(true)
+        dispatch({type: Actions.START_SENDING_CHAT})
         setNoti(undefined)
         setInput('')
 
@@ -488,15 +487,14 @@ export const GoogleSttChat = () => {
             return
         } catch (sendDetectedTranscriptError) {
             console.error({sendDetectedTranscriptError})
-            setIsLoading(false)
-            setIsSending(false)
+            dispatch({type: Actions.STOP_SENDING_CHAT})
             showErrorMessage(NOTI_MESSAGES.gpt.error)
             return
         }
     }
 
-    const toggleUnttering = () => {
-        if (isUttering) {
+    const toggleUttering = () => {
+        if (state.isUttering) {
             stopUttering()
         } else {
             const lastMessage = messages
@@ -528,12 +526,12 @@ export const GoogleSttChat = () => {
     };
 
     const onStartSpeaking = () => {
-        setIsSpeaking(true)
+        dispatch({type: Actions.START_SPEAKING})
         stopAutoStopTimeout()
     }
 
     const onStopSpeaking = () => {
-        setIsSpeaking(false)
+        dispatch({type: Actions.STOP_SPEAKING})
     }
 
     const cleanUpResources = () => {
@@ -582,9 +580,9 @@ export const GoogleSttChat = () => {
      */
     useEffect(() => {
         if (
-            !isSending &&
+            !state.isSending &&
             !recording &&
-            isWhisperPrepared &&
+            state.isWhisperPrepared &&
             /**
              * Recorded audio should not be empty.
              * Empty wav file always start with 44 bytes not 0.
@@ -596,16 +594,16 @@ export const GoogleSttChat = () => {
                 sendingDetectedMessageRef.current = false
             })
         }
-    }, [recording, isSending, isWhisperPrepared, transcript])
+    }, [recording, state.isSending, state.isWhisperPrepared, transcript])
 
     useEffect(() => {
-        if (isAutoStop && recording && isFinalData) {
+        if (state.isAutoStop && recording && state.isFinalData) {
             startAutoStopTimeout()
         }
-        if ((isAutoStop && !recording) || !isFinalData) {
+        if ((state.isAutoStop && !recording) || !state.isFinalData) {
             stopAutoStopTimeout()
         }
-    }, [isAutoStop, recording, isSpeaking, isFinalData])
+    }, [state.isAutoStop, recording, state.isSpeaking, state.isFinalData])
 
     useEffect(() => {
         if (speechRef.current) {
@@ -646,13 +644,13 @@ export const GoogleSttChat = () => {
             </div>
             <GoogleSTTPill
                 autoStopTimeout={autoStopTimeout}
-                isAutoStop={isAutoStop}
-                isUnttering={isUttering}
+                isAutoStop={state.isAutoStop}
+                isUnttering={state.isUttering}
                 speakingRate={speakingRate}
                 onChangeAutoStopTimeout={setAutoStopTimeout}
-                onChangeIsAutoStop={setIsAutoStop}
+                onChangeIsAutoStop={(value) => {dispatch({type: Actions.TOGGLE_AUTO_STOP, value: value})}}
                 onChangeSpeakingRate={setSpeakingRate}
-                onToggleUnttering={toggleUnttering}
+                onToggleUnttering={toggleUttering}
             />
             {noti ? (
                 <Alert
@@ -665,11 +663,11 @@ export const GoogleSttChat = () => {
                 <InterimHistory interims={interimsRef.current} interim={interim}/>
             ) : null}
             <GoogleSTTInput
-                isListening={isListening}
-                isLoading={isLoading}
-                isSpeaking={isSpeaking}
+                isListening={state.isListening}
+                isLoading={state.isLoading}
+                isSpeaking={state.isSpeaking}
                 isRecording={recording}
-                isWhisperPrepared={isWhisperPrepared}
+                isWhisperPrepared={state.isWhisperPrepared}
                 query={input}
                 onChangeQuery={handleInputChange}
                 onForceStopRecording={forceStopRecording}
