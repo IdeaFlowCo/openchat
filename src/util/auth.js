@@ -16,7 +16,7 @@ import PageLoader from "./../components/PageLoader";
 // Whether to merge extra user data from database into `auth.user`
 // June 21, 2023: Changed from true to false since no plans to use
 // Stripe payments for this project for the time being.
-const MERGE_DB_USER = true;
+const MERGE_DB_USER = false;
 
 // Whether to connect analytics session to `user.uid`
 // June 21, 2023: Changed from true to false since no plans to use
