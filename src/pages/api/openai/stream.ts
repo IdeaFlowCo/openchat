@@ -27,9 +27,9 @@ export default async function handler(req: Request, res: Response) {
   console.log({ messages, userId })
 
   // TODO: uncomment when supabase work again
-  // if (!messages || !userId) {
-  //   return new Response('Missing messages, userId.', { status: 400 })
-  // }
+  if (!messages || !userId) {
+    return new Response('Missing messages, userId.', { status: 400 })
+  }
   if (!messages) {
     return new Response('Missing messages, userId.', { status: 400 })
   }

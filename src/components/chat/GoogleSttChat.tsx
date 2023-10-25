@@ -461,9 +461,9 @@ export const GoogleSttChat = () => {
             return
         }
         // TODO: uncomment when supabase work again
-        // if (!auth.user) {
-        //   return
-        // }
+        if (!auth.user) {
+          return
+        }
         dispatch({type: Actions.START_SENDING_CHAT})
         setNoti(undefined)
         setInput('')
