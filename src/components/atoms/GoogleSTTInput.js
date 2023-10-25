@@ -120,7 +120,7 @@ export default function GoogleSTTInput({
                 onStopListening?.()
               }}
               disabled={isLoading}
-              className="rounded-full border bg-[#96BE64] p-3"
+              className={`rounded-full border ${isListening ? 'bg-[#F2C80F]' : 'bg-[#96BE64]'} p-3`}
             >
               <MicWaveIcon />
             </button>
@@ -133,7 +133,7 @@ export default function GoogleSTTInput({
                 onStopListening?.()
               }}
               disabled={isLoading}
-              className="rounded-full border bg-[#96BE64] p-3"
+              className="rounded-full border bg-[#F2C80F] p-3"
             >
               <MicIcon />
             </button>

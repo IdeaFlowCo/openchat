@@ -1,6 +1,7 @@
-export const START_KEYWORDS = ['Alexa', 'Alex']
-export const END_KEYWORD = 'Terminator'
-export const STOP_TIMEOUT = 3 // 3 seconds
+export const START_KEYWORDS = ['flow', 'start dictation']
+export const END_KEYWORDS = ['over', 'end dictation']
+export const STOP_TIMEOUT = 2 // 2 seconds
+export const BE_CONCISE = 'Please, be concise.'
 export const VOICE_COMMANDS = [
     {
         command: 'off-auto-stop',

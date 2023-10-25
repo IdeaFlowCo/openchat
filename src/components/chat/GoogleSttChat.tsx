@@ -23,7 +23,7 @@ import {
     splitTextsBySeparator,
     whisperTranscript
 } from "./methods";
-import { START_KEYWORDS, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
+import { BE_CONCISE, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
 import {isAndroid} from 'react-device-detect';
 import {initialState, Actions, reducer} from './reducers'
 
@@ -37,16 +37,10 @@ interface WordRecognized {
     text: string
 }
 
-
-interface ReducerState {
-    isAutoStop: boolean
-    isListening: boolean
-    isLoading: boolean
-    isSending: boolean
-    isSpeaking: boolean
-    isUttering: boolean
-    isWhisperPrepared: boolean
-    isFinalData: boolean
+const defaultMessage: Message = {
+    content: `Welcome to Flow, your voice assistant. To activate flow, turn on the microphone. Then when you want to ask Flow a question and say “Flow, write a poem about Doug Engelbart” or anything else you would like to ask. You can switch to always on mode which allows you to speak, slowly, and end an utterance by saying “Over”.`,
+    role: 'assistant',
+    id: 'initial-message',
 }
 
 
@@ -82,8 +76,8 @@ export const GoogleSttChat = () => {
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const [playPing] = useSound('/sounds/ping.mp3')
-    const [playSonar] = useSound('/sounds/sonar.mp3')
+    const [playPing] = useSound('/sounds/bubble.mp3')
+    const [playSonar] = useSound('/sounds/sonar.mp3', {volume: 0.3})
 
     const onStartUttering = () => {
         dispatch({type: Actions.START_UTTERING})
@@ -141,7 +135,7 @@ export const GoogleSttChat = () => {
         handleInputChange,
     } = useChat({
         api: '/api/openai/stream',
-        initialMessages: [],
+        initialMessages: [defaultMessage],
         onError: (sendDetectedTranscriptError) => {
             console.error({sendDetectedTranscriptError})
             dispatch({type: Actions.STOP_SENDING_CHAT})
@@ -422,8 +416,6 @@ export const GoogleSttChat = () => {
         }
     }
 
-    
-
     const stopAutoStopTimeout = () => {
         if (autoStopRef.current) {
             clearTimeout(autoStopRef.current)
@@ -477,9 +469,9 @@ export const GoogleSttChat = () => {
         setInput('')
 
         try {
-            const data: CreateMessage = {content: text, role: 'user'}
+            const data: CreateMessage = {content: `${text} ${BE_CONCISE}`, role: 'user'}
 
-            append(data, {
+            await append(data, {
                 options: {
                     body: auth.user?.id ? {userId: auth.user.id} : undefined,
                 },
@@ -556,6 +548,8 @@ export const GoogleSttChat = () => {
     }
 
     useEffect(() => {
+        prepareUseWhisper()
+
         function handleStopUttering(message: {data: {type: string, data: boolean}}) {
             const {data, type} = message.data
             if (type === 'speaking' && data === false) {
@@ -572,6 +566,8 @@ export const GoogleSttChat = () => {
         return () => {
             window.removeEventListener("message", handleStopUttering)
             window.removeEventListener("blur", handleBlur)
+            // release resource on component unmount
+            cleanUpResources();
         };
     }, [])
 
@@ -618,12 +614,6 @@ export const GoogleSttChat = () => {
             chatRef.current.scrollTop = chatRef.current.scrollHeight
         }
     }, [messages])
-
-    useEffect(() => {
-        prepareUseWhisper()
-        // release resource on component unmount
-        return cleanUpResources;
-    }, [])
 
     return (
         <div className="flex h-full w-screen flex-col">
@@ -687,13 +677,4 @@ const NOTI_MESSAGES = {
     },
 }
 
-// const getDefaultMessage = (name: string): MessageType => ({
-//   message: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message, and "${END_KEYWORD}" to end your message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
-//   sender: 'AI',
-// })
 
-const getDefaultMessage = (name: string): Message => ({
-    content: `Hi ${name}, I'm Orion, an extremely concise AI. To speak to me, click the mic icon, then say "${START_KEYWORDS[0]}" to start the message. Make sure to speak clearly and say the keywords clearly and with pause. How are you? `,
-    role: 'assistant',
-    id: 'initial-message',
-})
