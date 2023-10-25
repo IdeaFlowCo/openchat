@@ -103,6 +103,7 @@ export const GoogleSttChat = () => {
             return
         }
         dispatch({type: Actions.START_UTTERING})
+        startKeywordDetectedRef.current = true;
         if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
             if (!speechRef.current) {
                 speechRef.current = new SpeechSynthesisUtterance()
@@ -188,15 +189,12 @@ export const GoogleSttChat = () => {
         dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
         stopAutoStopTimeout()
         stopUttering()
-        console.table("SONAR")
         playSonar()
         dispatch({type: Actions.START_LOADING})
         await stopRecording()
     }
 
     const processStartKeyword = async () => {
-        console.table("PING")
-        
             await startRecording();
             stopUttering();
             playPing();
@@ -219,17 +217,18 @@ export const GoogleSttChat = () => {
                 dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
             }
 
-            if (!startKeywordDetectedRef.current) {
+            if (typeof startKeywordDetectedRef.current !== "undefined" && !startKeywordDetectedRef.current) {
                 const keyword = extractStartKeyword(interimRef.current);
-                console.log({keyword})
                 if (keyword) {
-                    // const startIndex = interimRef.current.toLowerCase().indexOf(keyword.toLowerCase());
                     await processStartKeyword();
                 }
             }
 
             // Check for end keyword and stop recording if detected
-            if (detectEndKeyword(interimRef.current) && !endKeywordDetectedRef.current) {
+            if (typeof startKeywordDetectedRef.current !== "undefined" && 
+                    !startKeywordDetectedRef.current && 
+                    detectEndKeyword(interimRef.current) && 
+                    !endKeywordDetectedRef.current) {
                 endKeywordDetectedRef.current = true;
                 await onAutoStop();  // Or any other method you want to call when stopping
             }
