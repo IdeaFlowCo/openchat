@@ -1,6 +1,6 @@
 import { VoiceCommand } from "../../../types/useWhisperTypes";
 import wordsToNumbers from "words-to-numbers";
-import { END_KEYWORD, START_KEYWORDS, VOICE_COMMANDS } from "../constants";
+import { END_KEYWORDS, START_KEYWORDS, VOICE_COMMANDS } from "../constants";
 import { Message } from "ai";
 
 type VoiceCommandAction =
@@ -67,10 +67,12 @@ export const handleStartKeywords = (text: string): string => {
         }
     });
 
-    const endKeywordIndex = lowerCaseText.lastIndexOf(END_KEYWORD.toLowerCase());
-    if (endKeywordIndex !== -1) {
-        text = text.substring(0, endKeywordIndex).trim();
-    }
+    END_KEYWORDS.forEach((keyword) => {
+        const endKeywordIndex = lowerCaseText.lastIndexOf(keyword.toLowerCase());
+        if (endKeywordIndex !== -1) {
+            text = text.substring(0, endKeywordIndex).trim();
+        }
+    });
 
     return trimText(text);
 }
@@ -109,7 +111,11 @@ export const whisperTranscript = async (base64: string): Promise<string> => {
 };
 
 export const detectEndKeyword = (interimText: string): boolean => {
-    return interimText.toLowerCase().includes(END_KEYWORD.toLowerCase());
+    let isKeywordDetected = false
+    for (const keyword of END_KEYWORDS) {
+        isKeywordDetected ||= interimText.toLowerCase().includes(keyword.toLowerCase()) 
+    }
+    return isKeywordDetected
 };
 
 
