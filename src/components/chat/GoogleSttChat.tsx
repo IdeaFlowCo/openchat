@@ -64,7 +64,7 @@ export const GoogleSttChat = () => {
     const storedMessagesRef = useRef(null)
     const lastSpeechIndexRef = useRef(0)
     const isReadyToSpeech = useRef(true)
-
+    
     const [firstMessage, setFirstMessage] = useState<string | null>(null)
     const [interim, setInterim] = useState<string>('')
     const [noti, setNoti] = useState<{
@@ -76,14 +76,16 @@ export const GoogleSttChat = () => {
 
     const [state, dispatch] = useReducer(reducer, initialState)
 
-    const [playPing] = useSound('/sounds/bubble.mp3')
+    const [playBubble] = useSound('/sounds/bubble.mp3', {volume: 1})
     const [playSonar] = useSound('/sounds/sonar.mp3', {volume: 0.3})
 
-    const onStartUttering = () => {
+    const onStartUttering = async() => {
+        // await stopRecording()
         dispatch({type: Actions.START_UTTERING})
     }
 
-    const onStopUttering = () => {
+    const onStopUttering = async() => {
+        await startRecording()
         lastSpeechIndexRef.current += 1
         if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
             startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
@@ -93,11 +95,11 @@ export const GoogleSttChat = () => {
     }
     
     const startUttering = (text: string) => {
-        if (!text) {
+                if (!text) {
             return
         }
         dispatch({type: Actions.START_UTTERING})
-        startKeywordDetectedRef.current = true;
+        // startKeywordDetectedRef.current = true;
         if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
             if (!speechRef.current) {
                 speechRef.current = new SpeechSynthesisUtterance()
@@ -169,30 +171,25 @@ export const GoogleSttChat = () => {
     }, [firstMessage])
 
     const forceStopRecording = async () => {
-        startKeywordDetectedRef.current = undefined
+        startKeywordDetectedRef.current = false
         dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
-        stopUttering()
-        playSonar()
-        dispatch({type: Actions.START_LOADING})
-        stopRecording()
-    }
-
-    const onAutoStop = async () => {
-        startKeywordDetectedRef.current = undefined
-        endKeywordDetectedRef.current = undefined
-        dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
-        stopAutoStopTimeout()
         stopUttering()
         playSonar()
         dispatch({type: Actions.START_LOADING})
         await stopRecording()
     }
 
+    const onAutoStop = async () => {
+        endKeywordDetectedRef.current = undefined
+        stopAutoStopTimeout()
+        await forceStopRecording()
+    }
+
     const processStartKeyword = async () => {
-            await startRecording();
-            stopUttering();
-            playPing();
-            startKeywordDetectedRef.current = true;
+        await startRecording();
+        stopUttering();
+        playBubble();
+        startKeywordDetectedRef.current = true;
         
     }
 
@@ -205,16 +202,19 @@ export const GoogleSttChat = () => {
             if (data.isFinal) {
                 interimsRef.current.push(data.text);
                 interimRef.current = '';
-                startKeywordDetectedRef.current = false;
+                // startKeywordDetectedRef.current = false;
                 dispatch({type: Actions.FINAL_DATA_RECEIVED})
             } else {
                 dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
             }
 
-            if (typeof startKeywordDetectedRef.current !== "undefined" && !startKeywordDetectedRef.current) {
+            if (typeof startKeywordDetectedRef.current !== "undefined" && 
+                    !startKeywordDetectedRef.current &&
+                    !state.isUttering) {
+                
                 const keyword = extractStartKeyword(interimRef.current);
-                if (keyword) {
-                    await processStartKeyword();
+                if (keyword !== null) {
+                    processStartKeyword();
                 }
             }
 
@@ -412,8 +412,10 @@ export const GoogleSttChat = () => {
         socketRef.current?.emit('startGoogleCloudStream')
         
         processorRef.current.port.onmessage = ({data: audio}) => {
-            socketRef.current?.emit('send_audio_data', {audio})
+                        socketRef.current?.emit('send_audio_data', {audio})
         }
+        await stopRecording();
+        await startRecording();
     }
 
     const stopAutoStopTimeout = () => {
@@ -442,7 +444,7 @@ export const GoogleSttChat = () => {
     }
 
     const stopUttering = () => {
-        if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
+                if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
             if (globalThis.speechSynthesis.speaking) {
                 globalThis.speechSynthesis.cancel()
             }
@@ -453,7 +455,7 @@ export const GoogleSttChat = () => {
         }
         
         dispatch({type: Actions.STOP_UTTERING})
-    }
+            }
 
     const submitTranscript = async (text?: string) => {
         isReadyToSpeech.current = true
@@ -548,7 +550,9 @@ export const GoogleSttChat = () => {
     }
 
     useEffect(() => {
-        prepareUseWhisper()
+        const callToStartListening = async () => {
+            await startListening()
+        }
 
         function handleStopUttering(message: {data: {type: string, data: boolean}}) {
             const {data, type} = message.data
@@ -559,8 +563,13 @@ export const GoogleSttChat = () => {
 
         function handleBlur(){
             stopListening()
+            stopRecording()
         }
+        
+        prepareUseWhisper()
+        callToStartListening()        
 
+        // TO-DO: Check the origin of the message
         window.addEventListener("message", handleStopUttering);
         window.addEventListener("blur", handleBlur)
         return () => {
@@ -579,11 +588,7 @@ export const GoogleSttChat = () => {
             !state.isSending &&
             !recording &&
             state.isWhisperPrepared &&
-            /**
-             * Recorded audio should not be empty.
-             * Empty wav file always start with 44 bytes not 0.
-             */
-            transcript.blob?.size > 44
+            transcript.blob?.size > 44 
         ) {
             sendingDetectedMessageRef.current = true
             onTranscribe().then(() => {
@@ -593,13 +598,13 @@ export const GoogleSttChat = () => {
     }, [recording, state.isSending, state.isWhisperPrepared, transcript])
 
     useEffect(() => {
-        if (state.isAutoStop && recording && state.isFinalData) {
+        if (state.isAutoStop && recording && state.isFinalData && startKeywordDetectedRef.current) {
             startAutoStopTimeout()
         }
-        if ((state.isAutoStop && !recording) || !state.isFinalData) {
+        if ((state.isAutoStop && !recording) || !state.isFinalData || !startKeywordDetectedRef.current) {
             stopAutoStopTimeout()
         }
-    }, [state.isAutoStop, recording, state.isSpeaking, state.isFinalData])
+    }, [state.isAutoStop, recording, state.isFinalData, startKeywordDetectedRef.current])
 
     useEffect(() => {
         if (speechRef.current) {
@@ -656,7 +661,7 @@ export const GoogleSttChat = () => {
                 isListening={state.isListening}
                 isLoading={state.isLoading}
                 isSpeaking={state.isSpeaking}
-                isRecording={recording}
+                isRecording={recording && startKeywordDetectedRef.current}
                 isWhisperPrepared={state.isWhisperPrepared}
                 query={input}
                 onChangeQuery={handleInputChange}

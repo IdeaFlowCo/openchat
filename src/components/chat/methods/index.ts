@@ -54,7 +54,8 @@ export const extractStartKeyword = (interimText: string): string | null => {
 };
 
 export const trimText = (text: string): string => {
-    return text.trim().replace(/,$/, '');
+    const textStripCommas = text.trim().replace(/(^,|,$)/, '').trim();
+    return `${textStripCommas.charAt(0).toLocaleUpperCase()}${textStripCommas.substring(1)}`
 }
 
 export const handleStartKeywords = (text: string): string => {
