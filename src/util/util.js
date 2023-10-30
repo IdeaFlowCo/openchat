@@ -1,8 +1,8 @@
-import { useRef, useEffect } from "react";
-import supabase from "./supabase";
+import { useRef, useEffect } from 'react';
+import supabase from './supabase';
 
 // Make an API request to `/api/{path}`
-export async function apiRequest(path, method = "GET", data) {
+export async function apiRequest(path, method = 'GET', data) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -11,16 +11,16 @@ export async function apiRequest(path, method = "GET", data) {
   return fetch(`/api/${path}`, {
     method: method,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
     body: data ? JSON.stringify(data) : undefined,
   })
     .then((response) => response.json())
     .then((response) => {
-      if (response.status === "error") {
+      if (response.status === 'error') {
         // Automatically signout user if accessToken is no longer valid
-        if (response.code === "auth/invalid-user-token") {
+        if (response.code === 'auth/invalid-user-token') {
           supabase.auth.signOut();
         }
 
@@ -32,12 +32,12 @@ export async function apiRequest(path, method = "GET", data) {
 }
 
 // Make an API request to any external URL
-export function apiRequestExternal(url, method = "GET", data) {
+export function apiRequestExternal(url, method = 'GET', data) {
   return fetch(url, {
     method: method,
     headers: {
-      accept: "application/json",
-      "Content-Type": "application/json",
+      accept: 'application/json',
+      'Content-Type': 'application/json',
     },
     body: data ? JSON.stringify(data) : undefined,
   }).then((response) => response.json());

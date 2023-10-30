@@ -1,13 +1,13 @@
-import React from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import React from 'react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en">
+      <Html lang='en'>
         <Head>
-          <link href="/favicon.ico" rel="shortcut icon" />
-          <link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
+          <link href='/favicon.ico' rel='shortcut icon' />
+          <link rel='stylesheet' href='https://rsms.me/inter/inter.css' />
           {/* Uncomment to add favicons for other platforms */}
           {/* These files can be generated with realfavicongenerator.net */}
           {/*

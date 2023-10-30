@@ -1,13 +1,13 @@
-const supabase = require("./_supabase");
+const supabase = require('./_supabase');
 
 /**** USERS ****/
 
 // Get user by uid
 function getUser(uid) {
-  return supabase.from("users").select("*").eq("id", uid).single().then(handle);
+  return supabase.from('users').select('*').eq('id', uid).single().then(handle);
 }
 
-// WARNING: If you use this, make sure to bring back other Stripe dependencies and ofc 
+// WARNING: If you use this, make sure to bring back other Stripe dependencies and ofc
 // add the neccessary columns to the supabase. Contact alanduong07@gmail.com if you need help.
 
 // Get customer by uid
@@ -19,7 +19,6 @@ function getUser(uid) {
 //     .maybeSingle()
 //     .then(handle);
 // }
-
 
 // // Get customer by Stripe customer ID
 // function getCustomerByStripeCid(id) {

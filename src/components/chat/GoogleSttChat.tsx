@@ -1,685 +1,715 @@
-import { useWhisper } from '@chengsokdara/use-whisper'
-import { useChat, type CreateMessage, type Message } from 'ai/react'
-import Alert from 'components/atoms/Alert'
-import ChatMessage from 'components/atoms/ChatMessage'
-import GoogleSTTInput from 'components/atoms/GoogleSTTInput'
-import GoogleSTTPill from 'components/atoms/GoogleSTTPill'
-import InterimHistory from 'components/atoms/InterimHistory'
-import type { Harker } from 'hark'
-import type { Encoder } from 'lamejs'
-import { useEffect, useReducer, useRef, useState } from 'react'
-import io, { type Socket } from 'socket.io-client'
-import { type VoiceCommand } from 'types/useWhisperTypes'
-import useSound from 'use-sound'
-import { useAuth } from 'util/auth'
-import { Mp3Encoder } from 'lamejs'
+import { useWhisper } from '@chengsokdara/use-whisper';
+import { useChat, type CreateMessage, type Message } from 'ai/react';
+import Alert from 'components/atoms/Alert';
+import ChatMessage from 'components/atoms/ChatMessage';
+import GoogleSTTInput from 'components/atoms/GoogleSTTInput';
+import GoogleSTTPill from 'components/atoms/GoogleSTTPill';
+import InterimHistory from 'components/atoms/InterimHistory';
+import type { Harker } from 'hark';
+import type { Encoder } from 'lamejs';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import io, { type Socket } from 'socket.io-client';
+import { type VoiceCommand } from 'types/useWhisperTypes';
+import useSound from 'use-sound';
+import { useAuth } from 'util/auth';
+import { Mp3Encoder } from 'lamejs';
 import {
-    blobToBase64,
-    checkIsVoiceCommand,
-    detectEndKeyword,
-    extractStartKeyword,
-    getVoiceCommandAction,
-    handleStartKeywords,
-    splitTextsBySeparator,
-    whisperTranscript
-} from "./methods";
-import { BE_CONCISE, STOP_TIMEOUT, TALKTOGPT_SOCKET_ENDPOINT } from "./constants";
-import {isAndroid} from 'react-device-detect';
-import {initialState, Actions, reducer} from './reducers'
+  blobToBase64,
+  checkIsVoiceCommand,
+  detectEndKeyword,
+  extractStartKeyword,
+  getVoiceCommandAction,
+  handleStartKeywords,
+  splitTextsBySeparator,
+  whisperTranscript,
+} from './methods';
+import {
+  BE_CONCISE,
+  STOP_TIMEOUT,
+  TALKTOGPT_SOCKET_ENDPOINT,
+} from './constants';
+import { isAndroid } from 'react-device-detect';
+import { initialState, Actions, reducer } from './reducers';
 
 const TEXT_SEPARATORS = {
-    PARAGRAPH_BREAK: '\n\n',
-    LINE_BREAK: '\n'
-}
+  PARAGRAPH_BREAK: '\n\n',
+  LINE_BREAK: '\n',
+};
 
 interface WordRecognized {
-    isFinal: boolean
-    text: string
+  isFinal: boolean;
+  text: string;
 }
 
 const defaultMessage: Message = {
-    content: `Welcome to Flow, your voice assistant. To activate flow, turn on the microphone. Then when you want to ask Flow a question and say “Flow, write a poem about Doug Engelbart” or anything else you would like to ask. You can switch to always on mode which allows you to speak, slowly, and end an utterance by saying “Over”.`,
-    role: 'assistant',
-    id: 'initial-message',
-}
-
+  content: `Welcome to Flow, your voice assistant. To activate flow, turn on the microphone. Then when you want to ask Flow a question and say “Flow, write a poem about Doug Engelbart” or anything else you would like to ask. You can switch to always on mode which allows you to speak, slowly, and end an utterance by saying “Over”.`,
+  role: 'assistant',
+  id: 'initial-message',
+};
 
 export const GoogleSttChat = () => {
-    const auth = useAuth()
-    const audioContextRef = useRef<any>()
-    const audioInputRef = useRef<any>()
-    const autoStopRef = useRef<NodeJS.Timeout>()
-    const chatRef = useRef<HTMLDivElement>()
-    const encoderRef = useRef<Encoder>()
-    const endKeywordDetectedRef = useRef<boolean>(false)
-    const harkRef = useRef<Harker>()
-    const interimRef = useRef<string>('')
-    const interimsRef = useRef<string[]>([])
-    const processorRef = useRef<any>()
-    const sendingDetectedMessageRef = useRef<boolean>(false)
-    const socketRef = useRef<Socket>()
-    const speechRef = useRef<SpeechSynthesisUtterance>()
-    const startKeywordDetectedRef = useRef<boolean>(false)
-    const streamRef = useRef<MediaStream>()
-    const storedMessagesRef = useRef(null)
-    const lastSpeechIndexRef = useRef(0)
-    const isReadyToSpeech = useRef(true)
-    
-    const [firstMessage, setFirstMessage] = useState<string | null>(null)
-    const [interim, setInterim] = useState<string>('')
-    const [noti, setNoti] = useState<{
-        type: 'error' | 'success'
-        message: string
-    }>()
-    const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT)
-    const [speakingRate, setSpeakingRate] = useState<number>(1)
+  const auth = useAuth();
+  const audioContextRef = useRef<any>();
+  const audioInputRef = useRef<any>();
+  const autoStopRef = useRef<NodeJS.Timeout>();
+  const chatRef = useRef<HTMLDivElement>();
+  const encoderRef = useRef<Encoder>();
+  const endKeywordDetectedRef = useRef<boolean>(false);
+  const harkRef = useRef<Harker>();
+  const interimRef = useRef<string>('');
+  const interimsRef = useRef<string[]>([]);
+  const processorRef = useRef<any>();
+  const sendingDetectedMessageRef = useRef<boolean>(false);
+  const socketRef = useRef<Socket>();
+  const speechRef = useRef<SpeechSynthesisUtterance>();
+  const startKeywordDetectedRef = useRef<boolean>(false);
+  const streamRef = useRef<MediaStream>();
+  const storedMessagesRef = useRef(null);
+  const lastSpeechIndexRef = useRef(0);
+  const isReadyToSpeech = useRef(true);
 
-    const [state, dispatch] = useReducer(reducer, initialState)
+  const [firstMessage, setFirstMessage] = useState<string | null>(null);
+  const [interim, setInterim] = useState<string>('');
+  const [noti, setNoti] = useState<{
+    type: 'error' | 'success';
+    message: string;
+  }>();
+  const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT);
+  const [speakingRate, setSpeakingRate] = useState<number>(1);
 
-    const [playBubble] = useSound('/sounds/bubble.mp3', {volume: 1})
-    const [playSonar] = useSound('/sounds/sonar.mp3', {volume: 0.3})
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-    const onStartUttering = async() => {
-        // await stopRecording()
-        dispatch({type: Actions.START_UTTERING})
+  const [playBubble] = useSound('/sounds/bubble.mp3', { volume: 1 });
+  const [playSonar] = useSound('/sounds/sonar.mp3', { volume: 0.3 });
+
+  const onStartUttering = async () => {
+    // await stopRecording()
+    dispatch({ type: Actions.START_UTTERING });
+  };
+
+  const onStopUttering = async () => {
+    await startRecording();
+    lastSpeechIndexRef.current += 1;
+    if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
+      startUttering(storedMessagesRef.current[lastSpeechIndexRef.current]);
+    } else {
+      dispatch({ type: Actions.STOP_UTTERING });
     }
+  };
 
-    const onStopUttering = async() => {
-        await startRecording()
-        lastSpeechIndexRef.current += 1
-        if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
-            startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
-        } else {
-            dispatch({type: Actions.STOP_UTTERING})
-        }
+  const startUttering = (text: string) => {
+    if (!text) {
+      return;
     }
-    
-    const startUttering = (text: string) => {
-                if (!text) {
-            return
-        }
-        dispatch({type: Actions.START_UTTERING})
-        // startKeywordDetectedRef.current = true;
-        if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
-            if (!speechRef.current) {
-                speechRef.current = new SpeechSynthesisUtterance()
-                speechRef.current.addEventListener('start', onStartUttering)
-                speechRef.current.addEventListener('end', onStopUttering)
-            }
-            speechRef.current.lang = "en-US"
-            speechRef.current.text = text
-            globalThis.speechSynthesis.speak(speechRef.current)
-        } else {
-            globalThis.ReactNativeWebView.postMessage(JSON.stringify({
-                type: "speaking-start",
-                data: text, 
-            }))
-        }
-    }
-
-    
-
-    const {recording, transcript, startRecording, stopRecording} =
-        useWhisper({
-            apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-            autoTranscribe: false,
-            removeSilence: true,
-            whisperConfig: {
-                language: 'en',
-            },
+    dispatch({ type: Actions.START_UTTERING });
+    // startKeywordDetectedRef.current = true;
+    if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
+      if (!speechRef.current) {
+        speechRef.current = new SpeechSynthesisUtterance();
+        speechRef.current.addEventListener('start', onStartUttering);
+        speechRef.current.addEventListener('end', onStopUttering);
+      }
+      speechRef.current.lang = 'en-US';
+      speechRef.current.text = text;
+      globalThis.speechSynthesis.speak(speechRef.current);
+    } else {
+      globalThis.ReactNativeWebView.postMessage(
+        JSON.stringify({
+          type: 'speaking-start',
+          data: text,
         })
+      );
+    }
+  };
 
-    const {
-        messages,
-        append,
-        input,
-        setInput,
-        handleInputChange,
-    } = useChat({
-        api: '/api/openai/stream',
-        initialMessages: [defaultMessage],
-        onError: (sendDetectedTranscriptError) => {
-            console.error({sendDetectedTranscriptError})
-            dispatch({type: Actions.STOP_SENDING_CHAT})
-            showErrorMessage(NOTI_MESSAGES.gpt.error)
-        },
-        onFinish: (message) => {
-            transcript.blob = undefined
-            setFirstMessage(message.content)
-            dispatch({type: Actions.STOP_SENDING_CHAT})
-        },
-        onResponse: () => {
-            lastSpeechIndexRef.current = 0
-            storedMessagesRef.current = []
+  const { recording, transcript, startRecording, stopRecording } = useWhisper({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    autoTranscribe: false,
+    removeSilence: true,
+    whisperConfig: {
+      language: 'en',
+    },
+  });
+
+  const { messages, append, input, setInput, handleInputChange } = useChat({
+    api: '/api/openai/stream',
+    initialMessages: [defaultMessage],
+    onError: (sendDetectedTranscriptError) => {
+      console.error({ sendDetectedTranscriptError });
+      dispatch({ type: Actions.STOP_SENDING_CHAT });
+      showErrorMessage(NOTI_MESSAGES.gpt.error);
+    },
+    onFinish: (message) => {
+      transcript.blob = undefined;
+      setFirstMessage(message.content);
+      dispatch({ type: Actions.STOP_SENDING_CHAT });
+    },
+    onResponse: () => {
+      lastSpeechIndexRef.current = 0;
+      storedMessagesRef.current = [];
+    },
+  });
+
+  const messagesSplitByParagraph = splitTextsBySeparator(
+    messages,
+    TEXT_SEPARATORS.PARAGRAPH_BREAK
+  );
+  const messagesSplitByLine = splitTextsBySeparator(
+    messagesSplitByParagraph,
+    TEXT_SEPARATORS.LINE_BREAK
+  );
+
+  const lastIndexUser = messagesSplitByLine.findLastIndex(
+    (message) => message.role === 'user'
+  );
+  storedMessagesRef.current =
+    lastIndexUser >= 0
+      ? messagesSplitByLine
+          .slice(lastIndexUser + 1)
+          .map((message) => message.content)
+      : [];
+  if (
+    storedMessagesRef.current.length > 1 &&
+    lastSpeechIndexRef.current === 0 &&
+    isReadyToSpeech.current
+  ) {
+    isReadyToSpeech.current = false;
+    startUttering(storedMessagesRef.current[lastSpeechIndexRef.current]);
+  }
+
+  useEffect(() => {
+    if (firstMessage && storedMessagesRef.current.length === 1)
+      startUttering(firstMessage);
+  }, [firstMessage]);
+
+  const forceStopRecording = async () => {
+    startKeywordDetectedRef.current = false;
+    dispatch({ type: Actions.NOT_FINAL_DATA_RECEIVED });
+    stopUttering();
+    playSonar();
+    dispatch({ type: Actions.START_LOADING });
+    await stopRecording();
+  };
+
+  const onAutoStop = async () => {
+    endKeywordDetectedRef.current = undefined;
+    stopAutoStopTimeout();
+    await forceStopRecording();
+  };
+
+  const processStartKeyword = async () => {
+    await startRecording();
+    stopUttering();
+    playBubble();
+    startKeywordDetectedRef.current = true;
+  };
+
+  const onSpeechRecognized = async (data: WordRecognized) => {
+    try {
+      interimRef.current += ` ${data.text}`;
+      setInterim(data.text);
+
+      if (data.isFinal) {
+        interimsRef.current.push(data.text);
+        interimRef.current = '';
+        // startKeywordDetectedRef.current = false;
+        dispatch({ type: Actions.FINAL_DATA_RECEIVED });
+      } else {
+        dispatch({ type: Actions.NOT_FINAL_DATA_RECEIVED });
+      }
+
+      if (
+        typeof startKeywordDetectedRef.current !== 'undefined' &&
+        !startKeywordDetectedRef.current &&
+        !state.isUttering
+      ) {
+        const keyword = extractStartKeyword(interimRef.current);
+        if (keyword !== null) {
+          processStartKeyword();
         }
-    })
+      }
 
-    const messagesSplitByParagraph = splitTextsBySeparator(messages, TEXT_SEPARATORS.PARAGRAPH_BREAK)
-    const messagesSplitByLine = splitTextsBySeparator(messagesSplitByParagraph, TEXT_SEPARATORS.LINE_BREAK)
-    
+      // Check for end keyword and stop recording if detected
+      if (
+        typeof startKeywordDetectedRef.current !== 'undefined' &&
+        !startKeywordDetectedRef.current &&
+        detectEndKeyword(interimRef.current) &&
+        !endKeywordDetectedRef.current
+      ) {
+        endKeywordDetectedRef.current = true;
+        await onAutoStop(); // Or any other method you want to call when stopping
+      }
+    } catch (error) {
+      console.error('An error occurred in onSpeechRecognized:', error);
+    }
+  };
 
-    const lastIndexUser = messagesSplitByLine.findLastIndex(message => message.role === 'user')
-    storedMessagesRef.current = lastIndexUser >= 0 ? messagesSplitByLine.slice(lastIndexUser+1).map(message => message.content) : []
-    if (storedMessagesRef.current.length > 1 && lastSpeechIndexRef.current === 0 && isReadyToSpeech.current) {
-        isReadyToSpeech.current = false
-        startUttering(storedMessagesRef.current[lastSpeechIndexRef.current])
-        
+  const handleTranscriptionResults = (transcribed: {
+    error?: Error;
+    text: string;
+  }): string | null => {
+    if (transcribed.error) {
+      console.warn('24MB file size limit reached!');
+      showErrorMessage('24MB limit reached!');
+      return null;
+    }
+    if (!transcribed.text) {
+      showErrorMessage('Voice command not detected. Please speak again.');
+      dispatch({ type: Actions.STOP_SENDING_CHAT });
+      return null;
+    }
+    return transcribed.text;
+  };
+
+  const onTranscribe = async () => {
+    const transcribed = await transcribeAudio(transcript.blob);
+
+    const transcriptionText = handleTranscriptionResults(transcribed);
+    if (!transcriptionText) return;
+
+    let text = handleStartKeywords(transcriptionText);
+
+    const voiceCommand = checkIsVoiceCommand(text);
+    if (voiceCommand) {
+      runVoiceCommand(voiceCommand);
+      return;
     }
 
-    useEffect(() => {
-        if (firstMessage && storedMessagesRef.current.length === 1) startUttering(firstMessage)
-    }, [firstMessage])
+    await submitTranscript(text);
 
-    const forceStopRecording = async () => {
-        startKeywordDetectedRef.current = false
-        dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
-        stopUttering()
-        playSonar()
-        dispatch({type: Actions.START_LOADING})
-        await stopRecording()
+    transcript.blob = undefined;
+    dispatch({ type: Actions.STOP_SENDING_CHAT });
+  };
+
+  const prepareHark = async () => {
+    if (!harkRef.current && streamRef.current) {
+      const { default: harkjs } = await import('hark');
+      harkRef.current = harkjs(streamRef.current, {
+        interval: 100,
+        threshold: -60,
+        play: false,
+      });
+      harkRef.current.on('speaking', onStartSpeaking);
+      harkRef.current.on('stopped_speaking', onStopSpeaking);
     }
+  };
 
-    const onAutoStop = async () => {
-        endKeywordDetectedRef.current = undefined
-        stopAutoStopTimeout()
-        await forceStopRecording()
+  const prepareUseWhisper = async () => {
+    if (!state.isWhisperPrepared) {
+      /**
+       * fake start and stop useWhisper so that recorder is prepared
+       * once start keyword detected, useWhisper can start record instantly
+       */
+      await startRecording();
+      await stopRecording();
+      dispatch({ type: Actions.PREPARE_WHISPER });
     }
+  };
 
-    const processStartKeyword = async () => {
-        await startRecording();
-        stopUttering();
-        playBubble();
-        startKeywordDetectedRef.current = true;
-        
+  const prepareSocket = async () => {
+    socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT);
+
+    socketRef.current.on('connect', () => {});
+
+    socketRef.current.on('receive_audio_text', (data) => {
+      onSpeechRecognized(data);
+    });
+
+    socketRef.current.on('disconnect', () => {});
+  };
+
+  const releaseHark = () => {
+    // remove hark event listeners
+    if (harkRef.current) {
+      // @ts-ignore
+      harkRef.current.off('speaking', onStartSpeaking);
+      // @ts-ignore
+      harkRef.current.off('stopped_speaking', onStopSpeaking);
+      harkRef.current = undefined;
     }
+  };
 
-    const onSpeechRecognized = async (data: WordRecognized) => {
-        try {
-
-            interimRef.current += ` ${data.text}`;
-            setInterim(data.text);
-
-            if (data.isFinal) {
-                interimsRef.current.push(data.text);
-                interimRef.current = '';
-                // startKeywordDetectedRef.current = false;
-                dispatch({type: Actions.FINAL_DATA_RECEIVED})
-            } else {
-                dispatch({type: Actions.NOT_FINAL_DATA_RECEIVED})
-            }
-
-            if (typeof startKeywordDetectedRef.current !== "undefined" && 
-                    !startKeywordDetectedRef.current &&
-                    !state.isUttering) {
-                
-                const keyword = extractStartKeyword(interimRef.current);
-                if (keyword !== null) {
-                    processStartKeyword();
-                }
-            }
-
-            // Check for end keyword and stop recording if detected
-            if (typeof startKeywordDetectedRef.current !== "undefined" && 
-                    !startKeywordDetectedRef.current && 
-                    detectEndKeyword(interimRef.current) && 
-                    !endKeywordDetectedRef.current) {
-                endKeywordDetectedRef.current = true;
-                await onAutoStop();  // Or any other method you want to call when stopping
-            }
-
-        } catch (error) {
-            console.error("An error occurred in onSpeechRecognized:", error);
-        }
-    };
-
-
-    const handleTranscriptionResults = (transcribed: {
-        error?: Error;
-        text: string;
-    }): string | null => {
-        if (transcribed.error) {
-            console.warn('24MB file size limit reached!');
-            showErrorMessage('24MB limit reached!');
-            return null;
-        }
-        if (!transcribed.text) {
-            showErrorMessage('Voice command not detected. Please speak again.');
-            dispatch({type: Actions.STOP_SENDING_CHAT})
-            return null;
-        }
-        return transcribed.text;
+  const releaseSocket = async () => {
+    if (socketRef.current) {
+      socketRef.current?.emit('endGoogleCloudStream');
+      socketRef.current?.disconnect();
     }
+    processorRef.current?.disconnect();
+    audioInputRef.current?.disconnect();
+    if (audioContextRef.current?.state !== 'closed') {
+      audioContextRef.current?.close();
+    }
+  };
 
+  const runVoiceCommand = (voiceCommand: VoiceCommand) => {
+    const action = getVoiceCommandAction(voiceCommand);
 
-    const onTranscribe = async () => {
-        const transcribed = await transcribeAudio(transcript.blob);
-
-        const transcriptionText = handleTranscriptionResults(transcribed);
-        if (!transcriptionText) return;
-
-        let text = handleStartKeywords(transcriptionText);
-
-        const voiceCommand = checkIsVoiceCommand(text);
-        if (voiceCommand) {
-            runVoiceCommand(voiceCommand);
-            return;
+    switch (action?.type) {
+      case 'SET_IS_AUTO_STOP':
+        dispatch({ type: Actions.TOGGLE_AUTO_STOP, value: action.value });
+        break;
+      case 'SET_AUTO_STOP_TIMEOUT':
+        setAutoStopTimeout(action.value);
+        break;
+      case 'SHOW_MESSAGE':
+        if (action.messageType === 'error') {
+          showErrorMessage(action.message);
+        } else if (action.messageType === 'success') {
+          showSuccessMessage(action.message);
         }
-
-        await submitTranscript(text);
-
+        break;
+      default:
         transcript.blob = undefined;
-        dispatch({type: Actions.STOP_SENDING_CHAT})
+        dispatch({ type: Actions.STOP_LOADING });
+        showErrorMessage('Unknown command.');
+        break;
+    }
+  };
+
+  const showErrorMessage = (message: string) => {
+    setNoti({ type: 'error', message });
+    startUttering(message);
+  };
+
+  const showSuccessMessage = (message: string) => {
+    setNoti({ type: 'success', message });
+  };
+
+  const startAutoStopTimeout = () => {
+    autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000);
+  };
+
+  const startListening = async () => {
+    await prepareSocket();
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+    }
+    streamRef.current = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId: 'default',
+        sampleRate: 16000,
+        sampleSize: 16,
+        channelCount: 1,
+        noiseSuppression: true,
+        echoCancellation: true,
+      },
+      video: false,
+    });
+
+    await prepareHark();
+
+    audioContextRef.current = new globalThis.AudioContext();
+    await audioContextRef.current.audioWorklet.addModule(
+      '/worklets/recorderWorkletProcessor.js'
+    );
+    audioInputRef.current = audioContextRef.current.createMediaStreamSource(
+      streamRef.current
+    );
+    processorRef.current = new AudioWorkletNode(
+      audioContextRef.current,
+      'recorder.worklet'
+    );
+
+    processorRef.current.connect(audioContextRef.current.destination);
+    audioContextRef.current.resume();
+    audioInputRef.current.connect(processorRef.current);
+
+    dispatch({ type: Actions.START_LISTENING });
+    socketRef.current?.emit('startGoogleCloudStream');
+
+    processorRef.current.port.onmessage = ({ data: audio }) => {
+      socketRef.current?.emit('send_audio_data', { audio });
+    };
+    await stopRecording();
+    await startRecording();
+  };
+
+  const stopAutoStopTimeout = () => {
+    if (autoStopRef.current) {
+      clearTimeout(autoStopRef.current);
+      autoStopRef.current = undefined;
+    }
+  };
+
+  const stopListening = async () => {
+    // release audio stream and remove event listeners
+    releaseHark();
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = undefined;
+    }
+    processorRef.current?.disconnect();
+    audioInputRef.current?.disconnect();
+    if (audioContextRef.current?.state !== 'closed') {
+      audioContextRef.current?.close();
+    }
+    interimsRef.current = [];
+    setInterim('');
+    dispatch({ type: Actions.STOP_LISTENING });
+    socketRef.current?.emit('endGoogleCloudStream');
+  };
+
+  const stopUttering = () => {
+    if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
+      if (globalThis.speechSynthesis.speaking) {
+        globalThis.speechSynthesis.cancel();
+      }
+    } else {
+      globalThis.ReactNativeWebView.postMessage(
+        JSON.stringify({
+          type: 'speaking-stop',
+        })
+      );
+    }
+
+    dispatch({ type: Actions.STOP_UTTERING });
+  };
+
+  const submitTranscript = async (text?: string) => {
+    isReadyToSpeech.current = true;
+    if (!text) {
+      return;
+    }
+    // TODO: uncomment when supabase work again
+    if (!auth.user) {
+      return;
+    }
+    dispatch({ type: Actions.START_SENDING_CHAT });
+    setNoti(undefined);
+    setInput('');
+
+    try {
+      const data: CreateMessage = {
+        content: `${text} ${BE_CONCISE}`,
+        role: 'user',
+      };
+
+      await append(data, {
+        options: {
+          body: auth.user?.id ? { userId: auth.user.id } : undefined,
+        },
+      });
+      return;
+    } catch (sendDetectedTranscriptError) {
+      console.error({ sendDetectedTranscriptError });
+      dispatch({ type: Actions.STOP_SENDING_CHAT });
+      showErrorMessage(NOTI_MESSAGES.gpt.error);
+      return;
+    }
+  };
+
+  const toggleUttering = () => {
+    if (state.isUttering) {
+      stopUttering();
+    } else {
+      const lastMessage = messages
+        .slice()
+        .reverse()
+        .find((message) => message.role === 'assistant')?.content;
+      if (lastMessage) {
+        startUttering(lastMessage);
+      }
+    }
+  };
+
+  const transcribeAudio = async (
+    blob: Blob
+  ): Promise<{
+    error?: Error;
+    text: string;
+  }> => {
+    if (!encoderRef.current) {
+      encoderRef.current = new Mp3Encoder(1, 44100, 96);
+    }
+
+    const base64 = await blobToBase64(blob);
+    if (!base64) {
+      return { error: new Error('Failed to read blob data.'), text: '' };
+    }
+
+    // Transcribe the audio
+    const text = await whisperTranscript(base64);
+    return { text };
+  };
+
+  const onStartSpeaking = () => {
+    dispatch({ type: Actions.START_SPEAKING });
+    stopAutoStopTimeout();
+  };
+
+  const onStopSpeaking = () => {
+    dispatch({ type: Actions.STOP_SPEAKING });
+  };
+
+  const cleanUpResources = () => {
+    releaseSocket();
+    releaseHark();
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = undefined;
+    }
+    // clear auto stop timeout instance
+    stopAutoStopTimeout();
+    // flush out lamejs
+    if (encoderRef.current) {
+      encoderRef.current.flush();
+      encoderRef.current = undefined;
+    }
+    if (speechRef.current) {
+      stopUttering();
+      speechRef.current.removeEventListener('start', onStartUttering);
+      speechRef.current.removeEventListener('end', onStopUttering);
+    }
+  };
+
+  useEffect(() => {
+    const callToStartListening = async () => {
+      await startListening();
     };
 
-    const prepareHark = async () => {
-        if (!harkRef.current && streamRef.current) {
-            const {default: harkjs} = await import('hark')
-            harkRef.current = harkjs(streamRef.current, {
-                interval: 100,
-                threshold: -60,
-                play: false,
-            })
-            harkRef.current.on('speaking', onStartSpeaking)
-            harkRef.current.on('stopped_speaking', onStopSpeaking)
-        }
+    function handleStopUttering(message: {
+      data: { type: string; data: boolean };
+    }) {
+      const { data, type } = message.data;
+      if (type === 'speaking' && data === false) {
+        onStopUttering();
+      }
     }
 
-    const prepareUseWhisper = async () => {
-        if (!state.isWhisperPrepared) {
-            /**
-             * fake start and stop useWhisper so that recorder is prepared
-             * once start keyword detected, useWhisper can start record instantly
-             */
-            await startRecording()
-            await stopRecording()
-            dispatch({type: Actions.PREPARE_WHISPER})
-        }
+    function handleBlur() {
+      stopListening();
+      stopRecording();
     }
 
-    const prepareSocket = async () => {
-        socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT)
+    prepareUseWhisper();
+    callToStartListening();
 
-        socketRef.current.on('connect', () => {
-        })
-
-        socketRef.current.on('receive_audio_text', (data) => {
-            onSpeechRecognized(data)
-        })
-
-        socketRef.current.on('disconnect', () => {
-        })
-    }
-
-    const releaseHark = () => {
-        // remove hark event listeners
-        if (harkRef.current) {
-            // @ts-ignore
-            harkRef.current.off('speaking', onStartSpeaking)
-            // @ts-ignore
-            harkRef.current.off('stopped_speaking', onStopSpeaking)
-            harkRef.current = undefined
-        }
-    }
-
-    const releaseSocket = async () => {
-        if (socketRef.current) {
-            socketRef.current?.emit('endGoogleCloudStream')
-            socketRef.current?.disconnect()
-        }
-        processorRef.current?.disconnect()
-        audioInputRef.current?.disconnect()
-        if (audioContextRef.current?.state !== 'closed') {
-            audioContextRef.current?.close()
-        }
-    }
-
-    const runVoiceCommand = (voiceCommand: VoiceCommand) => {
-        const action = getVoiceCommandAction(voiceCommand);
-
-        switch (action?.type) {
-            case 'SET_IS_AUTO_STOP':
-                dispatch({type: Actions.TOGGLE_AUTO_STOP, value: action.value});
-                break;
-            case 'SET_AUTO_STOP_TIMEOUT':
-                setAutoStopTimeout(action.value);
-                break;
-            case 'SHOW_MESSAGE':
-                if (action.messageType === 'error') {
-                    showErrorMessage(action.message);
-                } else if (action.messageType === 'success') {
-                    showSuccessMessage(action.message);
-                }
-                break;
-            default:
-                transcript.blob = undefined;
-                dispatch({type: Actions.STOP_LOADING})
-                showErrorMessage('Unknown command.');
-                break;
-        }
-    }
-
-
-    const showErrorMessage = (message: string) => {
-        setNoti({type: 'error', message})
-        startUttering(message)
-    }
-
-    const showSuccessMessage = (message: string) => {
-        setNoti({type: 'success', message})
-    }
-
-    const startAutoStopTimeout = () => {
-        autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000)
-    }
-
-    const startListening = async () => {
-        await prepareSocket()
-        
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop())
-        }
-        streamRef.current = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                deviceId: 'default',
-                sampleRate: 16000,
-                sampleSize: 16,
-                channelCount: 1,
-                noiseSuppression: true,
-                echoCancellation: true,
-            },
-            video: false,
-        })
-
-        await prepareHark()
-
-        audioContextRef.current = new globalThis.AudioContext()
-        await audioContextRef.current.audioWorklet.addModule(
-            '/worklets/recorderWorkletProcessor.js'
-        )
-        audioInputRef.current = audioContextRef.current.createMediaStreamSource(
-            streamRef.current
-        )
-        processorRef.current = new AudioWorkletNode(
-            audioContextRef.current,
-            'recorder.worklet'
-        )
-        
-        processorRef.current.connect(audioContextRef.current.destination)
-        audioContextRef.current.resume()
-        audioInputRef.current.connect(processorRef.current)
-
-        dispatch({type: Actions.START_LISTENING})
-        socketRef.current?.emit('startGoogleCloudStream')
-        
-        processorRef.current.port.onmessage = ({data: audio}) => {
-                        socketRef.current?.emit('send_audio_data', {audio})
-        }
-        await stopRecording();
-        await startRecording();
-    }
-
-    const stopAutoStopTimeout = () => {
-        if (autoStopRef.current) {
-            clearTimeout(autoStopRef.current)
-            autoStopRef.current = undefined
-        }
-    }
-
-    const stopListening = async () => {
-        // release audio stream and remove event listeners
-        releaseHark()
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop())
-            streamRef.current = undefined
-        }
-        processorRef.current?.disconnect()
-        audioInputRef.current?.disconnect()
-        if (audioContextRef.current?.state !== 'closed') {
-            audioContextRef.current?.close()
-        }
-        interimsRef.current = []
-        setInterim('')
-        dispatch({type: Actions.STOP_LISTENING})
-        socketRef.current?.emit('endGoogleCloudStream')
-    }
-
-    const stopUttering = () => {
-                if (!isAndroid || (isAndroid && !globalThis.ReactNativeWebView)) {
-            if (globalThis.speechSynthesis.speaking) {
-                globalThis.speechSynthesis.cancel()
-            }
-        } else {
-            globalThis.ReactNativeWebView.postMessage(JSON.stringify({
-                type: "speaking-stop"
-            }))
-        }
-        
-        dispatch({type: Actions.STOP_UTTERING})
-            }
-
-    const submitTranscript = async (text?: string) => {
-        isReadyToSpeech.current = true
-        if (!text) {
-            return
-        }
-        // TODO: uncomment when supabase work again
-        if (!auth.user) {
-          return
-        }
-        dispatch({type: Actions.START_SENDING_CHAT})
-        setNoti(undefined)
-        setInput('')
-
-        try {
-            const data: CreateMessage = {content: `${text} ${BE_CONCISE}`, role: 'user'}
-
-            await append(data, {
-                options: {
-                    body: auth.user?.id ? {userId: auth.user.id} : undefined,
-                },
-            })
-            return
-        } catch (sendDetectedTranscriptError) {
-            console.error({sendDetectedTranscriptError})
-            dispatch({type: Actions.STOP_SENDING_CHAT})
-            showErrorMessage(NOTI_MESSAGES.gpt.error)
-            return
-        }
-    }
-
-    const toggleUttering = () => {
-        if (state.isUttering) {
-            stopUttering()
-        } else {
-            const lastMessage = messages
-                .slice()
-                .reverse()
-                .find((message) => message.role === 'assistant')?.content
-            if (lastMessage) {
-                startUttering(lastMessage)
-            }
-        }
-    }
-
-    const transcribeAudio = async (blob: Blob): Promise<{
-        error?: Error;
-        text: string
-    }> => {
-        if (!encoderRef.current) {
-            encoderRef.current = new Mp3Encoder(1, 44100, 96);
-        }
-
-        const base64 = await blobToBase64(blob);
-        if (!base64) {
-            return {error: new Error('Failed to read blob data.'), text: ''};
-        }
-
-        // Transcribe the audio
-        const text = await whisperTranscript(base64);
-        return {text};
+    // TO-DO: Check the origin of the message
+    window.addEventListener('message', handleStopUttering);
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      window.removeEventListener('message', handleStopUttering);
+      window.removeEventListener('blur', handleBlur);
+      // release resource on component unmount
+      cleanUpResources();
     };
+  }, []);
 
-    const onStartSpeaking = () => {
-        dispatch({type: Actions.START_SPEAKING})
-        stopAutoStopTimeout()
+  /**
+   * check before sending audio blob to Whisper for transcription
+   */
+  useEffect(() => {
+    if (
+      !state.isSending &&
+      !recording &&
+      state.isWhisperPrepared &&
+      transcript.blob?.size > 44
+    ) {
+      sendingDetectedMessageRef.current = true;
+      onTranscribe().then(() => {
+        sendingDetectedMessageRef.current = false;
+      });
     }
+  }, [recording, state.isSending, state.isWhisperPrepared, transcript]);
 
-    const onStopSpeaking = () => {
-        dispatch({type: Actions.STOP_SPEAKING})
+  useEffect(() => {
+    if (
+      state.isAutoStop &&
+      recording &&
+      state.isFinalData &&
+      startKeywordDetectedRef.current
+    ) {
+      startAutoStopTimeout();
     }
-
-    const cleanUpResources = () => {
-        releaseSocket()
-        releaseHark()
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop())
-            streamRef.current = undefined
-        }
-        // clear auto stop timeout instance
-        stopAutoStopTimeout()
-        // flush out lamejs
-        if (encoderRef.current) {
-            encoderRef.current.flush()
-            encoderRef.current = undefined
-        }
-        if (speechRef.current) {
-            stopUttering()
-            speechRef.current.removeEventListener('start', onStartUttering)
-            speechRef.current.removeEventListener('end', onStopUttering)
-        }
+    if (
+      (state.isAutoStop && !recording) ||
+      !state.isFinalData ||
+      !startKeywordDetectedRef.current
+    ) {
+      stopAutoStopTimeout();
     }
+  }, [
+    state.isAutoStop,
+    recording,
+    state.isFinalData,
+    startKeywordDetectedRef.current,
+  ]);
 
-    useEffect(() => {
-        const callToStartListening = async () => {
-            await startListening()
-        }
+  useEffect(() => {
+    if (speechRef.current) {
+      // change utterance speaking rate
+      speechRef.current.rate = speakingRate;
+    }
+  }, [speakingRate]);
 
-        function handleStopUttering(message: {data: {type: string, data: boolean}}) {
-            const {data, type} = message.data
-            if (type === 'speaking' && data === false) {
-                onStopUttering()
-            }
-        }
+  useEffect(() => {
+    if (chatRef.current) {
+      // auto scroll when there is new message
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-        function handleBlur(){
-            stopListening()
-            stopRecording()
-        }
-        
-        prepareUseWhisper()
-        callToStartListening()        
-
-        // TO-DO: Check the origin of the message
-        window.addEventListener("message", handleStopUttering);
-        window.addEventListener("blur", handleBlur)
-        return () => {
-            window.removeEventListener("message", handleStopUttering)
-            window.removeEventListener("blur", handleBlur)
-            // release resource on component unmount
-            cleanUpResources();
-        };
-    }, [])
-
-    /**
-     * check before sending audio blob to Whisper for transcription
-     */
-    useEffect(() => {
-        if (
-            !state.isSending &&
-            !recording &&
-            state.isWhisperPrepared &&
-            transcript.blob?.size > 44 
-        ) {
-            sendingDetectedMessageRef.current = true
-            onTranscribe().then(() => {
-                sendingDetectedMessageRef.current = false
-            })
-        }
-    }, [recording, state.isSending, state.isWhisperPrepared, transcript])
-
-    useEffect(() => {
-        if (state.isAutoStop && recording && state.isFinalData && startKeywordDetectedRef.current) {
-            startAutoStopTimeout()
-        }
-        if ((state.isAutoStop && !recording) || !state.isFinalData || !startKeywordDetectedRef.current) {
-            stopAutoStopTimeout()
-        }
-    }, [state.isAutoStop, recording, state.isFinalData, startKeywordDetectedRef.current])
-
-    useEffect(() => {
-        if (speechRef.current) {
-            // change utterance speaking rate
-            speechRef.current.rate = speakingRate
-        }
-    }, [speakingRate])
-
-    useEffect(() => {
-        if (chatRef.current) {
-            // auto scroll when there is new message
-            chatRef.current.scrollTop = chatRef.current.scrollHeight
-        }
-    }, [messages])
-
-    return (
-        <div className="flex h-full w-screen flex-col">
-            <div
-                ref={chatRef}
-                id="chat"
-                className="flex w-full flex-1 items-start justify-center overflow-auto p-4 sm:pt-10"
-            >
-                <div className="container flex max-w-3xl flex-col gap-3">
-                    {messagesSplitByLine.map((message, index) => (
-                        <ChatMessage
-                            key={index}
-                            message={message.content}
-                            sender={message.role}
-                        />
-                    ))}
-                </div>
-            </div>
-            <GoogleSTTPill
-                autoStopTimeout={autoStopTimeout}
-                isAutoStop={state.isAutoStop}
-                isUnttering={state.isUttering}
-                speakingRate={speakingRate}
-                onChangeAutoStopTimeout={setAutoStopTimeout}
-                onChangeIsAutoStop={(value) => {dispatch({type: Actions.TOGGLE_AUTO_STOP, value: value})}}
-                onChangeSpeakingRate={setSpeakingRate}
-                onToggleUnttering={toggleUttering}
+  return (
+    <div className='flex h-full w-screen flex-col'>
+      <div
+        ref={chatRef}
+        id='chat'
+        className='flex w-full flex-1 items-start justify-center overflow-auto p-4 sm:pt-10'
+      >
+        <div className='container flex max-w-3xl flex-col gap-3'>
+          {messagesSplitByLine.map((message, index) => (
+            <ChatMessage
+              key={index}
+              message={message.content}
+              sender={message.role}
             />
-            {noti ? (
-                <Alert
-                    message={noti.message}
-                    type={noti.type}
-                    onClose={() => setNoti(undefined)}
-                />
-            ) : null}
-            {interim ? (
-                <InterimHistory interims={interimsRef.current} interim={interim}/>
-            ) : null}
-            <GoogleSTTInput
-                isListening={state.isListening}
-                isLoading={state.isLoading}
-                isSpeaking={state.isSpeaking}
-                isRecording={recording && startKeywordDetectedRef.current}
-                isWhisperPrepared={state.isWhisperPrepared}
-                query={input}
-                onChangeQuery={handleInputChange}
-                onForceStopRecording={forceStopRecording}
-                onStartListening={startListening}
-                onStopListening={stopListening}
-                onStopUttering={stopUttering}
-                onSubmitQuery={submitTranscript}
-            />
+          ))}
         </div>
-    )
-}
+      </div>
+      <GoogleSTTPill
+        autoStopTimeout={autoStopTimeout}
+        isAutoStop={state.isAutoStop}
+        isUnttering={state.isUttering}
+        speakingRate={speakingRate}
+        onChangeAutoStopTimeout={setAutoStopTimeout}
+        onChangeIsAutoStop={(value) => {
+          dispatch({ type: Actions.TOGGLE_AUTO_STOP, value: value });
+        }}
+        onChangeSpeakingRate={setSpeakingRate}
+        onToggleUnttering={toggleUttering}
+      />
+      {noti ? (
+        <Alert
+          message={noti.message}
+          type={noti.type}
+          onClose={() => setNoti(undefined)}
+        />
+      ) : null}
+      {interim ? (
+        <InterimHistory interims={interimsRef.current} interim={interim} />
+      ) : null}
+      <GoogleSTTInput
+        isListening={state.isListening}
+        isLoading={state.isLoading}
+        isSpeaking={state.isSpeaking}
+        isRecording={recording && startKeywordDetectedRef.current}
+        isWhisperPrepared={state.isWhisperPrepared}
+        query={input}
+        onChangeQuery={handleInputChange}
+        onForceStopRecording={forceStopRecording}
+        onStartListening={startListening}
+        onStopListening={stopListening}
+        onStopUttering={stopUttering}
+        onSubmitQuery={submitTranscript}
+      />
+    </div>
+  );
+};
 
 const NOTI_MESSAGES = {
-    gpt: {
-        loading: 'hang on, still working',
-        error: 'Call to GPT Failed',
-    },
-}
-
-
+  gpt: {
+    loading: 'hang on, still working',
+    error: 'Call to GPT Failed',
+  },
+};

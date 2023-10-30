@@ -1,8 +1,8 @@
-import React, { useRef, useState } from "react";
-import { Transition, Dialog } from "@headlessui/react";
-import { useForm } from "react-hook-form";
-import AuthSocial from "components/AuthSocial";
-import { useAuth } from "util/auth";
+import React, { useRef, useState } from 'react';
+import { Transition, Dialog } from '@headlessui/react';
+import { useForm } from 'react-hook-form';
+import AuthSocial from 'components/AuthSocial';
+import { useAuth } from 'util/auth';
 
 // Warning: this is deprecated. I use AuthModal now. May still work though, and still is being used in Settings Page.
 function ReauthModal(props) {
@@ -30,7 +30,7 @@ function ReauthModal(props) {
         setPending(false);
         // Show error alert message
         setFormAlert({
-          type: "error",
+          type: 'error',
           message: error.message,
         });
       });
@@ -39,90 +39,90 @@ function ReauthModal(props) {
   return (
     <Transition appear={true} show={true}>
       <Dialog
-        as="div"
-        className="overflow-y-auto fixed inset-0 z-10"
+        as='div'
+        className='fixed inset-0 z-10 overflow-y-auto'
         onClose={() => props.onDone()}
       >
-        <div className="px-4 min-h-screen text-center">
+        <div className='min-h-screen px-4 text-center'>
           <Transition.Child
             as={React.Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
           >
-            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75" />
+            <Dialog.Overlay className='fixed inset-0 bg-gray-500 bg-opacity-75' />
           </Transition.Child>
           <span
-            className="inline-block h-screen align-middle"
-            aria-hidden="true"
+            className='inline-block h-screen align-middle'
+            aria-hidden='true'
           >
             &#8203;
           </span>
           <Transition.Child
             as={React.Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
           >
-            <div className="inline-block overflow-hidden p-6 my-8 w-full max-w-md text-left align-middle bg-white rounded-2xl shadow-xl transition-all transform">
+            <div className='my-8 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all'>
               <Dialog.Title
-                as="h3"
-                className="text-lg font-medium leading-6 text-gray-900"
+                as='h3'
+                className='text-lg font-medium leading-6 text-gray-900'
               >
                 Please sign in again to complete this action
               </Dialog.Title>
-              <div className="mt-4">
+              <div className='mt-4'>
                 {formAlert && (
-                  <div className="mb-4 text-red-600">{formAlert.message}</div>
+                  <div className='mb-4 text-red-600'>{formAlert.message}</div>
                 )}
 
-                {props.provider === "password" && (
+                {props.provider === 'password' && (
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <input
-                      className="py-1 px-3 w-full leading-8 bg-white rounded border border-gray-300 outline-none focus:border-indigo-500 focus:ring-1"
-                      name="pass"
-                      type="password"
-                      placeholder="Password"
+                      className='w-full rounded border border-gray-300 bg-white py-1 px-3 leading-8 outline-none focus:border-indigo-500 focus:ring-1'
+                      name='pass'
+                      type='password'
+                      placeholder='Password'
                       ref={register({
-                        required: "Please enter your password",
+                        required: 'Please enter your password',
                       })}
                     />
 
                     {errors.pass && (
-                      <p className="mt-1 text-sm text-left text-red-600">
+                      <p className='mt-1 text-left text-sm text-red-600'>
                         {errors.pass.message}
                       </p>
                     )}
 
-                    <div className="mt-4">
+                    <div className='mt-4'>
                       <button
-                        className="inline-flex justify-center py-2 px-4 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                        type="button"
+                        className='inline-flex justify-center rounded-md border border-gray-300 py-2 px-4 text-sm font-medium hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2'
+                        type='button'
                         onClick={() => props.onDone()}
                         ref={cancelButtonRef}
                       >
                         Cancel
                       </button>
                       <button
-                        className="inline-flex justify-center py-2 px-4 ml-3 text-sm font-medium text-white bg-indigo-500 rounded-md border border-transparent hover:bg-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                        type="submit"
+                        className='ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-500 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2'
+                        type='submit'
                         disabled={pending}
                       >
-                        {pending ? "..." : "Sign in"}
+                        {pending ? '...' : 'Sign in'}
                       </button>
                     </div>
                   </form>
                 )}
 
-                {props.provider !== "password" && (
+                {props.provider !== 'password' && (
                   <AuthSocial
-                    buttonAction="Sign in"
+                    buttonAction='Sign in'
                     providers={[props.provider]}
                     showLastUsed={false}
                     onAuth={() => {
@@ -131,7 +131,7 @@ function ReauthModal(props) {
                     }}
                     onError={(message) => {
                       setFormAlert({
-                        type: "error",
+                        type: 'error',
                         message: message,
                       });
                     }}

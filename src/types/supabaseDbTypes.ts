@@ -2,34 +2,33 @@
 
 // feedback
 export interface FeedbackType {
-    title: string,
-    description: string,
-    portal_id: number,
-    creator: number,
-    // Auto generated
-    id?: number,
-    created_at?: string,
+  title: string;
+  description: string;
+  portal_id: number;
+  creator: number;
+  // Auto generated
+  id?: number;
+  created_at?: string;
 
-    //Optional
-    status?: string,
-    topics?: string[],
+  //Optional
+  status?: string;
+  topics?: string[];
 }
 
-
-// followupSubmissions 
+// followupSubmissions
 export interface FollowupSubmissionType {
-    summary: string,
-    feedback: number,
-    user: number,
+  summary: string;
+  feedback: number;
+  user: number;
 }
 
 // followupMessages
 export interface FollowupMessageType {
-    followupSubmission: number;
-    message: string;
-    sender: "AI" | "human";
+  followupSubmission: number;
+  message: string;
+  sender: 'AI' | 'human';
 
-    // Auto generated
-    id?: number;
-    created_at?: string;
+  // Auto generated
+  id?: number;
+  created_at?: string;
 }

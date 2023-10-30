@@ -1,12 +1,12 @@
-import React from "react";
-import Meta from "components/Meta";
-import PricingSection from "components/landing/PricingSection";
-import AbstractBg from "components/atoms/AbstractBg";
+import React from 'react';
+import Meta from 'components/Meta';
+import PricingSection from 'components/landing/PricingSection';
+import AbstractBg from 'components/atoms/AbstractBg';
 
 function PricingPage(props) {
   return (
     <>
-      <Meta title="Pricing" />
+      <Meta title='Pricing' />
       <AbstractBg />
       <PricingSection />
     </>

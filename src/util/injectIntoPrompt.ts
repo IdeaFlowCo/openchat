@@ -1,5 +1,5 @@
 export default function injectIntoBasePrompt(text) {
-    return `Your name is Orion, the most powerful user researcher in the world.
+  return `Your name is Orion, the most powerful user researcher in the world.
 
     Your goal is to ask extremely concise, probing, open ended questions to the human you are interviewing.
 
@@ -25,8 +25,11 @@ export default function injectIntoBasePrompt(text) {
     `;
 }
 
-export function injectIntoFollowupPrompt(feedbackTitle: string, feedbackDescription: string) {
-    return `Your name is Orion, the most powerful user researcher in the world.
+export function injectIntoFollowupPrompt(
+  feedbackTitle: string,
+  feedbackDescription: string
+) {
+  return `Your name is Orion, the most powerful user researcher in the world.
 
     Your sole goal for this interview is to ask extremely concise, probing, followup questions about a product feedback submission that was just submitted by the human you are talking to.
 
