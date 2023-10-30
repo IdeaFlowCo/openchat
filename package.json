@@ -64,12 +64,17 @@
     "build": "next build",
     "start": "next start",
     "export": "next build && next export",
-    "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe-webhook"
+    "stripe-webhook": "stripe listen --forward-to localhost:3000/api/stripe-webhook",
+    "lint": "next lint",
+    "format": "prettier --check --ignore-path .gitignore .",
+    "format:fix": "prettier --write --ignore-path .gitignore ."
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^4.39.1",
     "@types/hark": "^1.2.2",
     "@types/react": "^18.2.12",
+    "eslint": "8.52.0",
+    "eslint-config-prettier": "^9.0.0",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "typescript": "^5.1.3"
