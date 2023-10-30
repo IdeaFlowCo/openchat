@@ -35,7 +35,7 @@
 //         });
 //         return;
 //     }
-    
+
 //     // Send the email
 //     try {
 //         await resend.emails.send({

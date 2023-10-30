@@ -3,102 +3,102 @@
 @tailwind utilities;
 
 @supports (-webkit-touch-callout: none) {
-    .h-screen {
-        height: -webkit-fill-available;
-    }
+  .h-screen {
+    height: -webkit-fill-available;
+  }
 }
 
 .b {
-    border: 1px solid red;
+  border: 1px solid red;
 }
 
 html {
-    height: 100%;
-    background: white;
+  height: 100%;
+  background: white;
 }
 
 body {
-    height: 100%;
+  height: 100%;
 }
 
 #__next {
-    height: 100%;
+  height: 100%;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-Light.otf");
-    font-weight: 300;
-    font-style: normal;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Light.otf');
+  font-weight: 300;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-LightItalic.otf");
-    font-weight: 300;
-    font-style: italic;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-LightItalic.otf');
+  font-weight: 300;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-Regular.otf");
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.otf');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-Medium.otf");
-    font-weight: 500;
-    font-style: normal;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.otf');
+  font-weight: 500;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-MediumItalic.otf");
-    font-weight: 500;
-    font-style: italic;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-MediumItalic.otf');
+  font-weight: 500;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-Bold.otf");
-    font-weight: bold;
-    font-style: normal;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.otf');
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-BoldItalic.otf");
-    font-weight: bold;
-    font-style: italic;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-BoldItalic.otf');
+  font-weight: bold;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-Black.otf");
-    font-weight: 900;
-    font-style: normal;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Black.otf');
+  font-weight: 900;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: "Satoshi";
-    src: url("/fonts/Satoshi-BlackItalic.otf");
-    font-weight: 900;
-    font-style: italic;
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-BlackItalic.otf');
+  font-weight: 900;
+  font-style: italic;
 }
 
 /* custom-number-input in SettingsDropdown.js */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
--webkit-appearance: none;
-margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .custom-number-input input:focus {
-outline: none !important;
+  outline: none !important;
 }
 
 .custom-number-input button:focus {
-outline: none !important;
+  outline: none !important;
 }

@@ -1,62 +1,62 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import contact from "util/contact";
-import Link from "next/link";
-import AbstractBg from "../atoms/AbstractBg";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import contact from 'util/contact';
+import Link from 'next/link';
+import AbstractBg from '../atoms/AbstractBg';
 
 function ContactSection(props) {
-    // TODO: If you ever want to use this, add a the neccessary FORMSPREE keys to your .env
-    // const [pending, setPending] = useState(false);
-    // const [formAlert, setFormAlert] = useState(null);
-    // const { handleSubmit, register, errors, reset } = useForm();
+  // TODO: If you ever want to use this, add a the neccessary FORMSPREE keys to your .env
+  // const [pending, setPending] = useState(false);
+  // const [formAlert, setFormAlert] = useState(null);
+  // const { handleSubmit, register, errors, reset } = useForm();
 
-    // const onSubmit = (data) => {
-    //     // Show pending indicator
-    //     setPending(true);
+  // const onSubmit = (data) => {
+  //     // Show pending indicator
+  //     setPending(true);
 
-    //     contact
-    //         .submit(data)
-    //         .then(() => {
-    //             // Clear form
-    //             reset();
-    //             // Show success alert message
-    //             setFormAlert({
-    //                 type: "success",
-    //                 message: "Your message has been sent!",
-    //             });
-    //         })
-    //         .catch((error) => {
-    //             // Show error alert message
-    //             setFormAlert({
-    //                 type: "error",
-    //                 message: error.message,
-    //             });
-    //         })
-    //         .finally(() => {
-    //             // Hide pending indicator
-    //             setPending(false);
-    //         });
-    // };
+  //     contact
+  //         .submit(data)
+  //         .then(() => {
+  //             // Clear form
+  //             reset();
+  //             // Show success alert message
+  //             setFormAlert({
+  //                 type: "success",
+  //                 message: "Your message has been sent!",
+  //             });
+  //         })
+  //         .catch((error) => {
+  //             // Show error alert message
+  //             setFormAlert({
+  //                 type: "error",
+  //                 message: error.message,
+  //             });
+  //         })
+  //         .finally(() => {
+  //             // Hide pending indicator
+  //             setPending(false);
+  //         });
+  // };
 
-    return (
-        <section className="bg-white py-12 px-4">
-            <AbstractBg />
-            <div className="container mx-auto max-w-2xl">
-                <div className="py-12 lg:pb-20">
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mx-auto max-w-2xl text-center">
-                            <h1 className="font-satoshi text-4xl font-medium tracking-tight text-gray-900 sm:text-6xl">
-                                About TalkToGPT
-                            </h1>
-                            <p className="mt-6 text-lg leading-8 text-gray-600">
-                                Brought to you by Ideaflow, TalkToGPT is the easiest way to 
-                                talk to GPT like you would a friend.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <section className='bg-white py-12 px-4'>
+      <AbstractBg />
+      <div className='container mx-auto max-w-2xl'>
+        <div className='py-12 lg:pb-20'>
+          <div className='mx-auto max-w-7xl px-6 lg:px-8'>
+            <div className='mx-auto max-w-2xl text-center'>
+              <h1 className='font-satoshi text-4xl font-medium tracking-tight text-gray-900 sm:text-6xl'>
+                About TalkToGPT
+              </h1>
+              <p className='mt-6 text-lg leading-8 text-gray-600'>
+                Brought to you by Ideaflow, TalkToGPT is the easiest way to talk
+                to GPT like you would a friend.
+              </p>
+            </div>
+          </div>
+        </div>
 
-                {/* {formAlert && (
+        {/* {formAlert && (
                     <div
                         className={
                             "mb-4" +
@@ -114,9 +114,9 @@ function ContactSection(props) {
                         {pending ? "..." : "Send message"}
                     </button>
                 </form> */}
-            </div>
-        </section>
-    );
+      </div>
+    </section>
+  );
 }
 
 export default ContactSection;

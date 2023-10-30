@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import Meta from "components/Meta";
-import PageLoader from "components/PageLoader";
-import { useAuth, requireAuth } from "util/auth";
-import { toast } from "react-hot-toast";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import Meta from 'components/Meta';
+import PageLoader from 'components/PageLoader';
+import { useAuth, requireAuth } from 'util/auth';
+import { toast } from 'react-hot-toast';
 // import { redirectToCheckout } from "util/stripe";
 
 function PurchasePage(props) {
@@ -25,16 +25,16 @@ function PurchasePage(props) {
     //     });
     //   });
     // }
-    toast.error("This feature is not yet available. Please check back later.");
+    toast.error('This feature is not yet available. Please check back later.');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      <Meta title="Purchase" />
+      <Meta title='Purchase' />
       <PageLoader>
         {formAlert && (
-          <div className="p-10 text-center text-red-600">
+          <div className='p-10 text-center text-red-600'>
             {formAlert.message}
           </div>
         )}

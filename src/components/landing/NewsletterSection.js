@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import newsletter from "util/newsletter";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import newsletter from 'util/newsletter';
 
 function NewsletterSection(props) {
   // const [subscribed, setSubscribed] = useState(false);
@@ -16,9 +16,9 @@ function NewsletterSection(props) {
   // };
 
   return (
-    <section className="py-12 px-4 bg-transparent">
-      <div className="container mx-auto max-w-lg">
-        <h1 className="mb-6 text-3xl font-medium text-center">
+    <section className='bg-transparent py-12 px-4'>
+      <div className='container mx-auto max-w-lg'>
+        <h1 className='mb-6 text-center text-3xl font-medium'>
           Stay up to date with TalkToGPT!
         </h1>
 

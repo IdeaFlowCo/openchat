@@ -1,8 +1,8 @@
-import React from 'react'
-import Meta from 'components/Meta'
-import ErrorBoundary from '../components/atoms/ErrorBoundary'
-import { requireAuth } from '../util/auth'
-import dynamic from 'next/dynamic'
+import React from 'react';
+import Meta from 'components/Meta';
+import ErrorBoundary from '../components/atoms/ErrorBoundary';
+import { requireAuth } from '../util/auth';
+import dynamic from 'next/dynamic';
 
 const StreamingChat = dynamic(
   () =>
@@ -12,17 +12,17 @@ const StreamingChat = dynamic(
   {
     ssr: false,
   }
-)
+);
 
 function ChatPage(props) {
   return (
     <ErrorBoundary fallback={<StreamingChat />}>
-      <Meta title="Chat" description="Chat with GPT" />
+      <Meta title='Chat' description='Chat with GPT' />
       <StreamingChat />
     </ErrorBoundary>
-  )
+  );
 }
 
 // TODO: uncomment when supabase work again
-export default requireAuth(ChatPage)
+export default requireAuth(ChatPage);
 // export default ChatPage

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import ReauthModal from "components/ReauthModal";
-import SettingsGeneral from "components/SettingsGeneral";
-import SettingsPassword from "components/SettingsPassword";
-import SettingsBilling from "components/SettingsBilling";
-import { useAuth } from "util/auth";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import ReauthModal from 'components/ReauthModal';
+import SettingsGeneral from 'components/SettingsGeneral';
+import SettingsPassword from 'components/SettingsPassword';
+import SettingsBilling from 'components/SettingsBilling';
+import { useAuth } from 'util/auth';
 
 function SettingsSection(props) {
   const auth = useAuth();
@@ -22,13 +22,13 @@ function SettingsSection(props) {
     billing: true,
   };
 
-  const section = validSections[props.section] ? props.section : "general";
+  const section = validSections[props.section] ? props.section : 'general';
 
   // Handle status of type "success", "error", or "requires-recent-login"
   // We don't treat "requires-recent-login" as an error as we handle it
   // gracefully by taking the user through a re-authentication flow.
   const handleStatus = ({ type, message, callback }) => {
-    if (type === "requires-recent-login") {
+    if (type === 'requires-recent-login') {
       // First clear any existing message
       setFormAlert(null);
       // Then update state to show re-authentication modal
@@ -47,7 +47,7 @@ function SettingsSection(props) {
   };
 
   return (
-    <section className="py-10 px-4">
+    <section className='py-10 px-4'>
       {reauthState.show && (
         <ReauthModal
           callback={reauthState.callback}
@@ -56,20 +56,18 @@ function SettingsSection(props) {
         />
       )}
 
-      <div className="flex justify-center space-x-5">
+      <div className='flex justify-center space-x-5'>
         <Link
-          href="/settings/general"
-          className={"" + (section === "general" ? " underline" : "")}>
-          
-            General
-          
+          href='/settings/general'
+          className={'' + (section === 'general' ? ' underline' : '')}
+        >
+          General
         </Link>
         <Link
-          href="/settings/password"
-          className={"" + (section === "password" ? " underline" : "")}>
-          
-            Password
-          
+          href='/settings/password'
+          className={'' + (section === 'password' ? ' underline' : '')}
+        >
+          Password
         </Link>
         {/* <Link href="/settings/billing">
           <a className={"" + (section === "billing" ? " underline" : "")}>
@@ -77,22 +75,22 @@ function SettingsSection(props) {
           </a>
         </Link> */}
       </div>
-      <div className="container mx-auto mt-5 max-w-md">
+      <div className='container mx-auto mt-5 max-w-md'>
         {formAlert && (
           <div
             className={
-              "mb-4" +
-              (formAlert.type === "error" ? " text-red-600" : "") +
-              (formAlert.type === "success" ? " text-green-600" : "")
+              'mb-4' +
+              (formAlert.type === 'error' ? ' text-red-600' : '') +
+              (formAlert.type === 'success' ? ' text-green-600' : '')
             }
           >
             {formAlert.message}
           </div>
         )}
 
-        {section === "general" && <SettingsGeneral onStatus={handleStatus} />}
+        {section === 'general' && <SettingsGeneral onStatus={handleStatus} />}
 
-        {section === "password" && <SettingsPassword onStatus={handleStatus} />}
+        {section === 'password' && <SettingsPassword onStatus={handleStatus} />}
 
         {/* {section === "billing" && <SettingsBilling onStatus={handleStatus} />} */}
       </div>

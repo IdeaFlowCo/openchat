@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 function LegalTerms(props) {
-    return (
-        <div className="prose prose-a:text-indigo-600 max-w-none">
-            {/* <h1 className="font-satoshi font-medium tracking-tight">
+  return (
+    <div className='prose max-w-none prose-a:text-indigo-600'>
+      {/* <h1 className="font-satoshi font-medium tracking-tight">
                 Terms of Service
             </h1>
             <p>
@@ -73,8 +73,8 @@ function LegalTerms(props) {
                 If you have any questions about these Terms, please contact us
                 at alan@deepform.ai.
             </p> */}
-        </div>
-    );
+    </div>
+  );
 }
 
 export default LegalTerms;

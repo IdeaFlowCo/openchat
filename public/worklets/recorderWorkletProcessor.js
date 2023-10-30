@@ -71,7 +71,7 @@ class RecorderProcessor extends AudioWorkletProcessor {
     }
     if (outSampleRate > sampleRate) {
       throw new Error(
-        "downsampling rate show be smaller than original sample rate"
+        'downsampling rate show be smaller than original sample rate'
       );
     }
     var sampleRateRatio = sampleRate / outSampleRate;
@@ -100,4 +100,4 @@ class RecorderProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor("recorder.worklet", RecorderProcessor);
+registerProcessor('recorder.worklet', RecorderProcessor);
