@@ -232,13 +232,16 @@ export const GoogleSttChat = () => {
 
       // Check for end keyword and stop recording if detected
       if (
-        typeof startKeywordDetectedRef.current !== 'undefined' &&
-        !startKeywordDetectedRef.current &&
         detectEndKeyword(interimRef.current) &&
         !endKeywordDetectedRef.current
       ) {
         endKeywordDetectedRef.current = true;
-        await onAutoStop(); // Or any other method you want to call when stopping
+        if (typeof startKeywordDetectedRef.current !== 'undefined' &&
+          !startKeywordDetectedRef.current) {
+            stopUttering();
+          } else {
+            onAutoStop();
+          }
       }
     } catch (error) {
       console.error('An error occurred in onSpeechRecognized:', error);
@@ -470,7 +473,8 @@ export const GoogleSttChat = () => {
         })
       );
     }
-
+    endKeywordDetectedRef.current = undefined;
+    dispatch({ type: Actions.STOP_LOADING });
     dispatch({ type: Actions.STOP_UTTERING });
   };
 
