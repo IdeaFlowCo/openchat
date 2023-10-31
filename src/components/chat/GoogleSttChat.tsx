@@ -219,6 +219,8 @@ export const GoogleSttChat = () => {
       } else {
         dispatch({ type: Actions.NOT_FINAL_DATA_RECEIVED });
       }
+
+      // Detect staring keyword and start recording if detected
       if (
         typeof startKeywordDetectedRef.current !== 'undefined' &&
         !startKeywordDetectedRef.current &&
@@ -230,7 +232,7 @@ export const GoogleSttChat = () => {
         }
       }
 
-      // Check for end keyword and stop recording if detected
+      // Detect end keyword and stop recording if detected
       if (
         detectEndKeyword(interimRef.current) &&
         !endKeywordDetectedRef.current
@@ -242,6 +244,16 @@ export const GoogleSttChat = () => {
           } else {
             onAutoStop();
           }
+      }
+
+      if ((typeof startKeywordDetectedRef.current == 'undefined' || !startKeywordDetectedRef.current) &&
+          (typeof endKeywordDetectedRef.current == 'undefined' || !endKeywordDetectedRef.current)) {
+        const voiceCommand = checkIsVoiceCommand(interimRef.current);
+        
+        if (voiceCommand) {
+          runVoiceCommand(voiceCommand);
+          return;
+        }
       }
     } catch (error) {
       console.error('An error occurred in onSpeechRecognized:', error);
@@ -272,13 +284,6 @@ export const GoogleSttChat = () => {
     if (!transcriptionText) return;
 
     let text = handleKeywords(transcriptionText);
-
-    const voiceCommand = checkIsVoiceCommand(text);
-    if (voiceCommand) {
-      runVoiceCommand(voiceCommand);
-      return;
-    }
-
     await submitTranscript(text);
 
     transcript.blob = undefined;
@@ -352,6 +357,13 @@ export const GoogleSttChat = () => {
     }
   };
 
+  const turnOffMicrophone = () => {
+    stopListening().then(() => {
+      stopUttering();
+      dispatch({ type: Actions.STOP_SPEAKING });
+    });
+  }
+
   const runVoiceCommand = (voiceCommand: VoiceCommand) => {
     const action = getVoiceCommandAction(voiceCommand);
 
@@ -359,8 +371,24 @@ export const GoogleSttChat = () => {
       case 'SET_IS_AUTO_STOP':
         dispatch({ type: Actions.TOGGLE_AUTO_STOP, value: action.value });
         break;
+
+      case 'SET_MICROPHONE_OFF':
+        turnOffMicrophone();
+        break;
+
       case 'SET_AUTO_STOP_TIMEOUT':
-        setAutoStopTimeout(action.value);
+        if (typeof action.value === 'number') {
+          setAutoStopTimeout(action.value);
+        }
+        if (typeof action.value === 'string') {
+          if (action.value === 'faster') {
+            setAutoStopTimeout(current => current - 1 <= 0 ? 1 : current - 1);
+          }
+          if (action.value === 'slower') {
+            setAutoStopTimeout(current => current + 1);
+          }
+        }
+        
         break;
       case 'SHOW_MESSAGE':
         if (action.messageType === 'error') {

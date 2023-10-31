@@ -5,7 +5,8 @@ import { Message } from 'ai';
 
 type VoiceCommandAction =
   | { type: 'SET_IS_AUTO_STOP'; value: boolean }
-  | { type: 'SET_AUTO_STOP_TIMEOUT'; value: number }
+  | { type: 'SET_AUTO_STOP_TIMEOUT'; value: number | string }
+  | { type: 'SET_MICROPHONE_OFF'; value: boolean }
   | { type: 'SHOW_MESSAGE'; messageType: 'error' | 'success'; message: string }
   | null;
 
@@ -13,11 +14,16 @@ export const getVoiceCommandAction = (
   voiceCommand: VoiceCommand
 ): VoiceCommandAction => {
   switch (voiceCommand.command) {
-    case 'off-auto-stop':
+    case VOICE_COMMANDS.OFF_AUTO_STOP.command:
       return { type: 'SET_IS_AUTO_STOP', value: false };
-    case 'on-auto-stop':
+
+    case VOICE_COMMANDS.ON_AUTO_STOP.command:
       return { type: 'SET_IS_AUTO_STOP', value: true };
-    case 'change-auto-stop':
+
+    case VOICE_COMMANDS.TURN_OFF_MIC.command:
+      return { type: 'SET_MICROPHONE_OFF', value: false };
+
+    case VOICE_COMMANDS.CHANGE_AUTO_STOP.command:
       if (voiceCommand.args && typeof voiceCommand.args === 'number') {
         return { type: 'SET_AUTO_STOP_TIMEOUT', value: voiceCommand.args };
       } else {
@@ -27,25 +33,38 @@ export const getVoiceCommandAction = (
           message: 'incorrect voice command.',
         };
       }
+
+    case VOICE_COMMANDS.MAKE_AUTO_STOP.command:
+      return { type: 'SET_AUTO_STOP_TIMEOUT', value: voiceCommand.args };
+      
     default:
       return null;
   }
 };
 
 export const checkIsVoiceCommand = (text: string): VoiceCommand | undefined => {
-  for (const voiceCommand of VOICE_COMMANDS) {
+  const voiceCommands = Object.values(VOICE_COMMANDS);
+  for (const voiceCommand of voiceCommands) {
     if (
       text
         .toLocaleLowerCase()
         .includes(voiceCommand.matcher.toLocaleLowerCase())
     ) {
-      if (voiceCommand.command === 'change-auto-stop') {
+      
+      if (voiceCommand.command === VOICE_COMMANDS.CHANGE_AUTO_STOP.command) {
         let args = wordsToNumbers(text);
         if (typeof args === 'string') {
           args = args.match(/\d+/)[0];
           args = parseInt(args, 10);
         }
         return { ...voiceCommand, args };
+      } else if (voiceCommand.command === VOICE_COMMANDS.MAKE_AUTO_STOP.command) {
+        const commands = [
+          {command: "faster", index: text.toLocaleLowerCase().indexOf('faster')},
+          {command: "slower", index: text.toLocaleLowerCase().indexOf('slower')},
+        ].sort((a, b) => a.index - b.index).filter((c) => c.index !== -1)
+
+        return { ...voiceCommand, args: commands.length > 0 ? commands[0].command : "" };
       } else {
         return voiceCommand;
       }
