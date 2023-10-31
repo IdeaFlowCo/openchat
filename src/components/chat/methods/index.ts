@@ -66,22 +66,22 @@ export const extractStartKeyword = (interimText: string): string | null => {
 export const trimText = (text: string): string => {
   const textStripCommas = text
     .trim()
-    .replace(/(^,|,$)/, '')
+    .replace(/(^,|,$|^\.)/, '')
     .trim();
   return `${textStripCommas
     .charAt(0)
     .toLocaleUpperCase()}${textStripCommas.substring(1)}`;
 };
 
-export const handleStartKeywords = (text: string): string => {
+export const handleKeywords = (text: string): string => {
   const lowerCaseText = text.toLowerCase();
 
-  START_KEYWORDS.forEach((keyword) => {
-    const keywordIndex = lowerCaseText.indexOf(keyword.toLowerCase());
-    if (keywordIndex !== -1) {
-      text = text.substring(keywordIndex + keyword.length);
-    }
-  });
+  // START_KEYWORDS.forEach((keyword) => {
+  //   const keywordIndex = lowerCaseText.indexOf(keyword.toLowerCase());
+  //   if (keywordIndex !== -1) {
+  //     text = text.substring(keywordIndex + keyword.length);
+  //   }
+  // });
 
   END_KEYWORDS.forEach((keyword) => {
     const endKeywordIndex = lowerCaseText.lastIndexOf(keyword.toLowerCase());
