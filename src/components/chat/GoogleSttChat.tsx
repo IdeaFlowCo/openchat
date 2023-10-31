@@ -19,7 +19,7 @@ import {
   detectEndKeyword,
   extractStartKeyword,
   getVoiceCommandAction,
-  handleStartKeywords,
+  handleKeywords,
   splitTextsBySeparator,
   whisperTranscript,
 } from './methods';
@@ -70,17 +70,17 @@ export const GoogleSttChat = () => {
 
   const [firstMessage, setFirstMessage] = useState<string | null>(null);
   const [interim, setInterim] = useState<string>('');
+  const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT);
+  const [speakingRate, setSpeakingRate] = useState<number>(1);
   const [noti, setNoti] = useState<{
     type: 'error' | 'success';
     message: string;
   }>();
-  const [autoStopTimeout, setAutoStopTimeout] = useState<number>(STOP_TIMEOUT);
-  const [speakingRate, setSpeakingRate] = useState<number>(1);
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const [playBubble] = useSound('/sounds/bubble.mp3', { volume: 1 });
-  const [playSonar] = useSound('/sounds/sonar.mp3', { volume: 0.3 });
+  const [playSonar] = useSound('/sounds/sonar.mp3', { volume: 0.3, interrupt: true, });
+  // const [playBubble] = useSound('/sounds/bubble.mp3', { volume: 1, interrupt: true });
 
   const onStartUttering = async () => {
     // await stopRecording()
@@ -88,7 +88,7 @@ export const GoogleSttChat = () => {
   };
 
   const onStopUttering = async () => {
-    await startRecording();
+    // await startRecording();
     lastSpeechIndexRef.current += 1;
     if (storedMessagesRef.current.length > lastSpeechIndexRef.current) {
       startUttering(storedMessagesRef.current[lastSpeechIndexRef.current]);
@@ -125,7 +125,6 @@ export const GoogleSttChat = () => {
   const { recording, transcript, startRecording, stopRecording } = useWhisper({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     autoTranscribe: false,
-    removeSilence: true,
     whisperConfig: {
       language: 'en',
     },
@@ -133,7 +132,6 @@ export const GoogleSttChat = () => {
 
   const { messages, append, input, setInput, handleInputChange } = useChat({
     api: '/api/openai/stream',
-    initialMessages: [defaultMessage],
     onError: (sendDetectedTranscriptError) => {
       console.error({ sendDetectedTranscriptError });
       dispatch({ type: Actions.STOP_SENDING_CHAT });
@@ -198,10 +196,14 @@ export const GoogleSttChat = () => {
   };
 
   const processStartKeyword = async () => {
-    await startRecording();
-    stopUttering();
-    playBubble();
-    startKeywordDetectedRef.current = true;
+    if (state.isUttering) {
+      return
+    }
+    startRecording().then(() => {
+      stopUttering();
+      // playBubble();
+      startKeywordDetectedRef.current = true;
+    });
   };
 
   const onSpeechRecognized = async (data: WordRecognized) => {
@@ -217,7 +219,6 @@ export const GoogleSttChat = () => {
       } else {
         dispatch({ type: Actions.NOT_FINAL_DATA_RECEIVED });
       }
-
       if (
         typeof startKeywordDetectedRef.current !== 'undefined' &&
         !startKeywordDetectedRef.current &&
@@ -267,7 +268,7 @@ export const GoogleSttChat = () => {
     const transcriptionText = handleTranscriptionResults(transcribed);
     if (!transcriptionText) return;
 
-    let text = handleStartKeywords(transcriptionText);
+    let text = handleKeywords(transcriptionText);
 
     const voiceCommand = checkIsVoiceCommand(text);
     if (voiceCommand) {
@@ -305,6 +306,13 @@ export const GoogleSttChat = () => {
       dispatch({ type: Actions.PREPARE_WHISPER });
     }
   };
+
+  const disableUseWhisper = async () => {
+    if (state.isWhisperPrepared) {
+      await stopRecording();
+      dispatch({ type: Actions.DISABLE_WHISPER });
+    }
+  }
 
   const prepareSocket = async () => {
     socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT);
@@ -421,8 +429,8 @@ export const GoogleSttChat = () => {
     processorRef.current.port.onmessage = ({ data: audio }) => {
       socketRef.current?.emit('send_audio_data', { audio });
     };
-    await stopRecording();
-    await startRecording();
+    // await stopRecording();
+    // await startRecording();
   };
 
   const stopAutoStopTimeout = () => {
@@ -564,10 +572,7 @@ export const GoogleSttChat = () => {
   };
 
   useEffect(() => {
-    const callToStartListening = async () => {
-      await startListening();
-    };
-
+    
     function handleStopUttering(message: {
       data: { type: string; data: boolean };
     }) {
@@ -578,16 +583,17 @@ export const GoogleSttChat = () => {
     }
 
     function handleBlur() {
+      disableUseWhisper();
       stopListening();
-      stopRecording();
     }
 
-    prepareUseWhisper();
-    callToStartListening();
+    prepareUseWhisper().then(() => {
+      startListening().then(() => {
+        window.addEventListener('message', handleStopUttering);
+        window.addEventListener('blur', handleBlur);
+      });
+    });
 
-    // TO-DO: Check the origin of the message
-    window.addEventListener('message', handleStopUttering);
-    window.addEventListener('blur', handleBlur);
     return () => {
       window.removeEventListener('message', handleStopUttering);
       window.removeEventListener('blur', handleBlur);
@@ -611,7 +617,7 @@ export const GoogleSttChat = () => {
         sendingDetectedMessageRef.current = false;
       });
     }
-  }, [recording, state.isSending, state.isWhisperPrepared, transcript]);
+  }, [recording, state.isSending, state.isWhisperPrepared, transcript.blob?.size]);
 
   useEffect(() => {
     if (
@@ -658,6 +664,10 @@ export const GoogleSttChat = () => {
         className='flex w-full flex-1 items-start justify-center overflow-auto p-4 sm:pt-10'
       >
         <div className='container flex max-w-3xl flex-col gap-3'>
+            <ChatMessage
+              message={defaultMessage.content}
+              sender={defaultMessage.role}
+            />
           {messagesSplitByLine.map((message, index) => (
             <ChatMessage
               key={index}

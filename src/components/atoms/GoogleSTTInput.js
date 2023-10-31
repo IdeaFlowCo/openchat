@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import useSound from 'use-sound';
 
 export default function GoogleSTTInput({
   isListening, // listening to wakeword
@@ -15,6 +16,7 @@ export default function GoogleSTTInput({
   onSubmitQuery,
 }) {
   const waveRef = useRef();
+  const [playBubble] = useSound('/sounds/bubble.mp3', { volume: 1, interrupt: true });
 
   useEffect(() => {
     const initWaveform = async () => {
@@ -29,7 +31,12 @@ export default function GoogleSTTInput({
       });
     };
     if (isRecording && !waveRef.current) {
+      playBubble()
       initWaveform();
+    }
+    return () => {
+      waveRef.current = null;
+      document.getElementById('siri-wave').innerHTML = '';
     }
   }, [isRecording]);
 
@@ -148,7 +155,7 @@ export default function GoogleSTTInput({
             !isListening && (
               <button
                 onClick={async () => {
-                  onStartListening?.();
+                  await onStartListening();
                 }}
                 className='rounded-full border bg-white p-3 text-white hover:opacity-70 '
               >

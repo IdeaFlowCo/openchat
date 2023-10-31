@@ -27,13 +27,14 @@ export enum Actions {
   STOP_UTTERING = 'stop_uttering',
   START_UTTERING = 'start_uttering',
   PREPARE_WHISPER = 'prepare_whisper',
+  DISABLE_WHISPER = 'disable_whisper',
   NOT_FINAL_DATA_RECEIVED = 'not_final_data_received',
   FINAL_DATA_RECEIVED = 'final_data_received',
 }
 
 export const initialState = {
   isAutoStop: true,
-  isListening: false,
+  isListening: true,
   isLoading: false,
   isSending: false,
   isSpeaking: false,
@@ -116,6 +117,12 @@ export function reducer(state: GoogleSttState, action: GoogleSttAction) {
     return {
       ...state,
       isWhisperPrepared: true,
+    };
+  }
+  if (action.type === Actions.DISABLE_WHISPER) {
+    return {
+      ...state,
+      isWhisperPrepared: false,
     };
   }
   if (action.type === Actions.NOT_FINAL_DATA_RECEIVED) {
