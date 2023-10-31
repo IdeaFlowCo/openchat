@@ -1,4 +1,4 @@
-interface GoogleSttState {
+interface GoogleSttFlagsState {
   isAutoStop: boolean;
   isListening: boolean;
   isLoading: boolean;
@@ -10,11 +10,11 @@ interface GoogleSttState {
 }
 
 interface GoogleSttAction {
-  type: Actions;
+  type: FlagsActions;
   value?: boolean;
 }
 
-export enum Actions {
+export enum FlagsActions {
   TOGGLE_AUTO_STOP = 'toggle_auto_stop',
   START_LISTENING = 'start_listening',
   STOP_LISTENING = 'stop_listening',
@@ -32,7 +32,7 @@ export enum Actions {
   FINAL_DATA_RECEIVED = 'final_data_received',
 }
 
-export const initialState = {
+export const initialFlagsState = {
   isAutoStop: true,
   isListening: true,
   isLoading: false,
@@ -43,95 +43,97 @@ export const initialState = {
   isFinalData: false,
 };
 
-export function reducer(state: GoogleSttState, action: GoogleSttAction) {
+
+
+export function flagsReducer(state: GoogleSttFlagsState, action: GoogleSttAction) {
   // console.log(action.type)
-  if (action.type === Actions.TOGGLE_AUTO_STOP) {
+  if (action.type === FlagsActions.TOGGLE_AUTO_STOP) {
     return {
       ...state,
       isAutoStop: action.value,
     };
   }
-  if (action.type === Actions.START_LISTENING) {
+  if (action.type === FlagsActions.START_LISTENING) {
     return {
       ...state,
       isListening: true,
     };
   }
-  if (action.type === Actions.STOP_LISTENING) {
+  if (action.type === FlagsActions.STOP_LISTENING) {
     return {
       ...state,
       isListening: false,
     };
   }
-  if (action.type === Actions.STOP_SENDING_CHAT) {
+  if (action.type === FlagsActions.STOP_SENDING_CHAT) {
     return {
       ...state,
       isSending: false,
       isLoading: false,
     };
   }
-  if (action.type === Actions.START_SENDING_CHAT) {
+  if (action.type === FlagsActions.START_SENDING_CHAT) {
     return {
       ...state,
       isSending: true,
       isLoading: true,
     };
   }
-  if (action.type === Actions.STOP_SPEAKING) {
+  if (action.type === FlagsActions.STOP_SPEAKING) {
     return {
       ...state,
       isSpeaking: false,
     };
   }
-  if (action.type === Actions.START_SPEAKING) {
+  if (action.type === FlagsActions.START_SPEAKING) {
     return {
       ...state,
       isSpeaking: true,
     };
   }
-  if (action.type === Actions.STOP_LOADING) {
+  if (action.type === FlagsActions.STOP_LOADING) {
     return {
       ...state,
       isLoading: false,
     };
   }
-  if (action.type === Actions.START_LOADING) {
+  if (action.type === FlagsActions.START_LOADING) {
     return {
       ...state,
       isLoading: true,
     };
   }
-  if (action.type === Actions.STOP_UTTERING) {
+  if (action.type === FlagsActions.STOP_UTTERING) {
     return {
       ...state,
       isUttering: false,
     };
   }
-  if (action.type === Actions.START_UTTERING) {
+  if (action.type === FlagsActions.START_UTTERING) {
     return {
       ...state,
       isUttering: true,
     };
   }
-  if (action.type === Actions.PREPARE_WHISPER) {
+  if (action.type === FlagsActions.PREPARE_WHISPER) {
     return {
       ...state,
       isWhisperPrepared: true,
     };
   }
-  if (action.type === Actions.DISABLE_WHISPER) {
+  if (action.type === FlagsActions.DISABLE_WHISPER) {
     return {
       ...state,
       isWhisperPrepared: false,
     };
   }
-  if (action.type === Actions.NOT_FINAL_DATA_RECEIVED) {
+  if (action.type === FlagsActions.NOT_FINAL_DATA_RECEIVED) {
     return {
       ...state,
       isFinalData: false,
     };
   }
-  if (action.type === Actions.FINAL_DATA_RECEIVED) {
+  if (action.type === FlagsActions.FINAL_DATA_RECEIVED) {
     return {
       ...state,
       isFinalData: true,
