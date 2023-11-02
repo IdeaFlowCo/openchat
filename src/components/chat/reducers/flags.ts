@@ -7,6 +7,8 @@ interface GoogleSttFlagsState {
   isUttering: boolean;
   isWhisperPrepared: boolean;
   isFinalData: boolean;
+  isTranscriptionDone: boolean;
+  isRecording: boolean;
 }
 
 interface GoogleSttAction {
@@ -30,6 +32,10 @@ export enum FlagsActions {
   DISABLE_WHISPER = 'disable_whisper',
   NOT_FINAL_DATA_RECEIVED = 'not_final_data_received',
   FINAL_DATA_RECEIVED = 'final_data_received',
+  START_RECORDING = 'start_recording',
+  STOP_RECORDING = 'stop_recording',
+  START_TRANSCRIPTION = 'start_transcription',
+  STOP_TRANSCRIPTION = 'stop_transcription',
 }
 
 export const initialFlagsState = {
@@ -41,6 +47,8 @@ export const initialFlagsState = {
   isUttering: false,
   isWhisperPrepared: false,
   isFinalData: false,
+  isRecording: false,
+  isTranscriptionDone: true,
 };
 
 
@@ -137,6 +145,30 @@ export function flagsReducer(state: GoogleSttFlagsState, action: GoogleSttAction
     return {
       ...state,
       isFinalData: true,
+    };
+  }
+  if (action.type === FlagsActions.START_RECORDING) {
+    return {
+      ...state,
+      isRecording: true,
+    };
+  }
+  if (action.type === FlagsActions.STOP_RECORDING) {
+    return {
+      ...state,
+      isRecording: false,
+    };
+  }
+  if (action.type === FlagsActions.START_TRANSCRIPTION) {
+    return {
+      ...state,
+      isTranscriptionDone: false,
+    };
+  }
+  if (action.type === FlagsActions.STOP_TRANSCRIPTION) {
+    return {
+      ...state,
+      isTranscriptionDone: true,
     };
   }
   throw Error('Unknown action.');

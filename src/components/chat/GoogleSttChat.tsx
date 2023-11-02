@@ -11,21 +11,18 @@ import { type VoiceCommand } from 'types/useWhisperTypes';
 import useSound from 'use-sound';
 import { useAuth } from 'util/auth';
 import {
-  blobToBase64,
   checkIsVoiceCommand,
   detectEndKeyword,
   extractStartKeyword,
   getVoiceCommandAction,
   handleKeywords,
   splitTextsBySeparator,
-  whisperTranscript,
 } from './methods';
 import {
   BE_CONCISE,
   TALKTOGPT_SOCKET_ENDPOINT,
 } from './constants';
 import { isAndroid } from 'react-device-detect';
-import { useAudioRecorder } from 'react-audio-voice-recorder';
 import { initialFlagsState, FlagsActions, flagsReducer } from './reducers/flags';
 import { ControlsActions, controlsReducer, initialControlsState } from './reducers/controls';
 
@@ -68,26 +65,30 @@ export const GoogleSttChat = () => {
   const [firstMessage, setFirstMessage] = useState<string | null>(null);
   const [interim, setInterim] = useState<string>('');
   const [openaiRequest, setOpenaiRequest] = useState<string>('');
-  const [transcript, setTranscript] = useState<Blob>(null);
   
   const [noti, setNoti] = useState<{
     type: 'error' | 'success';
     message: string;
   }>();
 
-  const [flahsState, flagsDispatch] = useReducer(flagsReducer, initialFlagsState);
-  const [controlsState, controlsDispatch] = useReducer(controlsReducer, initialControlsState);
-  const {
-    startRecording,
-    stopRecording,
-    recordingBlob,
-    isRecording,
-  } = useAudioRecorder();
+  const [{
+    isAutoStop, 
+    isFinalData, 
+    isListening, 
+    isLoading, 
+    isRecording, 
+    isSending, 
+    isSpeaking, 
+    isTranscriptionDone, 
+    isUttering, 
+    isWhisperPrepared
+  }, flagsDispatch] = useReducer(flagsReducer, initialFlagsState);
 
-  useEffect(() => {
-    if (!recordingBlob) return;
-    setTranscript(recordingBlob);
-  }, [recordingBlob])
+  const [{
+    autoStopTimeout,
+    speakingRate
+  }, controlsDispatch] = useReducer(controlsReducer, initialControlsState);
+
 
   const [playSonar] = useSound('/sounds/sonar.mp3', { volume: 0.3, interrupt: true, });
 
@@ -137,7 +138,6 @@ export const GoogleSttChat = () => {
       showErrorMessage(NOTI_MESSAGES.gpt.error);
     },
     onFinish: (message) => {
-      setTranscript(null)
       setFirstMessage(message.content);
       flagsDispatch({ type: FlagsActions.STOP_SENDING_CHAT });
     },
@@ -185,7 +185,7 @@ export const GoogleSttChat = () => {
     stopUttering();
     playSonar();
     flagsDispatch({ type: FlagsActions.START_LOADING });
-    stopRecording();
+    flagsDispatch({ type: FlagsActions.STOP_RECORDING });
   };
 
   const onAutoStop = async () => {
@@ -195,11 +195,12 @@ export const GoogleSttChat = () => {
   };
 
   const processStartKeyword = async () => {
-    if (flahsState.isUttering) {
+    if (isUttering) {
       return
     }
     setOpenaiRequest('');
-    startRecording();
+    flagsDispatch({ type: FlagsActions.START_RECORDING });
+    flagsDispatch({ type: FlagsActions.START_TRANSCRIPTION });
     stopUttering();
     startKeywordDetectedRef.current = true;
   };
@@ -222,7 +223,7 @@ export const GoogleSttChat = () => {
       if (
         typeof startKeywordDetectedRef.current !== 'undefined' &&
         !startKeywordDetectedRef.current &&
-        !flahsState.isUttering
+        !isUttering
       ) {
         const keyword = extractStartKeyword(interimRef.current);
         if (keyword !== null) {
@@ -258,23 +259,6 @@ export const GoogleSttChat = () => {
     }
   };
 
-  const handleTranscriptionResults = (transcribed: {
-    error?: Error;
-    text: string;
-  }): string | null => {
-    if (transcribed.error) {
-      console.warn('24MB file size limit reached!');
-      showErrorMessage('24MB limit reached!');
-      return null;
-    }
-    if (!transcribed.text) {
-      showErrorMessage('Voice command not detected. Please speak again.');
-      flagsDispatch({ type: FlagsActions.STOP_SENDING_CHAT });
-      return null;
-    }
-    return transcribed.text;
-  };
-
   const onTranscribe = async () => {
     // const transcribed = await transcribeAudio(transcript);
 
@@ -284,7 +268,6 @@ export const GoogleSttChat = () => {
     let text = handleKeywords(openaiRequest);
     await submitTranscript(text);
 
-    setTranscript(null)
     flagsDispatch({ type: FlagsActions.STOP_SENDING_CHAT });
   };
 
@@ -302,7 +285,7 @@ export const GoogleSttChat = () => {
   };
 
   const prepareUseWhisper = async () => {
-    if (!flahsState.isWhisperPrepared) {
+    if (!isWhisperPrepared) {
       /**
        * fake start and stop useWhisper so that recorder is prepared
        * once start keyword detected, useWhisper can start record instantly
@@ -314,8 +297,8 @@ export const GoogleSttChat = () => {
   };
 
   const disableUseWhisper = async () => {
-    if (flahsState.isWhisperPrepared) {
-      stopRecording();
+    if (isWhisperPrepared) {
+      flagsDispatch({ type: FlagsActions.STOP_RECORDING });
       flagsDispatch({ type: FlagsActions.DISABLE_WHISPER });
     }
   }
@@ -382,11 +365,11 @@ export const GoogleSttChat = () => {
           if (action.value === 'faster') {
             controlsDispatch({ 
               type: ControlsActions.SET_AUTO_STOP_TIMEOUT, 
-              value: controlsState.autoStopTimeout - 1 <= 0 ? 1 : controlsState.autoStopTimeout - 1 
+              value: autoStopTimeout - 1 <= 0 ? 1 : autoStopTimeout - 1 
             })
           }
           if (action.value === 'slower') {
-            controlsDispatch({type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: controlsState.autoStopTimeout + 1})
+            controlsDispatch({type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: autoStopTimeout + 1})
           }
         }
         
@@ -399,7 +382,6 @@ export const GoogleSttChat = () => {
         }
         break;
       default:
-        setTranscript(null)
         flagsDispatch({ type: FlagsActions.STOP_LOADING });
         showErrorMessage('Unknown command.');
         break;
@@ -416,7 +398,7 @@ export const GoogleSttChat = () => {
   };
 
   const startAutoStopTimeout = () => {
-    autoStopRef.current = setTimeout(onAutoStop, controlsState.autoStopTimeout * 1000);
+    autoStopRef.current = setTimeout(onAutoStop, autoStopTimeout * 1000);
   };
 
   const startListening = async () => {
@@ -541,7 +523,7 @@ export const GoogleSttChat = () => {
   };
 
   const toggleUttering = () => {
-    if (flahsState.isUttering) {
+    if (isUttering) {
       stopUttering();
     } else {
       const lastMessage = messages
@@ -552,22 +534,6 @@ export const GoogleSttChat = () => {
         startUttering(lastMessage);
       }
     }
-  };
-
-  const transcribeAudio = async (
-    blob: Blob
-  ): Promise<{
-    error?: Error;
-    text: string;
-  }> => {
-    const base64 = await blobToBase64(blob);
-    if (!base64) {
-      return { error: new Error('Failed to read blob data.'), text: '' };
-    }
-
-    // Transcribe the audio
-    const text = await whisperTranscript(base64);
-    return { text };
   };
 
   const onStartSpeaking = () => {
@@ -588,11 +554,6 @@ export const GoogleSttChat = () => {
     }
     // clear auto stop timeout instance
     stopAutoStopTimeout();
-    // flush out lamejs
-    // if (encoderRef.current) {
-    //   encoderRef.current.flush();
-    //   encoderRef.current = undefined;
-    // }
     if (speechRef.current) {
       stopUttering();
       speechRef.current.removeEventListener('start', onStartUttering);
@@ -601,7 +562,6 @@ export const GoogleSttChat = () => {
   };
 
   useEffect(() => {
-    
     function handleStopUttering(message: {
       data: { type: string; data: boolean };
     }) {
@@ -636,46 +596,46 @@ export const GoogleSttChat = () => {
    */
   useEffect(() => {
     if (
-      !flahsState.isSending &&
+      !isSending &&
       !isRecording &&
-      flahsState.isWhisperPrepared &&
-      transcript?.size > 44
+      isWhisperPrepared && 
+      !isTranscriptionDone
     ) {
       onTranscribe().then(() => {
-        console.log("Transcription done")
+        flagsDispatch({ type: FlagsActions.STOP_TRANSCRIPTION });
       });
     }
-  }, [isRecording, flahsState.isSending, flahsState.isWhisperPrepared, transcript?.size]);
+  }, [isRecording, isSending, isWhisperPrepared, isTranscriptionDone]);
 
   useEffect(() => {
     if (
-      flahsState.isAutoStop &&
+      isAutoStop &&
       isRecording &&
-      flahsState.isFinalData &&
+      isFinalData &&
       startKeywordDetectedRef.current
     ) {
       startAutoStopTimeout();
     }
     if (
-      (flahsState.isAutoStop && !isRecording) ||
-      !flahsState.isFinalData ||
+      (isAutoStop && !isRecording) ||
+      !isFinalData ||
       !startKeywordDetectedRef.current
     ) {
       stopAutoStopTimeout();
     }
   }, [
-    flahsState.isAutoStop,
+    isAutoStop,
     isRecording,
-    flahsState.isFinalData,
+    isFinalData,
     startKeywordDetectedRef.current,
   ]);
 
   useEffect(() => {
     if (speechRef.current) {
       // change utterance speaking rate
-      speechRef.current.rate = controlsState.speakingRate;
+      speechRef.current.rate = speakingRate;
     }
-  }, [controlsState.speakingRate]);
+  }, [speakingRate]);
 
   useEffect(() => {
     if (chatRef.current) {
@@ -706,10 +666,10 @@ export const GoogleSttChat = () => {
         </div>
       </div>
       <GoogleSTTPill
-        autoStopTimeout={controlsState.autoStopTimeout}
-        isAutoStop={flahsState.isAutoStop}
-        isUnttering={flahsState.isUttering}
-        speakingRate={controlsState.speakingRate}
+        autoStopTimeout={autoStopTimeout}
+        isAutoStop={isAutoStop}
+        isUnttering={isUttering}
+        speakingRate={speakingRate}
         onChangeAutoStopTimeout={(value:number) => controlsDispatch({ type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: value })}
         onChangeIsAutoStop={(value: boolean) => { flagsDispatch({ type: FlagsActions.TOGGLE_AUTO_STOP, value: value }); }}
         onChangeSpeakingRate={(value: number) => controlsDispatch({ type: ControlsActions.SET_SPEANKING_RATE, value: value })}
@@ -726,11 +686,11 @@ export const GoogleSttChat = () => {
         <InterimHistory interims={interimsRef.current} interim={interim} />
       ) : null}
       <GoogleSTTInput
-        isListening={flahsState.isListening}
-        isLoading={flahsState.isLoading}
-        isSpeaking={flahsState.isSpeaking}
+        isListening={isListening}
+        isLoading={isLoading}
+        isSpeaking={isSpeaking}
         isRecording={isRecording && startKeywordDetectedRef.current}
-        isWhisperPrepared={flahsState.isWhisperPrepared}
+        isWhisperPrepared={isWhisperPrepared}
         query={input}
         onChangeQuery={handleInputChange}
         onForceStopRecording={forceStopRecording}
