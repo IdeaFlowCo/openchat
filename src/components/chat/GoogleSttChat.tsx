@@ -67,6 +67,7 @@ export const GoogleSttChat = () => {
 
   const [firstMessage, setFirstMessage] = useState<string | null>(null);
   const [interim, setInterim] = useState<string>('');
+  const [openaiRequest, setOpenaiRequest] = useState<string>('');
   const [transcript, setTranscript] = useState<Blob>(null);
   
   const [noti, setNoti] = useState<{
@@ -197,7 +198,7 @@ export const GoogleSttChat = () => {
     if (flahsState.isUttering) {
       return
     }
-    
+    setOpenaiRequest('');
     startRecording();
     stopUttering();
     startKeywordDetectedRef.current = true;
@@ -211,7 +212,7 @@ export const GoogleSttChat = () => {
       if (data.isFinal) {
         interimsRef.current.push(data.text);
         interimRef.current = '';
-        // startKeywordDetectedRef.current = false;
+        setOpenaiRequest((prev) => `${prev} ${data.text}`);
         flagsDispatch({ type: FlagsActions.FINAL_DATA_RECEIVED });
       } else {
         flagsDispatch({ type: FlagsActions.NOT_FINAL_DATA_RECEIVED });
@@ -275,12 +276,12 @@ export const GoogleSttChat = () => {
   };
 
   const onTranscribe = async () => {
-    const transcribed = await transcribeAudio(transcript);
+    // const transcribed = await transcribeAudio(transcript);
 
-    const transcriptionText = handleTranscriptionResults(transcribed);
-    if (!transcriptionText) return;
+    // const transcriptionText = handleTranscriptionResults(transcribed);
+    if (!openaiRequest) return;
 
-    let text = handleKeywords(transcriptionText);
+    let text = handleKeywords(openaiRequest);
     await submitTranscript(text);
 
     setTranscript(null)

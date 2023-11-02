@@ -95,12 +95,12 @@ export const trimText = (text: string): string => {
 export const handleKeywords = (text: string): string => {
   const lowerCaseText = text.toLowerCase();
 
-  // START_KEYWORDS.forEach((keyword) => {
-  //   const keywordIndex = lowerCaseText.indexOf(keyword.toLowerCase());
-  //   if (keywordIndex !== -1) {
-  //     text = text.substring(keywordIndex + keyword.length);
-  //   }
-  // });
+  START_KEYWORDS.forEach((keyword) => {
+    const keywordIndex = lowerCaseText.indexOf(keyword.toLowerCase());
+    if (keywordIndex !== -1) {
+      text = text.substring(keywordIndex + keyword.length);
+    }
+  });
 
   END_KEYWORDS.forEach((keyword) => {
     const endKeywordIndex = lowerCaseText.lastIndexOf(keyword.toLowerCase());
