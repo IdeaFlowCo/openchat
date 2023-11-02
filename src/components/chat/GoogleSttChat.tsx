@@ -44,7 +44,7 @@ const defaultMessage: Message = {
 
 export const GoogleSttChat = () => {
   const auth = useAuth();
-  
+
   const audioContextRef = useRef<AudioContext>();
   const audioInputRef = useRef<MediaStreamAudioSourceNode>();
   const autoStopRef = useRef<NodeJS.Timeout>();
@@ -65,22 +65,22 @@ export const GoogleSttChat = () => {
   const [firstMessage, setFirstMessage] = useState<string | null>(null);
   const [interim, setInterim] = useState<string>('');
   const [openaiRequest, setOpenaiRequest] = useState<string>('');
-  
+
   const [noti, setNoti] = useState<{
     type: 'error' | 'success';
     message: string;
   }>();
 
   const [{
-    isAutoStop, 
-    isFinalData, 
-    isListening, 
-    isLoading, 
-    isRecording, 
-    isSending, 
-    isSpeaking, 
-    isTranscriptionDone, 
-    isUttering, 
+    isAutoStop,
+    isFinalData,
+    isListening,
+    isLoading,
+    isRecording,
+    isSending,
+    isSpeaking,
+    isTranscriptionDone,
+    isUttering,
     isWhisperPrepared
   }, flagsDispatch] = useReducer(flagsReducer, initialFlagsState);
 
@@ -162,8 +162,8 @@ export const GoogleSttChat = () => {
   storedMessagesRef.current =
     lastIndexUser >= 0
       ? messagesSplitByLine
-          .slice(lastIndexUser + 1)
-          .map((message) => message.content)
+        .slice(lastIndexUser + 1)
+        .map((message) => message.content)
       : [];
   if (
     storedMessagesRef.current.length > 1 &&
@@ -239,16 +239,16 @@ export const GoogleSttChat = () => {
         endKeywordDetectedRef.current = true;
         if (typeof startKeywordDetectedRef.current !== 'undefined' &&
           !startKeywordDetectedRef.current) {
-            stopUttering();
-          } else {
-            onAutoStop();
-          }
+          stopUttering();
+        } else {
+          onAutoStop();
+        }
       }
 
       if ((typeof startKeywordDetectedRef.current == 'undefined' || !startKeywordDetectedRef.current) &&
-          (typeof endKeywordDetectedRef.current == 'undefined' || !endKeywordDetectedRef.current)) {
+        (typeof endKeywordDetectedRef.current == 'undefined' || !endKeywordDetectedRef.current)) {
         const voiceCommand = checkIsVoiceCommand(interimRef.current);
-        
+
         if (voiceCommand) {
           runVoiceCommand(voiceCommand);
           return;
@@ -306,13 +306,13 @@ export const GoogleSttChat = () => {
   const prepareSocket = async () => {
     socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT);
 
-    socketRef.current.on('connect', () => {});
+    socketRef.current.on('connect', () => { });
 
     socketRef.current.on('receive_audio_text', (data) => {
       onSpeechRecognized(data);
     });
 
-    socketRef.current.on('disconnect', () => {});
+    socketRef.current.on('disconnect', () => { });
   };
 
   const releaseHark = () => {
@@ -363,16 +363,16 @@ export const GoogleSttChat = () => {
         }
         if (typeof action.value === 'string') {
           if (action.value === 'faster') {
-            controlsDispatch({ 
-              type: ControlsActions.SET_AUTO_STOP_TIMEOUT, 
-              value: autoStopTimeout - 1 <= 0 ? 1 : autoStopTimeout - 1 
+            controlsDispatch({
+              type: ControlsActions.SET_AUTO_STOP_TIMEOUT,
+              value: autoStopTimeout - 1 <= 0 ? 1 : autoStopTimeout - 1
             })
           }
           if (action.value === 'slower') {
-            controlsDispatch({type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: autoStopTimeout + 1})
+            controlsDispatch({ type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: autoStopTimeout + 1 })
           }
         }
-        
+
         break;
       case 'SHOW_MESSAGE':
         if (action.messageType === 'error') {
@@ -598,7 +598,7 @@ export const GoogleSttChat = () => {
     if (
       !isSending &&
       !isRecording &&
-      isWhisperPrepared && 
+      isWhisperPrepared &&
       !isTranscriptionDone
     ) {
       onTranscribe().then(() => {
@@ -652,10 +652,10 @@ export const GoogleSttChat = () => {
         className='flex w-full flex-1 items-start justify-center overflow-auto p-4 sm:pt-10'
       >
         <div className='container flex max-w-3xl flex-col gap-3'>
-            <ChatMessage
-              message={defaultMessage.content}
-              sender={defaultMessage.role}
-            />
+          <ChatMessage
+            message={defaultMessage.content}
+            sender={defaultMessage.role}
+          />
           {messagesSplitByLine.map((message, index) => (
             <ChatMessage
               key={index}
@@ -670,7 +670,7 @@ export const GoogleSttChat = () => {
         isAutoStop={isAutoStop}
         isUnttering={isUttering}
         speakingRate={speakingRate}
-        onChangeAutoStopTimeout={(value:number) => controlsDispatch({ type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: value })}
+        onChangeAutoStopTimeout={(value: number) => controlsDispatch({ type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: value })}
         onChangeIsAutoStop={(value: boolean) => { flagsDispatch({ type: FlagsActions.TOGGLE_AUTO_STOP, value: value }); }}
         onChangeSpeakingRate={(value: number) => controlsDispatch({ type: ControlsActions.SET_SPEANKING_RATE, value: value })}
         onToggleUnttering={toggleUttering}
