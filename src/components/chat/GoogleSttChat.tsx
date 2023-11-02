@@ -247,10 +247,11 @@ export const GoogleSttChat = () => {
 
       if ((typeof startKeywordDetectedRef.current == 'undefined' || !startKeywordDetectedRef.current) &&
         (typeof endKeywordDetectedRef.current == 'undefined' || !endKeywordDetectedRef.current)) {
-        const voiceCommand = checkIsVoiceCommand(interimRef.current);
+        const voiceCommand = checkIsVoiceCommand(interimsRef.current.reverse()[0]);
 
-        if (voiceCommand) {
+        if (typeof voiceCommand !== "undefined" && voiceCommand) {
           runVoiceCommand(voiceCommand);
+          showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
           return;
         }
       }

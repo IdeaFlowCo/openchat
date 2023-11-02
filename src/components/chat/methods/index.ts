@@ -10,9 +10,7 @@ type VoiceCommandAction =
   | { type: 'SHOW_MESSAGE'; messageType: 'error' | 'success'; message: string }
   | null;
 
-export const getVoiceCommandAction = (
-  voiceCommand: VoiceCommand
-): VoiceCommandAction => {
+export const getVoiceCommandAction = (voiceCommand: VoiceCommand): VoiceCommandAction => {
   switch (voiceCommand.command) {
     case VOICE_COMMANDS.OFF_AUTO_STOP.command:
       return { type: 'SET_IS_AUTO_STOP', value: false };
@@ -36,7 +34,7 @@ export const getVoiceCommandAction = (
 
     case VOICE_COMMANDS.MAKE_AUTO_STOP.command:
       return { type: 'SET_AUTO_STOP_TIMEOUT', value: voiceCommand.args };
-      
+
     default:
       return null;
   }
@@ -44,32 +42,32 @@ export const getVoiceCommandAction = (
 
 export const checkIsVoiceCommand = (text: string): VoiceCommand | undefined => {
   const voiceCommands = Object.values(VOICE_COMMANDS);
-  for (const voiceCommand of voiceCommands) {
-    if (
-      text
-        .toLocaleLowerCase()
-        .includes(voiceCommand.matcher.toLocaleLowerCase())
-    ) {
-      
-      if (voiceCommand.command === VOICE_COMMANDS.CHANGE_AUTO_STOP.command) {
-        let args = wordsToNumbers(text);
-        if (typeof args === 'string') {
-          args = args.match(/\d+/)[0];
-          args = parseInt(args, 10);
-        }
-        return { ...voiceCommand, args };
-      } else if (voiceCommand.command === VOICE_COMMANDS.MAKE_AUTO_STOP.command) {
-        const commands = [
-          {command: "faster", index: text.toLocaleLowerCase().indexOf('faster')},
-          {command: "slower", index: text.toLocaleLowerCase().indexOf('slower')},
-        ].sort((a, b) => a.index - b.index).filter((c) => c.index !== -1)
+  if (text) {
+    for (const voiceCommand of voiceCommands) {
+      if (text.match(voiceCommand.matcher)) {
+        if (voiceCommand.command === VOICE_COMMANDS.CHANGE_AUTO_STOP.command) {
+          let args = wordsToNumbers(text);
+          if (typeof args === 'string') {
+            args = args.match(/\d+/)[0];
+            args = parseInt(args, 10);
+          }
+          return { ...voiceCommand, args };
+        } else if (voiceCommand.command === VOICE_COMMANDS.MAKE_AUTO_STOP.command) {
+          const commands = [
+            { command: 'faster', index: text.toLocaleLowerCase().indexOf('faster') },
+            { command: 'slower', index: text.toLocaleLowerCase().indexOf('slower') },
+          ]
+            .sort((a, b) => a.index - b.index)
+            .filter((c) => c.index !== -1);
 
-        return { ...voiceCommand, args: commands.length > 0 ? commands[0].command : "" };
-      } else {
-        return voiceCommand;
+          return { ...voiceCommand, args: commands.length > 0 ? commands[0].command : '' };
+        } else {
+          return voiceCommand;
+        }
       }
     }
   }
+
   return undefined;
 };
 
@@ -87,9 +85,7 @@ export const trimText = (text: string): string => {
     .trim()
     .replace(/(^,|,$|^\.)/, '')
     .trim();
-  return `${textStripCommas
-    .charAt(0)
-    .toLocaleUpperCase()}${textStripCommas.substring(1)}`;
+  return `${textStripCommas.charAt(0).toLocaleUpperCase()}${textStripCommas.substring(1)}`;
 };
 
 export const handleKeywords = (text: string): string => {
@@ -133,14 +129,10 @@ export const whisperTranscript = async (base64: string): Promise<string> => {
       'Content-Type': 'application/json',
     };
     const { default: axios } = await import('axios');
-    const response = await axios.post(
-      '/api/openai/whisper',
-      JSON.stringify(body),
-      {
-        headers,
-        maxBodyLength: 25 * 1024 * 1024,
-      }
-    );
+    const response = await axios.post('/api/openai/whisper', JSON.stringify(body), {
+      headers,
+      maxBodyLength: 25 * 1024 * 1024,
+    });
     return response?.data?.text || '';
   } catch (error) {
     console.warn('whisperTranscript', { error });
@@ -151,17 +143,12 @@ export const whisperTranscript = async (base64: string): Promise<string> => {
 export const detectEndKeyword = (interimText: string): boolean => {
   let isKeywordDetected = false;
   for (const keyword of END_KEYWORDS) {
-    isKeywordDetected ||= interimText
-      .toLowerCase()
-      .includes(keyword.toLowerCase());
+    isKeywordDetected ||= interimText.toLowerCase().includes(keyword.toLowerCase());
   }
   return isKeywordDetected;
 };
 
-export const splitTextsBySeparator = (
-  texts: Message[],
-  separator: string
-): Message[] => {
+export const splitTextsBySeparator = (texts: Message[], separator: string): Message[] => {
   const finalMessages = [];
   texts.forEach((text) => {
     const exploded = text.content.split(separator);

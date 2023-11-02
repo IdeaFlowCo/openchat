@@ -1,5 +1,6 @@
 export type VoiceCommand = {
   command: string;
-  matcher: string;
+  matcher: RegExp;
+  successMessage: string;
   args?: string | number;
 };
