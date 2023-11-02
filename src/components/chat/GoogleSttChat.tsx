@@ -571,21 +571,14 @@ export const GoogleSttChat = () => {
       }
     }
 
-    function handleBlur() {
-      disableUseWhisper();
-      stopListening();
-    }
-
     prepareUseWhisper().then(() => {
       startListening().then(() => {
         window.addEventListener('message', handleStopUttering);
-        window.addEventListener('blur', handleBlur);
       });
     });
 
     return () => {
       window.removeEventListener('message', handleStopUttering);
-      window.removeEventListener('blur', handleBlur);
       // release resource on component unmount
       cleanUpResources();
     };
