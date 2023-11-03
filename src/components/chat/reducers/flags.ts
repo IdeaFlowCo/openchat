@@ -32,10 +32,11 @@ export enum FlagsActions {
   DISABLE_WHISPER = 'disable_whisper',
   NOT_FINAL_DATA_RECEIVED = 'not_final_data_received',
   FINAL_DATA_RECEIVED = 'final_data_received',
-  START_RECORDING = 'start_recording',
   STOP_RECORDING = 'stop_recording',
   START_TRANSCRIPTION = 'start_transcription',
   STOP_TRANSCRIPTION = 'stop_transcription',
+  FORCE_STOP_RECORDING = 'force_stop_recording',
+  WAKEWORD_RECOGNISED = 'wakeword_recognised',
 }
 
 export const initialFlagsState = {
@@ -50,8 +51,6 @@ export const initialFlagsState = {
   isRecording: false,
   isTranscriptionDone: true,
 };
-
-
 
 export function flagsReducer(state: GoogleSttFlagsState, action: GoogleSttAction) {
   // console.log(action.type)
@@ -147,12 +146,6 @@ export function flagsReducer(state: GoogleSttFlagsState, action: GoogleSttAction
       isFinalData: true,
     };
   }
-  if (action.type === FlagsActions.START_RECORDING) {
-    return {
-      ...state,
-      isRecording: true,
-    };
-  }
   if (action.type === FlagsActions.STOP_RECORDING) {
     return {
       ...state,
@@ -169,6 +162,21 @@ export function flagsReducer(state: GoogleSttFlagsState, action: GoogleSttAction
     return {
       ...state,
       isTranscriptionDone: true,
+    };
+  }
+  if (action.type === FlagsActions.FORCE_STOP_RECORDING) {
+    return {
+      ...state,
+      isRecording: false,
+      isFinalData: false,
+      isLoading: true,
+    };
+  }
+  if (action.type === FlagsActions.WAKEWORD_RECOGNISED) {
+    return {
+      ...state,
+      isTranscriptionDone: false,
+      isRecording: true,
     };
   }
   throw Error('Unknown action.');

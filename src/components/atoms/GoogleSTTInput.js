@@ -109,7 +109,7 @@ export default function GoogleSTTInput({
         </div>
 
         <div className='w-[3.125rem]'>
-          {isRecording && isWhisperPrepared && (
+          {isRecording && isWhisperPrepared && !isLoading && (
             <button
               onClick={async () => {
                 await onForceStopRecording();
@@ -127,9 +127,8 @@ export default function GoogleSTTInput({
                 onStopListening?.();
               }}
               disabled={isLoading}
-              className={`rounded-full border ${
-                isListening ? 'bg-[#F2C80F]' : 'bg-[#96BE64]'
-              } p-3`}
+              className={`rounded-full border ${isListening ? 'bg-[#F2C80F]' : 'bg-[#96BE64]'
+                } p-3`}
             >
               <MicWaveIcon />
             </button>
