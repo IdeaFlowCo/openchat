@@ -16,6 +16,7 @@ import {
   extractStartKeyword,
   getVoiceCommandAction,
   handleKeywords,
+  sanitizeText,
   splitTextsBySeparator,
 } from './methods';
 import {
@@ -81,7 +82,6 @@ export const GoogleSttChat = () => {
     isSpeaking,
     isTranscriptionDone,
     isUttering,
-    isWhisperPrepared
   }, flagsDispatch] = useReducer(flagsReducer, initialFlagsState);
 
   const [{
@@ -181,11 +181,11 @@ export const GoogleSttChat = () => {
 
   const forceStopRecording = async () => {
     startKeywordDetectedRef.current = false;
-    flagsDispatch({ type: FlagsActions.NOT_FINAL_DATA_RECEIVED });
+    endKeywordDetectedRef.current = false;
     stopUttering();
     playSonar();
-    flagsDispatch({ type: FlagsActions.START_LOADING });
-    flagsDispatch({ type: FlagsActions.STOP_RECORDING });
+    flagsDispatch({ type: FlagsActions.FORCE_STOP_RECORDING });
+    setOpenaiRequest(sanitizeText(interim))
   };
 
   const onAutoStop = async () => {
@@ -194,13 +194,12 @@ export const GoogleSttChat = () => {
     await forceStopRecording();
   };
 
-  const processStartKeyword = async () => {
+  const processStartKeyword = () => {
     if (isUttering) {
       return
     }
     setOpenaiRequest('');
-    flagsDispatch({ type: FlagsActions.START_RECORDING });
-    flagsDispatch({ type: FlagsActions.START_TRANSCRIPTION });
+    flagsDispatch({ type: FlagsActions.WAKEWORD_RECOGNISED });
     stopUttering();
     startKeywordDetectedRef.current = true;
   };
@@ -241,6 +240,7 @@ export const GoogleSttChat = () => {
           !startKeywordDetectedRef.current) {
           stopUttering();
         } else {
+          setOpenaiRequest(interim)
           onAutoStop();
         }
       }
@@ -284,25 +284,6 @@ export const GoogleSttChat = () => {
       harkRef.current.on('stopped_speaking', onStopSpeaking);
     }
   };
-
-  const prepareUseWhisper = async () => {
-    if (!isWhisperPrepared) {
-      /**
-       * fake start and stop useWhisper so that recorder is prepared
-       * once start keyword detected, useWhisper can start record instantly
-       */
-      // await startRecording();
-      // await stopRecording();
-      flagsDispatch({ type: FlagsActions.PREPARE_WHISPER });
-    }
-  };
-
-  const disableUseWhisper = async () => {
-    if (isWhisperPrepared) {
-      flagsDispatch({ type: FlagsActions.STOP_RECORDING });
-      flagsDispatch({ type: FlagsActions.DISABLE_WHISPER });
-    }
-  }
 
   const prepareSocket = async () => {
     socketRef.current = io(TALKTOGPT_SOCKET_ENDPOINT);
@@ -572,10 +553,8 @@ export const GoogleSttChat = () => {
       }
     }
 
-    prepareUseWhisper().then(() => {
-      startListening().then(() => {
-        window.addEventListener('message', handleStopUttering);
-      });
+    startListening().then(() => {
+      window.addEventListener('message', handleStopUttering);
     });
 
     return () => {
@@ -592,14 +571,14 @@ export const GoogleSttChat = () => {
     if (
       !isSending &&
       !isRecording &&
-      isWhisperPrepared &&
-      !isTranscriptionDone
+      !isTranscriptionDone &&
+      openaiRequest
     ) {
       onTranscribe().then(() => {
         flagsDispatch({ type: FlagsActions.STOP_TRANSCRIPTION });
       });
     }
-  }, [isRecording, isSending, isWhisperPrepared, isTranscriptionDone]);
+  }, [isRecording, isSending, isTranscriptionDone, openaiRequest]);
 
   useEffect(() => {
     if (
@@ -684,7 +663,7 @@ export const GoogleSttChat = () => {
         isLoading={isLoading}
         isSpeaking={isSpeaking}
         isRecording={isRecording && startKeywordDetectedRef.current}
-        isWhisperPrepared={isWhisperPrepared}
+        isWhisperPrepared={true}
         query={input}
         onChangeQuery={handleInputChange}
         onForceStopRecording={forceStopRecording}

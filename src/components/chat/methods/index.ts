@@ -1,6 +1,6 @@
 import { VoiceCommand } from '../../../types/useWhisperTypes';
 import wordsToNumbers from 'words-to-numbers';
-import { END_KEYWORDS, START_KEYWORDS, VOICE_COMMANDS } from '../constants';
+import { END_WORDS, WAKE_WORDS, VOICE_COMMANDS } from '../constants';
 import { Message } from 'ai';
 
 type VoiceCommandAction =
@@ -72,8 +72,9 @@ export const checkIsVoiceCommand = (text: string): VoiceCommand | undefined => {
 };
 
 export const extractStartKeyword = (interimText: string): string | null => {
-  for (const keyword of START_KEYWORDS) {
-    if (interimText.toLowerCase().includes(keyword.toLowerCase())) {
+  const wake_words = process.env.NEXT_PUBLIC_WAKEWORDS?.split(',') || WAKE_WORDS;
+  for (const keyword of wake_words) {
+    if (sanitizeText(interimText).includes(sanitizeText(keyword))) {
       return keyword;
     }
   }
@@ -90,18 +91,23 @@ export const trimText = (text: string): string => {
 
 export const handleKeywords = (text: string): string => {
   const lowerCaseText = text.toLowerCase();
+  const wake_words = process.env.NEXT_PUBLIC_WAKEWORDS?.split(',') || WAKE_WORDS;
+  wake_words.forEach((keyword) => {
+    const last_keyword_chunk = keyword.split(' ').reverse()[0];
+    const keywordIndex = lowerCaseText.indexOf(sanitizeText(last_keyword_chunk));
 
-  START_KEYWORDS.forEach((keyword) => {
-    const keywordIndex = lowerCaseText.indexOf(keyword.toLowerCase());
     if (keywordIndex !== -1) {
-      text = text.substring(keywordIndex + keyword.length);
+      text = text.substring(keywordIndex + last_keyword_chunk.length);
     }
   });
 
-  END_KEYWORDS.forEach((keyword) => {
-    const endKeywordIndex = lowerCaseText.lastIndexOf(keyword.toLowerCase());
+  const end_words = process.env.NEXT_PUBLIC_ENDWORDS?.split(',') || END_WORDS;
+  end_words.forEach((keyword) => {
+    const first_keyword_chunk = keyword.split(' ')[0];
+    const endKeywordIndex = text.lastIndexOf(sanitizeText(first_keyword_chunk));
     if (endKeywordIndex !== -1) {
-      text = text.substring(0, endKeywordIndex).trim();
+      const keywordChunk = text.substring(endKeywordIndex).substring(first_keyword_chunk.length).trim();
+      text = text.substring(0, endKeywordIndex).trim().concat(' ', keywordChunk);
     }
   });
 
@@ -142,8 +148,9 @@ export const whisperTranscript = async (base64: string): Promise<string> => {
 
 export const detectEndKeyword = (interimText: string): boolean => {
   let isKeywordDetected = false;
-  for (const keyword of END_KEYWORDS) {
-    isKeywordDetected ||= interimText.toLowerCase().includes(keyword.toLowerCase());
+  const end_words = process.env.NEXT_PUBLIC_ENDWORDS?.split(',') || END_WORDS;
+  for (const keyword of end_words) {
+    isKeywordDetected ||= sanitizeText(interimText).includes(sanitizeText(keyword));
   }
   return isKeywordDetected;
 };
@@ -166,3 +173,21 @@ export const splitTextsBySeparator = (texts: Message[], separator: string): Mess
 
   return finalMessages;
 };
+
+export const sanitizeText = (keyword: string): string => {
+  return keyword
+    .replaceAll(/[,|.]/g, '')
+    .replaceAll(/\n\n|\n/g, '')
+    .trim()
+    .toLocaleLowerCase();
+};
+
+// export const getIndexLastKeyword = (interims: string[]): number => {
+//   const wake_words = process.env.NEXT_PUBLIC_WAKEWORKDS?.split(',') || WAKE_WORDS;
+//   const wake_words_index = wake_words.map((keyword) => {
+//     const index = interims.findLastIndex((interim) => sanitizeText(interim).includes(sanitizeText(keyword)));
+//     return { keyword, index };
+//   });
+
+//   return wake_words_index.toSorted((a, b) => a.index - b.index)[0].index;
+// };

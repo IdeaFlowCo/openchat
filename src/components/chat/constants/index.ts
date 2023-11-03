@@ -1,5 +1,5 @@
-export const START_KEYWORDS = ['flow', 'slow', 'start dictation'];
-export const END_KEYWORDS = ['over', 'end dictation'];
+export const WAKE_WORDS = ['flow', 'slow', 'start dictation'];
+export const END_WORDS = ['over', 'end dictation'];
 export const STOP_TIMEOUT = 2; // 2 seconds
 export const BE_CONCISE = 'Please, be concise.';
 
