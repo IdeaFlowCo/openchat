@@ -182,12 +182,12 @@ export const sanitizeText = (keyword: string): string => {
     .toLocaleLowerCase();
 };
 
-export const getIndexLastKeyword = (interims: string[]): number => {
-  const wake_words = process.env.NEXT_PUBLIC_WAKEWORKDS?.split(',') || WAKE_WORDS;
-  const wake_words_index = wake_words.map((keyword) => {
-    const index = interims.findLastIndex((interim) => sanitizeText(interim).includes(sanitizeText(keyword)));
-    return { keyword, index };
-  });
+// export const getIndexLastKeyword = (interims: string[]): number => {
+//   const wake_words = process.env.NEXT_PUBLIC_WAKEWORKDS?.split(',') || WAKE_WORDS;
+//   const wake_words_index = wake_words.map((keyword) => {
+//     const index = interims.findLastIndex((interim) => sanitizeText(interim).includes(sanitizeText(keyword)));
+//     return { keyword, index };
+//   });
 
-  return wake_words_index.toSorted((a, b) => a.index - b.index)[0].index;
-};
+//   return wake_words_index.toSorted((a, b) => a.index - b.index)[0].index;
+// };
