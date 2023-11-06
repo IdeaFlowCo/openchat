@@ -1,13 +1,12 @@
 export default function Alert({ message, type, onClose }) {
   return (
     <div
-      className={`mx-4 mt-2 rounded-full border-l-4 bg-gray-50 pl-3 md:mx-auto md:max-w-2xl md:pl-4 ${
-        type === 'error'
+      className={`mx-4 mt-2 rounded-full border-l-4 bg-gray-50 pl-3 md:mx-auto md:max-w-2xl md:pl-4 ${type === 'error'
           ? 'border-red-500'
           : type === 'success'
-          ? 'border-green-500'
-          : 'border-gray-500'
-      }`}
+            ? 'border-green-500'
+            : 'border-gray-500'
+        }`}
     >
       <div className='flex justify-between py-3'>
         <div className='flex flex-1 items-center'>
@@ -22,25 +21,23 @@ export default function Alert({ message, type, onClose }) {
           </div>
           <div className='ml-2 flex flex-1 self-center'>
             <p
-              className={`${
-                type === 'error'
+              className={`${type === 'error'
                   ? 'text-red-600'
                   : type === 'success'
-                  ? 'text-green-600'
-                  : 'text-gray-600'
-              }`}
+                    ? 'text-green-600'
+                    : 'text-gray-600'
+                }`}
             >
               {message}
             </p>
           </div>
           <button
-            className={`px-6 md:px-8 ${
-              type === 'error'
+            className={`px-6 md:px-8 ${type === 'error'
                 ? 'text-red-600'
                 : type === 'success'
-                ? 'text-green-600'
-                : 'text-gray-600'
-            }`}
+                  ? 'text-green-600'
+                  : 'text-gray-600'
+              }`}
             onClick={onClose}
           >
             <svg

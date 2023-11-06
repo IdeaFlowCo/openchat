@@ -21,8 +21,8 @@ export const VOICE_COMMANDS = {
   },
   MAKE_AUTO_STOP: {
     command: 'make-auto-stop',
-    matcher: /make automatic respon(d|se)/i,
-    successMessage: 'Automatic response is turned changed to',
+    matcher: /make automatic respon(d|se) (faster|slower)/i,
+    successMessage: 'Automatic response is turned to',
   },
   TURN_OFF_MIC: {
     command: 'turn-off-mic',

@@ -28,7 +28,7 @@ export const getVoiceCommandAction = (voiceCommand: VoiceCommand): VoiceCommandA
         return {
           type: 'SHOW_MESSAGE',
           messageType: 'error',
-          message: 'incorrect voice command.',
+          message: 'Incorrect voice command. The value must be a number.',
         };
       }
 
@@ -48,8 +48,8 @@ export const checkIsVoiceCommand = (text: string): VoiceCommand | undefined => {
         if (voiceCommand.command === VOICE_COMMANDS.CHANGE_AUTO_STOP.command) {
           let args = wordsToNumbers(text);
           if (typeof args === 'string') {
-            args = args.match(/\d+/)[0];
-            args = parseInt(args, 10);
+            const match = /\d+/.exec(args);
+            args = match ? parseInt(match[0], 10) : 0;
           }
           return { ...voiceCommand, args };
         } else if (voiceCommand.command === VOICE_COMMANDS.MAKE_AUTO_STOP.command) {
@@ -90,16 +90,16 @@ export const trimText = (text: string): string => {
 };
 
 export const handleKeywords = (text: string): string => {
-  const lowerCaseText = text.toLowerCase();
-  const wake_words = process.env.NEXT_PUBLIC_WAKEWORDS?.split(',') || WAKE_WORDS;
-  wake_words.forEach((keyword) => {
-    const last_keyword_chunk = keyword.split(' ').reverse()[0];
-    const keywordIndex = lowerCaseText.indexOf(sanitizeText(last_keyword_chunk));
+  // const lowerCaseText = text.toLowerCase();
+  // const wake_words = process.env.NEXT_PUBLIC_WAKEWORDS?.split(',') || WAKE_WORDS;
+  // wake_words.forEach((keyword) => {
+  //   const last_keyword_chunk = keyword.split(' ').reverse()[0];
+  //   const keywordIndex = lowerCaseText.indexOf(sanitizeText(last_keyword_chunk));
 
-    if (keywordIndex !== -1) {
-      text = text.substring(keywordIndex + last_keyword_chunk.length);
-    }
-  });
+  //   if (keywordIndex !== -1) {
+  //     text = text.substring(keywordIndex + last_keyword_chunk.length);
+  //   }
+  // });
 
   const end_words = process.env.NEXT_PUBLIC_ENDWORDS?.split(',') || END_WORDS;
   end_words.forEach((keyword) => {

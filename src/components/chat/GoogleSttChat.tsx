@@ -247,11 +247,13 @@ export const GoogleSttChat = () => {
 
       if ((typeof startKeywordDetectedRef.current == 'undefined' || !startKeywordDetectedRef.current) &&
         (typeof endKeywordDetectedRef.current == 'undefined' || !endKeywordDetectedRef.current)) {
-        const voiceCommand = checkIsVoiceCommand(interimsRef.current.reverse()[0]);
+        const reversedInterims = interimsRef.current[interimsRef.current.length - 1] ?? '';
+        const voiceCommand = checkIsVoiceCommand(reversedInterims);
 
         if (typeof voiceCommand !== "undefined" && voiceCommand) {
           runVoiceCommand(voiceCommand);
-          showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
+          // showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
+          // interimsRef.current.pop();
           return;
         }
       }
@@ -329,19 +331,21 @@ export const GoogleSttChat = () => {
 
   const runVoiceCommand = (voiceCommand: VoiceCommand) => {
     const action = getVoiceCommandAction(voiceCommand);
-
     switch (action?.type) {
       case 'SET_IS_AUTO_STOP':
         flagsDispatch({ type: FlagsActions.TOGGLE_AUTO_STOP, value: action.value });
+        showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
         break;
 
       case 'SET_MICROPHONE_OFF':
         turnOffMicrophone();
+        showSuccessMessage(voiceCommand.successMessage)
         break;
 
       case 'SET_AUTO_STOP_TIMEOUT':
         if (typeof action.value === 'number') {
           controlsDispatch({ type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: action.value })
+          showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
         }
         if (typeof action.value === 'string') {
           if (action.value === 'faster') {
@@ -349,17 +353,19 @@ export const GoogleSttChat = () => {
               type: ControlsActions.SET_AUTO_STOP_TIMEOUT,
               value: autoStopTimeout - 1 <= 0 ? 1 : autoStopTimeout - 1
             })
+            showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
           }
           if (action.value === 'slower') {
             controlsDispatch({ type: ControlsActions.SET_AUTO_STOP_TIMEOUT, value: autoStopTimeout + 1 })
           }
+          showSuccessMessage(`${voiceCommand.successMessage} ${voiceCommand.args ?? ''}`)
         }
 
         break;
       case 'SHOW_MESSAGE':
         if (action.messageType === 'error') {
           showErrorMessage(action.message);
-        } else if (action.messageType === 'success') {
+        } else {
           showSuccessMessage(action.message);
         }
         break;
@@ -368,6 +374,8 @@ export const GoogleSttChat = () => {
         showErrorMessage('Unknown command.');
         break;
     }
+
+    interimsRef.current.pop();
   };
 
   const showErrorMessage = (message: string) => {
@@ -542,6 +550,14 @@ export const GoogleSttChat = () => {
       speechRef.current.removeEventListener('end', onStopUttering);
     }
   };
+
+  useEffect(() => {
+    if (noti && noti.type === 'success') {
+      setTimeout(() => {
+        setNoti(undefined);
+      }, 2000)
+    }
+  }, [noti]);
 
   useEffect(() => {
     function handleStopUttering(message: {
